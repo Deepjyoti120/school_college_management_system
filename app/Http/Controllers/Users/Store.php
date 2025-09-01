@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers\Users;
+
+use App\Enums\UserRole;
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules;
+
+class Store extends Controller
+{
+    /**
+     * Display a listing of the users.
+     */
+    public function __invoke(Request $request)
+    {
+        $countryCode = $request->input('country_code', '+91');
+        $validated = $request->validate([
+            'name' => ['required', 'string'],
+            'role' => ['required', 'string'],
+            'dob' => ['required', 'date'],
+            'doj' => ['required', 'date'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            // 'phone' => ['required', 'digits:10', 'unique:users,phone'],
+            'phone' => [
+                'required',
+                'digits:10',
+                Rule::unique('users')->where(function ($query) use ($countryCode) {
+                    return $query->where('country_code', $countryCode);
+                }),
+            ],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+        $validated['country_code'] = $countryCode;
+        User::create([
+            ...$validated,
+            'is_active' => false
+        ]);
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
+    }
+}
