@@ -16,9 +16,6 @@ import {
     Settings,
     Settings2,
     SquareTerminal,
-    StretchHorizontal,
-    User2,
-    User2Icon,
     Users2Icon,
 } from 'lucide-vue-next'
 import NavMain from '@/components/NavMain.vue'
@@ -34,9 +31,8 @@ import {
     SidebarRail,
 } from '@/components/ui/sidebar'
 import { usePage } from '@inertiajs/vue3'
-import { User } from '@/types'
 import BrandCard from './BrandCard.vue'
-import { UserRole, VehicleType } from '@/types/enums'
+import { UserRole } from '@/types/enums'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
     collapsible: 'icon',
@@ -140,7 +136,7 @@ const data = {
     ]
 }
 
-if (user.role === UserRole.COM) {
+if (user.role === UserRole.ADMIN) {
     const adminItems = [
         {
             title: "Admin",
@@ -156,22 +152,22 @@ if (user.role === UserRole.COM) {
     ]
     data.navMain.push(...adminItems);
 }
-if (user.role === UserRole.GM) {
-    const adminItems = [
-        {
-            title: "Admin",
-            items: [
-                {
-                    title: 'Users',
-                    url: '/users',
-                    icon: Users2Icon,
-                    isActive: false,
-                },
-            ],
-        },
-    ]
-    data.navMain.push(...adminItems);
-}
+// if (user.role === UserRole.GM) {
+//     const adminItems = [
+//         {
+//             title: "Admin",
+//             items: [
+//                 {
+//                     title: 'Users',
+//                     url: '/users',
+//                     icon: Users2Icon,
+//                     isActive: false,
+//                 },
+//             ],
+//         },
+//     ]
+//     data.navMain.push(...adminItems);
+// }
 const settings =
 {
     title: "Settings",

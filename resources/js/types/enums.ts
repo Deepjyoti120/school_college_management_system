@@ -1,8 +1,14 @@
 export const enum UserRole {
-  COM = 'com',               // Commercial
-  GM = 'gm',                 // General Manager
-  DEL = 'del',               // Delivery User
-  FAC = 'fac',               // Facility
+  SUPER_ADMIN = 'super_admin',
+  ADMIN = 'admin',
+  STUDENT = 'student',
+  TEACHER = 'teacher',
+  ACCOUNTANT = 'accountant',
+  LIBRARIAN = 'librarian',
+  HEAD_MASTER = 'head_master',
+  PRINCIPAL = 'principal',
+  PARENT = 'parent',
+  STAFF = 'staff',
 }
 
 export const enum OrderStatus {

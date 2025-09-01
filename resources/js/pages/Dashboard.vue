@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import Heading from '@/components/Heading.vue'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import BarChart from '@/components/ui/custom-chart/BarChart.vue'
-import DoughnutChart from '@/components/ui/custom-chart/DoughnutChart.vue'
 import LineChart from '@/components/ui/custom-chart/LineChart.vue'
 import PieChart from '@/components/ui/custom-chart/PieChart.vue'
-import { Progress } from '@/components/ui/progress'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { BreadcrumbItem } from '@/types'
 import { Head } from '@inertiajs/vue3'
@@ -56,7 +54,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             <CardContent>
                 <div class="grid gap-4 md:grid-cols-2"
                  :class="showRevenue ? 'lg:grid-cols-4' : 'lg:grid-cols-3'">
-                    <Card class="shadow-none">
+                    <!-- <Card class="shadow-none">
                         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle class="text-sm font-medium">
                                 Total Orders
@@ -75,9 +73,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 {{ stats.ordersByCurrentUser }} created by you
                             </p>
                         </CardContent>
-                    </Card>
+                    </Card> -->
                     <Card class="shadow-none">
-                        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+                        <!-- <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle class="text-sm font-medium">
                                 Pending Order
                             </CardTitle>
@@ -86,17 +84,17 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 class="h-4 w-4 text-muted-foreground">
                                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                             </svg>
-                        </CardHeader>
+                        </CardHeader> -->
                         <CardContent>
-                            <div class="text-2xl font-bold">{{ stats.pendingOrders }}</div>
+                            <!-- <div class="text-2xl font-bold">{{ stats.pendingOrders }}</div> -->
                             <!-- <div class="text-2xl font-bold">{{ Math.round(completionRate) }}%</div> -->
                             <!-- <Progress :model-value="completionRate" class="h-2 mt-2" /> -->
-                            <p class="text-xs text-muted-foreground mt-1">
+                            <!-- <p class="text-xs text-muted-foreground mt-1">
                                 {{ stats.rejectedOrders }} Rejected
-                            </p>
+                            </p> -->
                         </CardContent>
                     </Card>
-                    <Card class="shadow-none">
+                    <!-- <Card class="shadow-none">
                         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle class="text-sm font-medium">
                                 Completed Order
@@ -114,8 +112,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 {{ stats.dispatchedToday }} today completed
                             </p>
                         </CardContent>
-                    </Card>
-                    <Card v-if="showRevenue" class="shadow-none">
+                    </Card> -->
+                    <!-- <Card v-if="showRevenue" class="shadow-none">
                         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle class="text-sm font-medium">
                                 Revenue
@@ -132,29 +130,29 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 ₹{{ stats.avgOrderValue }} average order
                             </p>
                         </CardContent>
-                    </Card>
+                    </Card> -->
                 </div>
                 <!-- Charts -->
                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 mt-6">
                     <!-- Order Status Donut Chart -->
-                    <Card class="shadow-none">
+                    <!-- <Card class="shadow-none">
                         <CardHeader>
                             <CardTitle>Order Status</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <PieChart :data="charts?.statusDistribution" />
                         </CardContent>
-                    </Card>
+                    </Card> -->
 
-                    <Card class="shadow-none">
+                    <!-- <Card class="shadow-none">
                         <CardHeader>
                             <CardTitle>Top Products</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <BarChart :data="charts.productSales" color="#10b981" />
                         </CardContent>
-                    </Card>
-                    <Card class="shadow-none">
+                    </Card> -->
+                    <!-- <Card class="shadow-none">
                         <CardHeader>
                             <CardTitle>Orders by Day of Week</CardTitle>
                         </CardHeader>
@@ -164,17 +162,17 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 quantity: item.count
                             }))" color="#f59e0b" />
                         </CardContent>
-                    </Card>
-                    <Card class="shadow-none">
+                    </Card> -->
+                    <!-- <Card class="shadow-none">
                         <CardHeader>
                             <CardTitle>Order Volume</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <LineChart :data="charts.orderVolume" />
                         </CardContent>
-                    </Card>
+                    </Card> -->
 
-                    <Card class="shadow-none">
+                    <!-- <Card class="shadow-none">
                         <CardHeader>
                             <CardTitle>Processing Time</CardTitle>
                         </CardHeader>
@@ -184,8 +182,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 quantity: item.count
                             }))" color="#6366f1" />
                         </CardContent>
-                    </Card>
-                    <Card class="shadow-none">
+                    </Card> -->
+                    <!-- <Card class="shadow-none">
                         <CardHeader>
                             <CardTitle>Orders by Hour of Day</CardTitle>
                         </CardHeader>
@@ -195,7 +193,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 quantity: item.count
                             }))" color="#3b82f6" />
                         </CardContent>
-                    </Card>
+                    </Card> -->
                 </div>
             </CardContent>
         </div>
