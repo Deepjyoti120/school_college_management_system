@@ -44,7 +44,14 @@ class LoginRequest extends FormRequest
 
         $user = User::where('email', $this->email)->first();
 
-        if (! $user || ! $user->is_active) {
+        if (! $user) {
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages([
+                'email' => __('These credentials do not match our records.'),
+            ]);
+        }
+
+        if (!$user->is_active) {
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
                 'email' => __('This account is inactive.'),

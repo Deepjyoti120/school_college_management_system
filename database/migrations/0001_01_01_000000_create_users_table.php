@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
             $table->string('country_code')->nullable();
-            $table->unique(['phone', 'country_code']);
+            // $table->unique(['phone', 'country_code']);
             $table->json('device_info')->nullable();
             $table->string('fcm_token')->nullable();
             $table->timestamp('email_verified_at')->nullable();
