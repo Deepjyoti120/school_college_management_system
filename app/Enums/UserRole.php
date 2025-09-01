@@ -4,28 +4,46 @@ namespace App\Enums;
 
 enum UserRole: string
 {
-    case COM = 'com';
-    case GM = 'gm';
-    case DEL = 'del';
-    case FAC = 'fac';
+    case SUPER_ADMIN = 'super_admin';
+    case ADMIN = 'admin';
+    case STUDENT = 'student';
+    case TEACHER = 'teacher';
+    case ACCOUNTANT = 'accountant';
+    case LIBRARIAN = 'librarian';
+    case HEAD_MASTER = 'head_master';
+    case PRINCIPAL = 'principal';
+    case PARENT = 'parent';
+    case STAFF = 'staff';
 
     public function label(): string
     {
         return match ($this) {
-            self::COM =>  'Company', //'COM',// 
-            self::GM => 'General Manager', //'GM', //
-            self::DEL =>  'Dealer', //'DEL',  //
-            self::FAC => 'Factory', //'FAC',//
+            self::ADMIN => 'Admin',
+            self::SUPER_ADMIN => 'Super Admin',
+            self::STUDENT => 'Student',
+            self::TEACHER => 'Teacher',
+            self::ACCOUNTANT => 'Accountant',
+            self::LIBRARIAN => 'Librarian',
+            self::HEAD_MASTER => 'Head Master',
+            self::PRINCIPAL => 'Principal',
+            self::PARENT => 'Parent',
+            self::STAFF => 'Staff',
         };
     }
 
     public function color(): string
     {
         return match ($this) {
-            self::COM => 'primary',
-            self::GM => 'destructive',
-            self::DEL => 'secondary',
-            self::FAC => 'success',
+            self::ADMIN => 'warning',
+            self::SUPER_ADMIN => 'danger',
+            self::STUDENT => 'info',
+            self::TEACHER => 'success',
+            self::ACCOUNTANT => 'primary',
+            self::LIBRARIAN => 'secondary',
+            self::HEAD_MASTER => 'dark',
+            self::PRINCIPAL => 'dark',
+            self::PARENT => 'info',
+            self::STAFF => 'secondary',
         };
     }
 

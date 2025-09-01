@@ -38,6 +38,8 @@ class User extends Authenticatable implements JWTSubject
         'country_code',
         'device_info',
         'fcm_token',
+        'class_id',
+        'section_id',
     ];
 
     /**
@@ -112,5 +114,15 @@ class User extends Authenticatable implements JWTSubject
     public function getProfileUrlAttribute(): ?string
     {
         return $this->profile_photo ?  Storage::url($this->profile_photo) : null;
+    }
+
+    public function class()
+    {
+        return $this->belongsTo(SchoolClass::class, 'class_id');
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(SchoolClassSection::class, 'section_id');
     }
 }
