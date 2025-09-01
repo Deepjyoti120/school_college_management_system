@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Heading from '@/components/Heading.vue'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import BarChart from '@/components/ui/custom-chart/BarChart.vue'
-import LineChart from '@/components/ui/custom-chart/LineChart.vue'
-import PieChart from '@/components/ui/custom-chart/PieChart.vue'
+import { Card, CardContent} from '@/components/ui/card'
+// import BarChart from '@/components/ui/custom-chart/BarChart.vue'
+// import LineChart from '@/components/ui/custom-chart/LineChart.vue'
+// import PieChart from '@/components/ui/custom-chart/PieChart.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { BreadcrumbItem } from '@/types'
 import { Head } from '@inertiajs/vue3'
@@ -44,7 +44,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 </script>
 
 <template>
-
     <Head title="Dashboard" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6">
