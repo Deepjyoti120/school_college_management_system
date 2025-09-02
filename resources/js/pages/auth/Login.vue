@@ -24,6 +24,7 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 </script>
 
 <template>
@@ -38,8 +39,8 @@ const submit = () => {
                         </div>
                         </Link>
                         <div class="text-center">
-                            <h1 class="text-xl font-medium">Cement Pilot</h1>
-                            <p class="text-center text-sm text-muted-foreground">Cement Pilot Management System</p>
+                            <h1 class="text-xl font-medium">{{ appName }}</h1>
+                            <!-- <p class="text-center text-sm text-muted-foreground">Cement Pilot Management System</p> -->
                         </div>
                     </div>
                     <form @submit.prevent="submit" class="flex flex-col gap-6">

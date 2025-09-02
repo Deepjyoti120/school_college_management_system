@@ -57,4 +57,25 @@ enum UserRole: string
             self::cases()
         );
     }
+
+    public static function optionsForUser(?UserRole $currentRole): array
+    {
+        $roles = self::cases();
+
+        if ($currentRole === self::SUPER_ADMIN) {
+            $roles = array_filter($roles, fn($role) => $role !== self::SUPER_ADMIN);
+        }
+
+        if ($currentRole === self::ADMIN) {
+            $roles = array_filter($roles, fn($role) => !in_array($role, [self::SUPER_ADMIN, self::ADMIN]));
+        }
+
+        return array_map(
+            fn($role) => [
+                'label' => $role->label(),
+                'value' => $role->value,
+            ],
+            $roles
+        );
+    }
 }

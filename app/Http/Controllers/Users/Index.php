@@ -33,8 +33,8 @@ class Index extends Controller
         return Inertia::render('users/Index', [
             'users' => $users,
             'filters' => $request->only(['search', 'role']),
-            'roles' => UserRole::options(),
-            'allowAoggleActive' => UserRole::GM === auth()->user()->role,
+            'roles' => UserRole::optionsForUser(auth()->user()->role),
+            'allowAoggleActive' => UserRole::ADMIN === auth()->user()->role,
         ]);
     }
 }

@@ -26,6 +26,9 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->date('dob')->nullable();
             $table->date('doj')->nullable();
+            $table->string('roll_number')->nullable();
+            //  roll_number , unique with school_id if multi school system is implemented
+            
 
             // Geolocation
             $table->decimal('latitude', 10, 7)->nullable();

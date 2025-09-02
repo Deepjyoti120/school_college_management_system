@@ -40,6 +40,8 @@ class User extends Authenticatable implements JWTSubject
         'fcm_token',
         'class_id',
         'section_id',
+        'school_id',
+        'roll_number',
     ];
 
     /**
@@ -124,5 +126,10 @@ class User extends Authenticatable implements JWTSubject
     public function section()
     {
         return $this->belongsTo(SchoolClassSection::class, 'section_id');
+    }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +11,8 @@ class SchoolClass extends Model
     use HasUlids;
 
     protected $fillable = [
-        'name'
+        'name',
+        'school_id',
     ];
 
     public function sections()
@@ -20,6 +22,11 @@ class SchoolClass extends Model
 
     public function students()
     {
-        return $this->hasMany(User::class, 'class_id')->where('role', 'student');
+        return $this->hasMany(User::class, 'class_id')->where('role', UserRole::STUDENT);
+    }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class);
     }
 }
