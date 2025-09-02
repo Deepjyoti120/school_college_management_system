@@ -136,7 +136,7 @@ const data = {
     ]
 }
 
-if (user.role === UserRole.ADMIN) {
+if (user.role === UserRole.SUPER_ADMIN) {
     const adminItems = [
         {
             title: "Admin",

@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/vue3';
-import bg from '@/assets/img/bg.jpeg'
+import bg from '@/assets/img/bg.jpg'
 defineProps<{
     status?: string;
     canResetPassword: boolean;
