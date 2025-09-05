@@ -24,6 +24,9 @@ return new class extends Migration
             $table->string('website')->nullable();
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
+            $table->string('logo_path')->nullable();
+            $table->string('cover_path')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
