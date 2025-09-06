@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import type { SidebarProps } from '@/components/ui/sidebar'
-
 import {
     AudioWaveform,
-    BaggageClaim,
     BaggageClaimIcon,
-    BookOpen,
-    Bot,
     Car,
     Command,
     Frame,
@@ -19,9 +15,7 @@ import {
     Users2Icon,
 } from 'lucide-vue-next'
 import NavMain from '@/components/NavMain.vue'
-import NavProjects from '@/components/NavProjects.vue'
 import NavUser from '@/components/NavUser.vue'
-import TeamSwitcher from '@/components/TeamSwitcher.vue'
 
 import {
     Sidebar,
@@ -152,22 +146,22 @@ if (user.role === UserRole.SUPER_ADMIN) {
     ]
     data.navMain.push(...adminItems);
 }
-// if (user.role === UserRole.GM) {
-//     const adminItems = [
-//         {
-//             title: "Admin",
-//             items: [
-//                 {
-//                     title: 'Users',
-//                     url: '/users',
-//                     icon: Users2Icon,
-//                     isActive: false,
-//                 },
-//             ],
-//         },
-//     ]
-//     data.navMain.push(...adminItems);
-// }
+if (user.role === UserRole.PRINCIPAL) {
+    const adminItems = [
+        {
+            title: "Admin",
+            items: [
+                {
+                    title: 'Users',
+                    url: '/users',
+                    icon: Users2Icon,
+                    isActive: false,
+                },
+            ],
+        },
+    ]
+    data.navMain.push(...adminItems);
+}
 const settings =
 {
     title: "Settings",

@@ -75,7 +75,7 @@ enum UserRole: string
                 'label' => $role->label(),
                 'value' => $role->value,
             ],
-            $roles
+            array_filter($roles, fn($role) => !in_array($role, [self::SUPER_ADMIN, self::ADMIN]))
         );
     }
 }
