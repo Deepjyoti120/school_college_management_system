@@ -69,14 +69,6 @@ const onSearch = async () => {
         onFinish: () => {
             loading.value = false;
             page.props.flash.success = 'Search completed successfully.';
-            page.props.flash.error = 'Search completed successfully.';
-            // toast('Search completed successfully.', {
-            //     description: '',
-            //     action: {
-            //         label: 'Undo',
-            //         onClick: () => console.log('Undo'),
-            //     },
-            // })
         }
     })
 
