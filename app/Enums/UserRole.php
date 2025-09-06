@@ -61,7 +61,6 @@ enum UserRole: string
     public static function optionsForUser(?UserRole $currentRole): array
     {
         $roles = self::cases();
-
         if ($currentRole === self::SUPER_ADMIN) {
             $roles = array_filter($roles, fn($role) => $role !== self::SUPER_ADMIN);
         }
@@ -77,5 +76,20 @@ enum UserRole: string
             ],
             array_filter($roles, fn($role) => !in_array($role, [self::SUPER_ADMIN, self::ADMIN]))
         );
+    }
+
+    public static function allowedForUser(?UserRole $currentRole): array
+    {
+        $roles = self::cases();
+
+        if ($currentRole === self::SUPER_ADMIN) {
+            $roles = array_filter($roles, fn($role) => $role !== self::SUPER_ADMIN);
+        }
+
+        if ($currentRole === self::ADMIN) {
+            $roles = array_filter($roles, fn($role) => !in_array($role, [self::SUPER_ADMIN, self::ADMIN]));
+        }
+
+        return array_filter($roles, fn($role) => !in_array($role, [self::SUPER_ADMIN, self::ADMIN]));
     }
 }

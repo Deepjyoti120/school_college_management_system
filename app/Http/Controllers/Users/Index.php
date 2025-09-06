@@ -24,12 +24,13 @@ class Index extends Controller
                         ->orWhereRaw('LOWER(email) LIKE ?', ["%{$search}%"]);
                 });
             })
-            ->where('id', '!=', auth()->id())
+            // ->where('id', '!=', auth()->id())
+            ->whereIn('role', UserRole::allowedForUser(auth()->user()->role))
             ->when($request->role && $request->role !== 'all', fn($q) => $q->where('role', $request->role))
             ->orderBy('created_at')
             ->paginate(10)
             ->withQueryString();
-            // sleep(1);
+        // sleep(1);
         return Inertia::render('users/Index', [
             'users' => $users,
             'filters' => $request->only(['search', 'role']),
