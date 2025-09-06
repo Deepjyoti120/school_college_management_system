@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { toast } from 'vue-sonner';
+import { Head, useForm } from '@inertiajs/vue3';
 import Heading from '@/components/Heading.vue';
 
 import { Input } from '@/components/ui/input';
@@ -15,7 +13,6 @@ import SelectValue from '@/components/ui/select/SelectValue.vue';
 import SelectContent from '@/components/ui/select/SelectContent.vue';
 import SelectGroup from '@/components/ui/select/SelectGroup.vue';
 import SelectItem from '@/components/ui/select/SelectItem.vue';
-import SelectLabel from '@/components/ui/select/SelectLabel.vue';
 import InputError from '@/components/InputError.vue';
 
 const breadcrumbs = [
