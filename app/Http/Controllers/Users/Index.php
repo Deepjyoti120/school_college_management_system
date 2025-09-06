@@ -24,7 +24,7 @@ class Index extends Controller
                         ->orWhereRaw('LOWER(email) LIKE ?', ["%{$search}%"]);
                 });
             })
-            // ->where('id', '!=', auth()->id())
+            ->where('id', '!=', auth()->id())
             ->whereIn('role', UserRole::allowedForUser(auth()->user()->role))
             ->when($request->role && $request->role !== 'all', fn($q) => $q->where('role', $request->role))
             ->orderBy('created_at')
