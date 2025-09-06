@@ -22,7 +22,7 @@ class SchoolClass extends Model
 
     public function sections()
     {
-        return $this->hasMany(SchoolClassSection::class);
+        return $this->hasMany(SchoolClassSection::class, 'class_id');
     }
 
     public function students()
