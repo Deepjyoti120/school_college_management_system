@@ -35,7 +35,7 @@ class Index extends Controller
             'users' => $users,
             'filters' => $request->only(['search', 'role']),
             'roles' => UserRole::optionsForUser(auth()->user()->role),
-            'allowAoggleActive' => UserRole::PRINCIPAL === auth()->user()->role,
+            'allowAoggleActive' => UserRole::PRINCIPAL === auth()->user()->role || UserRole::SUPER_ADMIN === auth()->user()->role,
         ]);
     }
 }
