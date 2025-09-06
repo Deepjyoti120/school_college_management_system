@@ -17,6 +17,7 @@ import {
 import NavMain from '@/components/NavMain.vue'
 import NavUser from '@/components/NavUser.vue'
 
+
 import {
     Sidebar,
     SidebarContent,
@@ -27,12 +28,13 @@ import {
 import { usePage } from '@inertiajs/vue3'
 import BrandCard from './BrandCard.vue'
 import { UserRole } from '@/types/enums'
+import { AppPageProps } from '@/types'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
     collapsible: 'icon',
 })
 
-const page = usePage()
+const page = usePage<AppPageProps>()
 const user = page.props.auth.user;
 const appName = page.props.name;
 const data = {
