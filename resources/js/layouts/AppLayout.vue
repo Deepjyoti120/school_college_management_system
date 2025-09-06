@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
-import type { BreadcrumbItemType } from '@/types';
+import type { AppPageProps, BreadcrumbItemType } from '@/types';
 import { Toaster } from '@/components/ui/sonner';
 import 'vue-sonner/style.css'
 import { usePage } from '@inertiajs/vue3';
-import { watchEffect } from 'vue';
+import { h, watchEffect } from 'vue';
 import { toast } from 'vue-sonner';
+import { CircleAlert, CircleCheck, CircleCheckBigIcon, Home } from 'lucide-vue-next';
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
 }
@@ -13,7 +14,7 @@ interface Props {
 withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
-const page = usePage();
+const page = usePage<AppPageProps>();
 
 watchEffect(() => {
     const flash = page.props.flash;
@@ -24,6 +25,12 @@ watchEffect(() => {
                 label: 'Undo',
                 onClick: () => console.log('Undo'),
             },
+            actionButtonStyle: {
+                backgroundColor: '#10B981',
+                color: 'white',
+                border: 'none',
+            },
+            icon: h(CircleCheckBigIcon, { class: "w-5 h-5 text-green-500" })
         });
     }
     if (flash?.error) {
@@ -33,6 +40,12 @@ watchEffect(() => {
                 label: 'Undo',
                 onClick: () => console.log('Undo'),
             },
+            actionButtonStyle: {
+                backgroundColor: '#EF4444',
+                color: 'white',
+                border: 'none',
+            },
+            icon: h(CircleAlert, { class: "w-5 h-5 text-red-500 " })
         });
     }
 });

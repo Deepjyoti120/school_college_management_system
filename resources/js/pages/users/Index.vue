@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
@@ -39,6 +39,7 @@ import Avatar from '@/components/ui/avatar/Avatar.vue';
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue';
 import Switch from '@/components/ui/switch/Switch.vue';
 import { User } from '@/types/User';
+import { AppPageProps } from '@/types';
 // const props = defineProps({
 //     users: Object,
 //     filters: Object,
@@ -55,6 +56,7 @@ const props = defineProps<Props>();
 const search = ref(props.filters?.search || '')
 const role = ref(props.filters?.role)
 const loading = ref(false)
+const page = usePage<AppPageProps>()
 const onSearch = async () => {
     loading.value = true
     router.get(route('users.index'), {
@@ -66,13 +68,15 @@ const onSearch = async () => {
         preserveScroll: true,
         onFinish: () => {
             loading.value = false;
-            toast('Search completed successfully.', {
-                description: '',
-                action: {
-                    label: 'Undo',
-                    onClick: () => console.log('Undo'),
-                },
-            })
+            page.props.flash.success = 'Search completed successfully.';
+            page.props.flash.error = 'Search completed successfully.';
+            // toast('Search completed successfully.', {
+            //     description: '',
+            //     action: {
+            //         label: 'Undo',
+            //         onClick: () => console.log('Undo'),
+            //     },
+            // })
         }
     })
 
