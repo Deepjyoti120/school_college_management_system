@@ -13,14 +13,18 @@ import SelectContent from '@/components/ui/select/SelectContent.vue';
 import SelectGroup from '@/components/ui/select/SelectGroup.vue';
 import SelectItem from '@/components/ui/select/SelectItem.vue';
 import InputError from '@/components/InputError.vue';
+import { SelectOption } from '@/types/SelectOption';
+import { ref, watch } from 'vue';
 
 const breadcrumbs = [
     { title: 'Users', href: '/users' },
     { title: 'Create user', href: '/users/create' },
 ];
-const props = defineProps({
-    roles: Array,
-})
+interface Props {
+    roles: SelectOption[],
+    classes: SelectOption[],
+}
+const props = defineProps<Props>()
 const form = useForm({
     name: '',
     email: '',
@@ -29,9 +33,21 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     role: '',
+    class_id: '',
+    section_id: '',
     phone: '',
+    roll_number: '',
 });
+const sections = ref<SelectOption[]>([]);
 
+watch(() => form.class_id, async (newVal) => {
+    form.section_id = ''
+    sections.value = []
+    if (newVal) {
+        const res = await fetch(route('class.sections', { class_id: newVal }))
+        sections.value = await res.json()
+    }
+})
 const submit = () => {
     form.post(route('user.store'), {
         onSuccess: () => form.reset(),
@@ -55,32 +71,63 @@ const submit = () => {
                             <form @submit.prevent="submit" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="grid gap-2 col-span-full md:col-span-1">
                                     <Label for="name">Name</Label>
-                                    <Input id="name" v-model="form.name"  autofocus placeholder="Enter name"
+                                    <Input id="name" v-model="form.name" autofocus placeholder="Enter name"
                                         autocomplete="name" />
                                     <InputError :message="form.errors.name" />
                                 </div>
                                 <div class="grid gap-2 col-span-full md:col-span-1">
                                     <Label for="email">Email</Label>
-                                    <Input id="email" type="email" v-model="form.email"
-                                        placeholder="Enter email" autocomplete="email" />
+                                    <Input id="email" type="email" v-model="form.email" placeholder="Enter email"
+                                        autocomplete="email" />
                                     <InputError :message="form.errors.email" />
                                 </div>
                                 <div class="grid gap-2 col-span-full md:col-span-1">
                                     <Label for="dob">Date of Birth</Label>
-                                    <Input id="dob" type="date" v-model="form.dob"  />
+                                    <Input id="dob" type="date" v-model="form.dob" />
                                     <InputError :message="form.errors.dob" />
                                 </div>
                                 <div class="grid gap-2 col-span-full md:col-span-1">
                                     <Label for="doj">Date of Joining</Label>
-                                    <Input id="doj" type="date" v-model="form.doj"  />
+                                    <Input id="doj" type="date" v-model="form.doj" />
                                     <InputError :message="form.errors.doj" />
                                 </div>
-
+                                <div class="grid gap-2 ">
+                                    <Label for="role">Class Room</Label>
+                                    <Select v-model="form.class_id">
+                                        <SelectTrigger class="w-full">
+                                            <SelectValue placeholder="Select Class Room" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem v-for="r in props.classes" :key="r.value" :value="r.value">
+                                                    {{ r.label }}
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError :message="form.errors.class_id" />
+                                </div>
+                                <div class="grid gap-2">
+                                    <Label for="role">Class Section</Label>
+                                    <Select v-model="form.section_id">
+                                        <SelectTrigger class="w-full">
+                                            <SelectValue placeholder="Select Class Room Section" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem v-for="r in sections" :key="r.value" :value="r.value">
+                                                    {{ r.label }}
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError :message="form.errors.section_id" />
+                                </div>
                                 <div class="grid gap-2">
                                     <Label for="role">Role</Label>
                                     <Select v-model="form.role">
-                                        <SelectTrigger  class="w-full">
-                                            <SelectValue placeholder="Select Role" />
+                                        <SelectTrigger class="w-full">
+                                            <SelectValue placeholder="Role" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
@@ -95,8 +142,14 @@ const submit = () => {
 
                                 <div class="grid gap-2 col-span-full md:col-span-1">
                                     <Label for="phone">Phone</Label>
-                                    <Input id="phone" type="number" v-model="form.phone"  />
+                                    <Input @input="form.phone = form.phone?.toString().slice(0, 10)" id="phone"
+                                        type="number" v-model="form.phone" maxlength="10" />
                                     <InputError :message="form.errors.phone" />
+                                </div>
+                                <div class="grid gap-2 col-span-full md:col-span-1">
+                                    <Label for="roll_number">Rool Number</Label>
+                                    <Input id="roll_number" type="text" v-model="form.roll_number" />
+                                    <InputError :message="form.errors.roll_number" />
                                 </div>
                                 <div class="grid gap-2 col-span-full md:col-span-1">
                                     <Label for="password">Password</Label>
@@ -107,10 +160,10 @@ const submit = () => {
                                 <div class="grid gap-2 col-span-full md:col-span-1">
                                     <Label for="password_confirmation">Confirm Password</Label>
                                     <Input id="password_confirmation" type="password"
-                                        v-model="form.password_confirmation"  autocomplete="new-password"
+                                        v-model="form.password_confirmation" autocomplete="new-password"
                                         placeholder="Confirm password" />
                                     <!-- <InputError :message="form.errors.password_confirmation" /> -->
-                                     <InputError :message="form.errors.password_confirmation || form.errors.password" />
+                                    <InputError :message="form.errors.password_confirmation || form.errors.password" />
                                 </div>
                                 <div class="col-span-full pt-4 flex justify-end">
                                     <Button type="submit" class="w-full md:w-auto" :disabled="form.processing">

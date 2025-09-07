@@ -38,6 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('users', Users\Index::class)->name('users.index');
     Route::get('user/create', Users\Create::class)->name('user.create');
+    Route::get('class/{class_id}/sections', [Users\Create::class, 'sections'])
+    ->name('class.sections');
     Route::post('user/store', Users\Store::class)->name('user.store');
     Route::put('user/{user}/toggle', Users\ToggleStatusController::class)->name('user.toggle');
     // Category

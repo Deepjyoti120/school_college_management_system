@@ -4,7 +4,6 @@ import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
-import { toast } from 'vue-sonner'
 import {
     Pagination,
     PaginationContent,
@@ -44,13 +43,13 @@ import { AppPageProps } from '@/types';
 //     users: Object,
 //     filters: Object,
 //     roles: Array,
-//     allowAoggleActive: Boolean,
+//     canUserCreate: Boolean,
 // })
 interface Props {
     users: User[],
     filters: object,
     roles: object,
-    allowAoggleActive: boolean,
+    canUserCreate: boolean,
 }
 const props = defineProps<Props>();
 const search = ref(props.filters?.search || '')
@@ -104,7 +103,7 @@ const toggleActive = (val: boolean, user: any) => {
                 <Heading title="Users"
                     description="Manage your users here. You can view, edit, and delete users as needed" />
                 <Link :href="route('user.create')">
-                <Button :variant="'default'" :tabindex="0" class="w-full md:w-32">
+                <Button v-if="canUserCreate" :variant="'default'" :tabindex="0" class="w-full md:w-32">
                     Add New
                 </Button>
                 </Link>
@@ -179,7 +178,7 @@ const toggleActive = (val: boolean, user: any) => {
                                         </Badge>
                                     </TableCell>
                                     <TableCell class="capitalize text-black dark:text-gray-200">
-                                        <Switch :disabled="!props.allowAoggleActive" v-model="user.is_active"
+                                        <Switch :disabled="!props.canUserCreate" v-model="user.is_active"
                                             @update:modelValue="(val) => toggleActive(val, user)" />
                                     </TableCell>
                                     <TableCell class="capitalize text-black dark:text-gray-200">

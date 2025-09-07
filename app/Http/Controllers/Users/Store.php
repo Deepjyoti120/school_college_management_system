@@ -16,6 +16,7 @@ class Store extends Controller
      */
     public function __invoke(Request $request)
     {
+        // try {
         $countryCode = $request->input('country_code', '+91');
         $validated = $request->validate([
             'name' => ['required', 'string'],
@@ -27,17 +28,24 @@ class Store extends Controller
             'phone' => [
                 'required',
                 'digits:10',
-                Rule::unique('users')->where(function ($query) use ($countryCode) {
-                    return $query->where('country_code', $countryCode);
-                }),
+                // Rule::unique('users')->where(function ($query) use ($countryCode) {
+                //     return $query->where('country_code', $countryCode);
+                // }),
             ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'class_id' => ['nullable', 'exists:school_classes,id'],
+            'section_id' => ['nullable', 'exists:school_class_sections,id'],
+            'roll_number' => ['nullable', 'string'],
         ]);
         $validated['country_code'] = $countryCode;
         User::create([
             ...$validated,
-            'is_active' => false
+            'is_active' => false,
+            'school_id' => auth()->user()->school_id,
         ]);
         return redirect()->route('users.index')->with('success', 'User created successfully.');
+        // } catch (\Exception $e) {
+        //     dd($e->getMessage());
+        // }
     }
 }
