@@ -33,9 +33,9 @@ class Store extends Controller
                 // }),
             ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'class_id' => ['nullable', 'exists:school_classes,id'],
-            'section_id' => ['nullable', 'exists:school_class_sections,id'],
-            'roll_number' => ['nullable', 'string'],
+            'class_id' => ['required', 'exists:school_classes,id'],
+            'section_id' => ['required', 'exists:school_class_sections,id'],
+            'roll_number' => ['required', 'string'],
         ]);
         $validated['country_code'] = $countryCode;
         User::create([
