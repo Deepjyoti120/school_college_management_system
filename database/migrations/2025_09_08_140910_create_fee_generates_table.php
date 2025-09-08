@@ -15,9 +15,11 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('school_id')->constrained()->cascadeOnDelete();
             // $table->foreignUlid('fee_id')->constrained()->cascadeOnDelete();
-            $table->foreignUlid('class_id')->constrained('school_classes')->cascadeOnDelete();
-            // academci year
+            // $table->foreignUlid('class_id')->constrained('school_classes')->cascadeOnDelete();
             $table->foreignUlid('academic_year_id')->constrained()->cascadeOnDelete();
+            $table->string('month');
+            $table->string('year');
+            $table->string('type');
             $table->timestamps();
         });
     }
