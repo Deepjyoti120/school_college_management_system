@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('fee_generates', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->foreignUlid('school_id')->constrained()->cascadeOnDelete();
+            // $table->foreignUlid('fee_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('class_id')->constrained('school_classes')->cascadeOnDelete();
+            // academci year
+            $table->foreignUlid('academic_year_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
