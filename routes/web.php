@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Users;
 use App\Http\Controllers\Category;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FeeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Restaurent;
@@ -61,6 +62,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('order/action/{order}/approved', [OrderController::class, 'approve'])->name('order.action.approved');
     Route::post('order/action/{order}/reject', [OrderController::class, 'reject'])->name('order.action.reject');
     // Order End
+    // Fee Generation Start
+    Route::get('fees', [FeeController::class, 'index'])->name('fees.index');
+    // Fee Generation End
 });
 
 require __DIR__ . '/settings.php';
