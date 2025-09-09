@@ -38,20 +38,21 @@ import { SelectOption } from '@/types/SelectOption';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
 import { Utils } from '@/lib/utils';
 import { FeeGenerate } from '@/types/FeeGenerate';
+import { FeeType } from '@/types/enums';
 
 interface Props {
     fees: PaginatedResponse<FeeGenerate>,
     filters: Record<string, any>,
     feeTypes: SelectOption[],
-    canOrder: boolean,
 }
 const props = defineProps<Props>();
 const search = ref(props.filters?.search || '')
 const status = ref(props.filters?.statusOptions)
+const feeType = ref(props.feeTypes)
 const loading = ref(false)
 const onSearch = async () => {
     loading.value = true
-    router.get(route('orders.index'), {
+    router.get(route('fees.index'), {
         search: search.value || '',
         status: status.value,
     }, {
@@ -73,7 +74,7 @@ const onSearch = async () => {
 }
 const goToPage = (page: number) => {
     loading.value = true
-    router.get(route('orders.index'), {
+    router.get(route('fees.index'), {
         page,
         search: search.value || '',
         status: status.value,
@@ -83,22 +84,21 @@ const goToPage = (page: number) => {
         onFinish: () => loading.value = false
     })
 }
-const breadcrumbs = [{ title: 'Orders', href: '/orders' }];
+const generateFee = () => {
+    loading.value = true
+    router.get(route('fees.generate'), {
+        type: feeType.value || '',
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+        onFinish: () => loading.value = false,
+        onSuccess: () => {
+            // toast.success('Fee generated successfully.');
+        },
+    })
+}
+const breadcrumbs = [{ title: 'Fee', href: '/fees' }];
 
-const isSheetOpen = ref(false);
-const sheetCloseBtn = async () => {
-    isSheetOpen.value = false;
-}
-const order = ref<FeeGenerate | null>(null);
-const takeAction = (ord: FeeGenerate) => {
-    order.value = ord;
-    isSheetOpen.value = true;
-}
-watch(() => isSheetOpen.value, (isSheetOpen) => {
-    if (!isSheetOpen) {
-        order.value = null;
-    }
-});
 </script>
 
 <template>
@@ -109,7 +109,7 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
             <div class="flex justify-between">
                 <Heading title="Fee" description="Manage or create academic fees" />
                 <div class="flex gap-2">
-                    <Select v-model="status">
+                    <Select v-model="feeType">
                         <SelectTrigger>
                             <SelectValue placeholder="Select Status" />
                         </SelectTrigger>
@@ -121,11 +121,11 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <Link :href="route('order.create')">
-                    <Button :variant="'default'" :tabindex="0" class="w-full">
+                    <!-- <Link :href="route('order.create')"> -->
+                    <Button @click="generateFee()" :variant="'default'" :tabindex="0">
                         New Fee Generate
                     </Button>
-                    </Link>
+                    <!-- </Link> -->
                 </div>
             </div>
             <CardContent>

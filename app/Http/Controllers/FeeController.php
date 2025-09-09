@@ -37,6 +37,13 @@ class FeeController extends Controller
             'feeTypes' => FeeType::options(),
         ]);
     }
+    public function feeGenerate(Request $request)
+    {
+        if (!in_array($request->type, FeeType::values(), true)) {
+            return back()->with('error', 'Fee type is required');
+        }
+        return back()->with('success', 'Fee Generated Successfully');
+    }
 
     public function create()
     {
