@@ -19,7 +19,7 @@ class FeeController extends Controller
 {
     public function index(Request $request)
     {
-        $fees = FeeGenerate::query()
+        $fees = FeeGenerate::query()->with(['school'])
             ->when($request->search, function ($q) use ($request) {
                 $search = strtolower($request->search);
                 $q->whereHas('product', function ($query) use ($search) {
@@ -30,7 +30,6 @@ class FeeController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
-
         return Inertia::render('fee/Index', [
             'fees' => $fees,
             'filters' => $request->only(['search', 'status']),

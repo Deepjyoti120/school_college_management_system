@@ -20,3 +20,8 @@ export const enum OrderStatus {
 
 export type BadgeVariant = 'default' | 'destructive' | 'outline' | 'secondary';
 export type StepperState = 'completed' | 'active' | 'inactive';
+
+export enum FeeType {
+  ADMISSION = "admission",
+  MONTHLY = "monthly",
+}

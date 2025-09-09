@@ -34,19 +34,11 @@ import { ArchiveX, Eye, LoaderCircle, Pen, } from 'lucide-vue-next';
 import Heading from '@/components/Heading.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import Badge from '@/components/ui/badge/Badge.vue';
-import { getInitials } from '@/composables/useInitials';
-import Avatar from '@/components/ui/avatar/Avatar.vue';
-import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue';
-import Switch from '@/components/ui/switch/Switch.vue';
-import Action from './Action.vue';
-import Sheet from '@/components/ui/sheet/Sheet.vue';
-import { Order } from '@/types/order';
 import { SelectOption } from '@/types/SelectOption';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
 import { OrderStatus } from '@/types/enums';
 import {
     AlertDialog,
-    AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
@@ -56,9 +48,10 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Utils } from '@/lib/utils';
+import { FeeGenerate } from '@/types/FeeGenerate';
 
 interface Props {
-    orders: PaginatedResponse<Order>,
+    fees: PaginatedResponse<FeeGenerate>,
     filters: Record<string, any>,
     statusOptions: SelectOption[],
     canOrder: boolean,
@@ -107,8 +100,8 @@ const isSheetOpen = ref(false);
 const sheetCloseBtn = async () => {
     isSheetOpen.value = false;
 }
-const order = ref<Order | null>(null);
-const takeAction = (ord: Order) => {
+const order = ref<FeeGenerate | null>(null);
+const takeAction = (ord: FeeGenerate) => {
     order.value = ord;
     isSheetOpen.value = true;
 }
@@ -129,14 +122,11 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
             <div class="flex justify-between">
                 <Heading title="Orders"
                     description="Manage your Orders here. You can view, edit, and delete orders as needed" />
-                <Link :href="route('order.create')" v-if="canOrder">
+                <Link :href="route('order.create')">
                 <Button :variant="'default'" :tabindex="0" class="w-full md:w-32">
                     Create Order
                 </Button>
                 </Link>
-                <Sheet v-model:open="isSheetOpen">
-                    <Action :order="order" :open="isSheetOpen" @close="sheetCloseBtn" />
-                </Sheet>
             </div>
             <CardContent>
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
@@ -195,7 +185,7 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
                                                     :class="order.creator?.role_color">
                                                     {{ order.creator?.role_label }}
                                                 </Badge>
-                                            </p> 
+                                            </p>
                                         </div>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
@@ -227,7 +217,8 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
                                         </Badge>
                                     </TableCell>
                                     <TableCell class="capitalize text-black dark:text-gray-200">
-                                        <Button :class="order?.show_action_button ? 'bg-green-400' : 'border'" size="sm" @click="takeAction(order)" :variant="'secondary'" :tabindex="0"
+                                        <Button :class="order?.show_action_button ? 'bg-green-400' : 'border'" size="sm"
+                                            @click="takeAction(order)" :variant="'secondary'" :tabindex="0"
                                             class="h-8 w-8">
                                             <Pen :size="60" />
                                         </Button>
@@ -249,10 +240,10 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
                                                             {{ new Date(order?.updated_at).toLocaleString('en-GB', {
                                                                 day: '2-digit',
                                                                 month: 'long',
-                                                            year: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                            hour12: true
+                                                                year: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit',
+                                                                hour12: true
                                                             }) }}
                                                         </div>
                                                     </AlertDialogTitle>
@@ -264,7 +255,8 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
                                                             <div class="font-semibold text-gray-600">Order No:</div>
                                                             <div class="text-gray-900">{{ order?.order_number }}</div>
                                                             <div class="font-semibold text-gray-600">Remarks:</div>
-                                                            <div class="text-gray-900">{{ order?.latestProgress?.remarks || '--' }}</div>
+                                                            <div class="text-gray-900">{{ order?.latestProgress?.remarks
+                                                                || '--' }}</div>
 
                                                             <div class="font-semibold text-gray-600">Date:</div>
                                                             <div class="text-gray-900">
@@ -277,7 +269,7 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
 
                                                             <div class="font-semibold text-gray-600">Phone No:</div>
                                                             <div class="text-gray-900">{{ order?.driver_phone ?? '-'
-                                                            }}</div>
+                                                                }}</div>
 
                                                             <div class="font-semibold text-gray-600">Quantity:</div>
                                                             <div class="text-gray-900">{{ order?.quantity }} {{
