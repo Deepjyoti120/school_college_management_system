@@ -111,26 +111,11 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
             <div class="flex justify-between">
                 <Heading title="Orders"
                     description="Manage your Orders here. You can view, edit, and delete orders as needed" />
-                <div class="flex gap-2">
-                    <Select v-model="status">
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select Status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectItem value="all">All</SelectItem>
-                                <SelectItem v-for="r in props.statusOptions" :key="r.value" :value="r.value">
-                                    {{ r.label }}
-                                </SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
                 <Link :href="route('order.create')">
-                <Button :variant="'default'" :tabindex="0" class="w-full md:w-32">
-                    Fee Generate
+                <Button :variant="'default'" :tabindex="0" class="w-full">
+                    New Fee Generate
                 </Button>
                 </Link>
-                </div>
             </div>
             <CardContent>
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
