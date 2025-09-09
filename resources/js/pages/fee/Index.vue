@@ -30,23 +30,12 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import Button from '@/components/ui/button/Button.vue';
-import { ArchiveX, Eye, LoaderCircle, Pen, } from 'lucide-vue-next';
+import { ArchiveX, LoaderCircle, Pen, } from 'lucide-vue-next';
 import Heading from '@/components/Heading.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import Badge from '@/components/ui/badge/Badge.vue';
 import { SelectOption } from '@/types/SelectOption';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
-import { OrderStatus } from '@/types/enums';
-import {
-    AlertDialog,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Utils } from '@/lib/utils';
 import { FeeGenerate } from '@/types/FeeGenerate';
 
@@ -122,11 +111,26 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
             <div class="flex justify-between">
                 <Heading title="Orders"
                     description="Manage your Orders here. You can view, edit, and delete orders as needed" />
+                <div class="flex gap-2">
+                    <Select v-model="status">
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="all">All</SelectItem>
+                                <SelectItem v-for="r in props.statusOptions" :key="r.value" :value="r.value">
+                                    {{ r.label }}
+                                </SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
                 <Link :href="route('order.create')">
                 <Button :variant="'default'" :tabindex="0" class="w-full md:w-32">
-                    Create Order
+                    Fee Generate
                 </Button>
                 </Link>
+                </div>
             </div>
             <CardContent>
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
@@ -154,7 +158,6 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
                         </Button>
                     </div>
                 </div>
-
                 <!-- <div v-if="loading" class="flex items-center justify-center py-10">
                     <LoaderCircle class="animate-spin" :size="24" />
                 </div> -->
@@ -175,15 +178,15 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
                                 </TableRow>
                             </TableHeader>
                             <TableBody class="bg-white dark:bg-slate-950">
-                                <TableRow v-for="order in props.orders?.data" :key="order.id">
+                                <TableRow v-for="fee in props.fees?.data" :key="fee.id">
                                     <TableCell class="text-black dark:text-gray-200">
                                         <div class="text-black dark:text-gray-200 leading-tight">
                                             <div class="font-medium">{{ order.creator?.name }}</div>
                                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ (order.creator?.country_code ?? '') + (' ' + order.creator?.phone ||
-                                                    '') }} <Badge class="mt-1" :variant="order.creator?.role_color"
-                                                    :class="order.creator?.role_color">
-                                                    {{ order.creator?.role_label }}
+                                                {{ (fee.creator?.country_code ?? '') + (' ' + fee.creator?.phone ||
+                                                    '') }} <Badge class="mt-1" :variant="fee.creator?.role_color"
+                                                    :class="fee.creator?.role_color">
+                                                    {{ fee.creator?.role_label }}
                                                 </Badge>
                                             </p>
                                         </div>
@@ -222,78 +225,11 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
                                             class="h-8 w-8">
                                             <Pen :size="60" />
                                         </Button>
-                                        <AlertDialog v-if="(order?.status ?? '') === OrderStatus.DISPATCHED">
-                                            <AlertDialogTrigger as-child>
-                                                <Button size="sm" :variant="'outline'" :tabindex="0"
-                                                    class="h-8 w-8 ml-2 ">
-                                                    <Eye :size="60" />
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle class="space-y-1">
-                                                        <div class="text-lg font-semibold">
-                                                            Challan Details <span class="text-primary">#{{
-                                                                order?.challan_no }}</span>
-                                                        </div>
-                                                        <div class="text-sm text-muted-foreground">
-                                                            {{ new Date(order?.updated_at).toLocaleString('en-GB', {
-                                                                day: '2-digit',
-                                                                month: 'long',
-                                                                year: 'numeric',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit',
-                                                                hour12: true
-                                                            }) }}
-                                                        </div>
-                                                    </AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
-                                                            <div class="font-semibold text-gray-600">Product Name:</div>
-                                                            <div class="text-gray-900">{{ order?.product?.name ?? '-' }}
-                                                            </div>
-                                                            <div class="font-semibold text-gray-600">Order No:</div>
-                                                            <div class="text-gray-900">{{ order?.order_number }}</div>
-                                                            <div class="font-semibold text-gray-600">Remarks:</div>
-                                                            <div class="text-gray-900">{{ order?.latestProgress?.remarks
-                                                                || '--' }}</div>
-
-                                                            <div class="font-semibold text-gray-600">Date:</div>
-                                                            <div class="text-gray-900">
-                                                                {{ new Date(order?.created_at).toLocaleDateString() }}
-                                                            </div>
-
-                                                            <div class="font-semibold text-gray-600">Dealer Name:</div>
-                                                            <div class="text-gray-900">{{ order?.creator?.name ?? '-' }}
-                                                            </div>
-
-                                                            <div class="font-semibold text-gray-600">Phone No:</div>
-                                                            <div class="text-gray-900">{{ order?.driver_phone ?? '-'
-                                                                }}</div>
-
-                                                            <div class="font-semibold text-gray-600">Quantity:</div>
-                                                            <div class="text-gray-900">{{ order?.quantity }} {{
-                                                                Utils.pluralize(order?.quantity, 'bag') }}</div>
-                                                            <div class="font-semibold text-gray-600">Driver Phone:</div>
-                                                            <div class="text-gray-900">{{ order?.driver_phone }}</div>
-                                                            <div class="font-semibold text-gray-600">Vehicle Number:
-                                                            </div>
-                                                            <div class="text-gray-900">{{ order?.vehicle_number }}</div>
-
-
-                                                        </div>
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel class="mt-6 self-end">Close</AlertDialogCancel>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
-                        <div v-if="props.orders?.data?.length === 0"
+                        <div v-if="props.fees?.data?.length === 0"
                             class="flex flex-col items-center justify-center py-10 text-gray-500 dark:text-gray-400">
                             <ArchiveX :size="60" />
                             <p>No users found</p>

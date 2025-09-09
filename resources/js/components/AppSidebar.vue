@@ -13,6 +13,7 @@ import {
     Settings2,
     SquareTerminal,
     Users2Icon,
+    WalletMinimal,
 } from 'lucide-vue-next'
 import NavMain from '@/components/NavMain.vue'
 import NavUser from '@/components/NavUser.vue'
@@ -77,7 +78,7 @@ const data = {
                 {
                     title: 'Fees Generation',
                     url: '/fees',
-                    icon: BaggageClaimIcon,
+                    icon: WalletMinimal,
                     isActive: false,
                 },
                 {
