@@ -42,7 +42,7 @@ import { FeeGenerate } from '@/types/FeeGenerate';
 interface Props {
     fees: PaginatedResponse<FeeGenerate>,
     filters: Record<string, any>,
-    statusOptions: SelectOption[],
+    feeTypes: SelectOption[],
     canOrder: boolean,
 }
 const props = defineProps<Props>();
@@ -106,16 +106,27 @@ watch(() => isSheetOpen.value, (isSheetOpen) => {
     <Head title="Orders" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6">
-            <!-- <Heading title="Users"
-                description="Manage your users here. You can view, edit, and delete users as needed" /> -->
             <div class="flex justify-between">
-                <Heading title="Orders"
-                    description="Manage your Orders here. You can view, edit, and delete orders as needed" />
-                <Link :href="route('order.create')">
-                <Button :variant="'default'" :tabindex="0" class="w-full">
-                    New Fee Generate
-                </Button>
-                </Link>
+                <Heading title="Fee" description="Manage or create academic fees" />
+                <div class="flex gap-2">
+                    <Select v-model="status">
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem v-for="r in props.feeTypes" :key="r.value" :value="r.value">
+                                    {{ r.label }}
+                                </SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <Link :href="route('order.create')">
+                    <Button :variant="'default'" :tabindex="0" class="w-full">
+                        New Fee Generate
+                    </Button>
+                    </Link>
+                </div>
             </div>
             <CardContent>
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">

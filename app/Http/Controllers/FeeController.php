@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\FeeType;
 use App\Enums\OrderStatus;
 use App\Enums\UserRole;
 use App\Models\FeeGenerate;
@@ -33,7 +34,7 @@ class FeeController extends Controller
         return Inertia::render('fee/Index', [
             'fees' => $fees,
             'filters' => $request->only(['search', 'status']),
-            'statusOptions' => OrderStatus::options(),
+            'feeTypes' => FeeType::options(),
         ]);
     }
 
