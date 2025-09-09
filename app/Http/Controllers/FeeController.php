@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
 use App\Enums\UserRole;
+use App\Models\FeeGenerate;
 use App\Models\Order;
 use App\Models\OrderDocument;
 use App\Models\OrderProgress;
@@ -18,7 +19,7 @@ class FeeController extends Controller
 {
     public function index(Request $request)
     {
-        $orders = Order::query()->with(['product', 'creator', 'updater', 'progresses.updater', 'documents'])
+        $fees = FeeGenerate::query()
             ->when($request->search, function ($q) use ($request) {
                 $search = strtolower($request->search);
                 $q->whereHas('product', function ($query) use ($search) {
@@ -26,25 +27,14 @@ class FeeController extends Controller
                 });
             })
             ->when($request->status && $request->status !== 'all', fn($q) => $q->where('status', $request->status))
-            ->when(auth()->user()->role === UserRole::DEL, fn($q) => $q->where('created_by', auth()->id()))
-            ->when(auth()->user()->role === UserRole::FAC, function ($q) {
-                return $q->whereHas(
-                    'updater',
-                    fn($u) =>
-                    $u->whereIn('role', [UserRole::FAC, UserRole::GM])
-                );
-            })
-            // ->forFacUser()
-            ->where('id', '!=', auth()->id())
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('fee/Index', [
-            'orders' => $orders,
+            'fees' => $fees,
             'filters' => $request->only(['search', 'status']),
             'statusOptions' => OrderStatus::options(),
-            'canOrder' => auth()->user()->role === UserRole::DEL,
         ]);
     }
 
