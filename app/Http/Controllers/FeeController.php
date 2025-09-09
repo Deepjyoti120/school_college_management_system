@@ -40,7 +40,7 @@ class FeeController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return Inertia::render('order/Index', [
+        return Inertia::render('fee/Index', [
             'orders' => $orders,
             'filters' => $request->only(['search', 'status']),
             'statusOptions' => OrderStatus::options(),

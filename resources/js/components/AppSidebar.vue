@@ -75,8 +75,8 @@ const data = {
                     isActive: false,
                 },
                 {
-                    title: 'Products',
-                    url: '/products',
+                    title: 'Fees Generation',
+                    url: '/fees',
                     icon: BaggageClaimIcon,
                     isActive: false,
                 },
@@ -149,7 +149,7 @@ if (user.role === UserRole.SUPER_ADMIN) {
     data.navMain.push(...adminItems);
 }
 if (user.role === UserRole.PRINCIPAL) {
-    const adminItems = [
+    const items = [
         {
             title: "Admin",
             items: [
@@ -162,7 +162,7 @@ if (user.role === UserRole.PRINCIPAL) {
             ],
         },
     ]
-    data.navMain.push(...adminItems);
+    data.navMain.push(...items);
 }
 const settings =
 {
