@@ -111,7 +111,7 @@ const breadcrumbs = [{ title: 'Fee', href: '/fees' }];
                 <div class="flex gap-2">
                     <Select v-model="feeType">
                         <SelectTrigger>
-                            <SelectValue placeholder="Select Status" />
+                            <SelectValue placeholder="Fee Type" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>

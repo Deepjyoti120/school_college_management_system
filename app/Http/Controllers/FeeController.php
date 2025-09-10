@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Enums\FeeType;
 use App\Enums\OrderStatus;
 use App\Enums\UserRole;
+use App\Models\AcademicYear;
 use App\Models\FeeGenerate;
 use App\Models\Order;
 use App\Models\OrderDocument;
 use App\Models\OrderProgress;
 use App\Models\Product;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -39,11 +41,73 @@ class FeeController extends Controller
     }
     public function feeGenerate(Request $request)
     {
+        // try {
         if (!in_array($request->type, FeeType::values(), true)) {
             return back()->with('error', 'Fee type is required');
         }
+
+        $academicYear = AcademicYear::where('is_current', true)->first();
+        if (!$academicYear) {
+            $lastYear = AcademicYear::latest('end_date')->first();
+
+            if ($lastYear) {
+                $startDate = Carbon::parse($lastYear->end_date)->addDay();
+                $endDate   = $startDate->copy()->addYear()->subDay();
+            } else {
+                $startDate = Carbon::create(null, 3, 1);
+                $endDate   = $startDate->copy()->addYear()->subDay();
+            }
+
+            $academicYear = AcademicYear::create([
+                'name' => $startDate->format('Y') . '-' . $endDate->format('Y'),
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'is_current' => true,
+                'school_id' => auth()->user()->school_id,
+            ]);
+        }
+        if ($request->type === FeeType::ADMISSION->value) {
+            $exists = FeeGenerate::where('academic_year_id', $academicYear->id)
+                ->where('type', FeeType::ADMISSION)
+                ->exists();
+
+            if ($exists) {
+                return back()->with('error', 'Admission fee already generated for this academic year.');
+            }
+
+            FeeGenerate::create([
+                'school_id' => auth()->user()->school_id,
+                'academic_year_id' => $academicYear->id,
+                'month' => $academicYear->start_date->month,
+                'year' => $academicYear->start_date->year,
+                'type' => FeeType::ADMISSION,
+            ]);
+        } else {
+            $startMonth = Carbon::parse($academicYear->start_date);
+            $endMonth   = Carbon::parse($academicYear->end_date);
+            for ($date = $startMonth->copy(); $date->lte($endMonth); $date->addMonth()) {
+                $exists = FeeGenerate::where('academic_year_id', $academicYear->id)
+                    ->where('month', $date->format('m'))
+                    ->where('year', $date->format('Y'))
+                    ->where('type', $request->type)
+                    ->exists();
+                if (!$exists) {
+                    FeeGenerate::create([
+                        'school_id' => auth()->user()->school_id,
+                        'academic_year_id' => $academicYear->id,
+                        'month' => $date->format('m'),
+                        'year' => $date->format('Y'),
+                        'type' => $request->type,
+                    ]);
+                }
+            }
+        }
         return back()->with('success', 'Fee Generated Successfully');
+        // } catch (\Exception $e) {
+        //     return back()->with('error', 'An error occurred: ' . $e->getMessage());
+        // }
     }
+
 
     public function create()
     {

@@ -14,6 +14,7 @@ class AcademicYear extends Model
         'start_date',
         'end_date',
         'is_current',
+        'school_id',
     ];
 
     protected $casts = [
@@ -26,5 +27,10 @@ class AcademicYear extends Model
     {
         return $query->where('is_current', true)
             ->latest('start_date');
+    }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class);
     }
 }

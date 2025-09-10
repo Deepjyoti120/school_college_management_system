@@ -4,13 +4,13 @@ namespace App\Enums;
 
 enum FeeType: string
 {
-    case ADDMISSION = 'admission';
+    case ADMISSION = 'admission';
     case MONTHLY = 'monthly';
 
     public function label(): string
     {
         return match ($this) {
-            self::ADDMISSION => 'Addmission',
+            self::ADMISSION => 'Addmission',
             self::MONTHLY => 'Monthly',
         };
     }
@@ -18,7 +18,7 @@ enum FeeType: string
     public function color(): string
     {
         return match ($this) {
-            self::ADDMISSION => 'warning',
+            self::ADMISSION => 'warning',
             self::MONTHLY => 'info',
         };
     }
