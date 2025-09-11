@@ -107,7 +107,7 @@ const breadcrumbs = [{ title: 'Fee', href: '/fees' }];
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6">
             <div class="flex justify-between">
-                <Heading title="Fee" description="Manage or create academic fees" />
+                <Heading title="Fees Generate" description="Manage or create academic fees" />
                 <div class="flex gap-2">
                     <Select v-model="feeType">
                         <SelectTrigger>
@@ -173,7 +173,7 @@ const breadcrumbs = [{ title: 'Fee', href: '/fees' }];
                                     <TableHead class="font-bold text-black dark:text-white">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody class="bg-white dark:bg-slate-950">
+                            <TableBody v-if="false" class="bg-white dark:bg-slate-950">
                                 <TableRow v-for="fee in props.fees?.data" :key="fee.id">
                                     <TableCell class="text-black dark:text-gray-200">
                                         <div class="text-black dark:text-gray-200 leading-tight">
@@ -233,20 +233,20 @@ const breadcrumbs = [{ title: 'Fee', href: '/fees' }];
                     </Card>
                 </div>
             </CardContent>
-            <Pagination v-if="props.orders?.data?.length != 0" :items-per-page="props.orders?.per_page"
-                :total="props.orders?.total" :default-page="props.orders?.current_page">
+            <Pagination v-if="props.fees?.data?.length != 0" :items-per-page="props.fees?.per_page"
+                :total="props.fees?.total" :default-page="props.fees?.current_page">
                 <PaginationContent v-slot="{ items }">
-                    <PaginationPrevious v-if="props.orders?.prev_page_url"
-                        @click="goToPage(props.orders.current_page - 1)" />
+                    <PaginationPrevious v-if="props.fees?.prev_page_url"
+                        @click="goToPage(props.fees.current_page - 1)" />
                     <template v-for="(item, index) in items" :key="index">
                         <PaginationItem v-if="item.type === 'page'" :value="item.value"
-                            :is-active="item.value === props.orders?.current_page" @click="goToPage(item.value)">
+                            :is-active="item.value === props.fees?.current_page" @click="goToPage(item.value)">
                             {{ item.value }}
                         </PaginationItem>
                     </template>
-                    <PaginationEllipsis v-if="props.orders?.last_page > 5" :index="4" />
-                    <PaginationNext v-if="props.orders?.next_page_url"
-                        @click="goToPage(props.orders?.current_page + 1)" />
+                    <PaginationEllipsis v-if="props.fees?.last_page > 5" :index="4" />
+                    <PaginationNext v-if="props.fees?.next_page_url"
+                        @click="goToPage(props.fees?.current_page + 1)" />
                 </PaginationContent>
             </Pagination>
         </div>

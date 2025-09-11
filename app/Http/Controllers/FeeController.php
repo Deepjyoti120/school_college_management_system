@@ -42,30 +42,28 @@ class FeeController extends Controller
     public function feeGenerate(Request $request)
     {
         // try {
+        //   Carbon::setTestNow(Carbon::create(2027, 5, 15));
         if (!in_array($request->type, FeeType::values(), true)) {
             return back()->with('error', 'Fee type is required');
         }
-
-        $academicYear = AcademicYear::where('is_current', true)->first();
-        if (!$academicYear) {
-            $lastYear = AcademicYear::latest('end_date')->first();
-
-            if ($lastYear) {
-                $startDate = Carbon::parse($lastYear->end_date)->addDay();
-                $endDate   = $startDate->copy()->addYear()->subDay();
-            } else {
-                $startDate = Carbon::create(null, 3, 1);
-                $endDate   = $startDate->copy()->addYear()->subDay();
-            }
-
-            $academicYear = AcademicYear::create([
-                'name' => $startDate->format('Y') . '-' . $endDate->format('Y'),
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'is_current' => true,
-                'school_id' => auth()->user()->school_id,
-            ]);
-        }
+        $academicYear = AcademicYear::getOrCreateCurrentAcademicYear(auth()->user()->school_id);
+        // if (!$academicYear) {
+        //     $lastYear = AcademicYear::latest('end_date')->first();
+        //     if ($lastYear) {
+        //         $startDate = Carbon::parse($lastYear->end_date)->addDay();
+        //         $endDate   = $startDate->copy()->addYear()->subDay();
+        //     } else {
+        //         $startDate = Carbon::create(null, 3, 1);
+        //         $endDate   = $startDate->copy()->addYear()->subDay();
+        //     }
+        //     $academicYear = AcademicYear::create([
+        //         'name' => $startDate->format('Y') . '-' . $endDate->format('Y'),
+        //         'start_date' => $startDate,
+        //         'end_date' => $endDate,
+        //         'is_current' => true,
+        //         'school_id' => auth()->user()->school_id,
+        //     ]);
+        // }
         if ($request->type === FeeType::ADMISSION->value) {
             $exists = FeeGenerate::where('academic_year_id', $academicYear->id)
                 ->where('type', FeeType::ADMISSION)
@@ -83,6 +81,13 @@ class FeeController extends Controller
                 'type' => FeeType::ADMISSION,
             ]);
         } else {
+            $exists = FeeGenerate::where('academic_year_id', $academicYear->id)
+                ->where('type', FeeType::MONTHLY)
+                ->exists();
+
+            if ($exists) {
+                return back()->with('error', 'Monthly fee already generated for this academic year.');
+            }
             $startMonth = Carbon::parse($academicYear->start_date);
             $endMonth   = Carbon::parse($academicYear->end_date);
             for ($date = $startMonth->copy(); $date->lte($endMonth); $date->addMonth()) {

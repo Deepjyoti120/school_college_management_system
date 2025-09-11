@@ -25,3 +25,8 @@ export enum FeeType {
   ADMISSION = "admission",
   MONTHLY = "monthly",
 }
+export enum FrequencyType {
+  ONE_TIME = 'one_time',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
+}
