@@ -15,7 +15,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('school_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('academic_year_id')->constrained()->cascadeOnDelete();
-            $table->foreignUlid('class_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignUlid('class_id')->nullable()->constrained('school_classes')->nullOnDelete();
             $table->string('name');
             $table->string('type');
             $table->decimal('amount', 10, 2);
