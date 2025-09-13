@@ -76,6 +76,12 @@ const data = {
                     isActive: false,
                 },
                 {
+                    title: 'Fees Structure',
+                    url: '/fees/structure',
+                    icon: WalletMinimal,
+                    isActive: false,
+                },
+                {
                     title: 'Fees Generation',
                     url: '/fees',
                     icon: WalletMinimal,

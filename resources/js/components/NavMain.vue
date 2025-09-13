@@ -54,7 +54,7 @@ const page = usePage();
                         </CollapsibleTrigger>
                     </template>
                     <template v-else>
-                        <SidebarMenuButton :tooltip="item.title" as-child :is-active="page.url.includes(item.url)">
+                        <SidebarMenuButton :tooltip="item.title" as-child :is-active="page.url === item.url">
                             <Link :href="item.url" class="flex items-center w-full">
                             <component :is="item.icon" v-if="item.icon" />
                             <span>{{ item.title }}</span>
