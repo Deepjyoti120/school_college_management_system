@@ -147,7 +147,7 @@ class FeeController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function feeCreate(Request $request)
     {
         $validated = $request->validate([
             'product_id' => ['required', 'exists:products,id'],

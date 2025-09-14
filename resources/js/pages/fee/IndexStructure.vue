@@ -51,7 +51,6 @@ const search = ref(props.filters?.search || '')
 const status = ref(props.filters?.statusOptions)
 const feeType = ref(props.feeTypes)
 const loading = ref(false)
-const route = useRoute()
 const onSearch = async () => {
     loading.value = true
     router.get(route('fees.index'), {
@@ -110,25 +109,11 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
         <div class="px-4 py-6">
             <div class="flex justify-between">
                 <Heading title="Fee Structure" description="Manage or create academic fees structure" />
-                <div class="flex gap-2">
-                    <Select v-model="feeType">
-                        <SelectTrigger>
-                            <SelectValue placeholder="Fee Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectItem v-for="r in props.feeTypes" :key="r.value" :value="r.value">
-                                    {{ r.label }}
-                                </SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                    <Link :href="route('user.create')">
-                    <Button v-if="canUserCreate" :variant="'default'" :tabindex="0" class="w-full md:w-32">
-                        Create New
-                    </Button>
-                    </Link>
-                </div>
+                <Link :href="route('user.create')">
+                <Button :variant="'default'" :tabindex="0" class="w-full md:w-32">
+                    Create New
+                </Button>
+                </Link>
             </div>
             <CardContent>
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
