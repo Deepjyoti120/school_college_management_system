@@ -7,6 +7,7 @@ import {
     Command,
     Frame,
     GalleryVerticalEnd,
+    LayoutPanelTop,
     Map,
     PieChart,
     Settings,
@@ -78,7 +79,7 @@ const data = {
                 {
                     title: 'Fees Structure',
                     url: '/fees/structure',
-                    icon: WalletMinimal,
+                    icon: LayoutPanelTop,
                     isActive: false,
                 },
                 {

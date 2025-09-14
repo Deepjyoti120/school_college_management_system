@@ -7,6 +7,7 @@ use App\Enums\OrderStatus;
 use App\Enums\UserRole;
 use App\Models\AcademicYear;
 use App\Models\FeeGenerate;
+use App\Models\FeeStructure;
 use App\Models\Order;
 use App\Models\OrderDocument;
 use App\Models\OrderProgress;
@@ -34,6 +35,25 @@ class FeeController extends Controller
             ->paginate(10)
             ->withQueryString();
         return Inertia::render('fee/Index', [
+            'fees' => $fees,
+            'filters' => $request->only(['search', 'status']),
+            'feeTypes' => FeeType::options(),
+        ]);
+    }
+    public function feeStructure(Request $request)
+    {
+        $fees = FeeStructure::query()->with(['school'])
+            ->when($request->search, function ($q) use ($request) {
+                $search = strtolower($request->search);
+                $q->whereHas('product', function ($query) use ($search) {
+                    $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                });
+            })
+            ->when($request->status && $request->status !== 'all', fn($q) => $q->where('status', $request->status))
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+        return Inertia::render('fee/IndexStructure', [
             'fees' => $fees,
             'filters' => $request->only(['search', 'status']),
             'feeTypes' => FeeType::options(),
