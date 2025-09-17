@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\FeeType;
+use App\Enums\FrequencyType;
 use App\Enums\OrderStatus;
 use App\Enums\UserRole;
 use App\Models\AcademicYear;
@@ -12,6 +13,7 @@ use App\Models\Order;
 use App\Models\OrderDocument;
 use App\Models\OrderProgress;
 use App\Models\Product;
+use App\Models\SchoolClass;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -57,6 +59,7 @@ class FeeController extends Controller
             'fees' => $fees,
             'filters' => $request->only(['search', 'status']),
             'feeTypes' => FeeType::options(),
+            'frequency' => FrequencyType::options(),
         ]);
     }
     public function feeGenerate(Request $request)
@@ -134,60 +137,47 @@ class FeeController extends Controller
     }
 
 
-    public function create()
+    public function feeCreate()
     {
-        $products = Product::all();
-        // ->map(fn($product) => [
-        //     'label' => $product->name,
-        //     'value' => $product->id,
-        // ]);
-        return Inertia::render('order/Create', [
-            'roles' => UserRole::options(),
-            'products' => $products,
+        $schoolId = auth()->user()->school_id;
+        return Inertia::render('fee/Create', [
+            'classes' => SchoolClass::where('school_id', $schoolId)
+                ->get(['id', 'name'])
+                ->map(fn($c) => ['label' => $c->name, 'value' => $c->id]),
+            'feeTypes' => collect(FeeType::cases())->map(fn($t) => [
+                'label' => $t->label(),
+                'value' => $t->value,
+            ]),
+            'frequencyTypes' => collect(FrequencyType::cases())->map(fn($f) => [
+                'label' => $f->label(),
+                'value' => $f->value,
+            ]),
         ]);
     }
 
-    public function feeCreate(Request $request)
+    public function feeStore(Request $request)
     {
         $validated = $request->validate([
-            'product_id' => ['required', 'exists:products,id'],
-            'quantity' => ['required', 'integer', 'min:1'],
-            'total_price' => ['required', 'numeric', 'min:0'],
-            'documents' => ['nullable', 'array', 'max:2'],
-            'documents.*' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'class_id'=> ['required', 'exists:school_classes,id'],
+            'name'=> ['required', 'string', 'max:255'],
+            'type'=> ['required', 'in:' . implode(',', FeeType::values())],
+            'amount'=> ['required', 'numeric', 'min:0'],
+            'frequency'=> ['required', 'in:' . implode(',', FrequencyType::values())],
+            'description'=> ['nullable', 'string', 'max:1000'],
         ]);
-        DB::transaction(function () use ($validated, $request) {
-            $order = Order::create([
-                'product_id' => $validated['product_id'],
-                'quantity' => $validated['quantity'],
-                'total_price' => $validated['total_price'],
-                'created_by' => auth()->id(),
-                // 'updated_by' => auth()->id(),
-                'stage' => 0,
-                'status' => 'pending',
-            ]);
-            if ($request->hasFile('documents')) {
-                foreach ($request->file('documents') as $file) {
-                    $path = $file->store('orders/documents', 'public');
-                    OrderDocument::create([
-                        'order_id' => $order->id,
-                        'file_path' => $path,
-                        'original_name' => $file->getClientOriginalName(),
-                        'mime_type' => $file->getClientMimeType(),
-                        'size' => $file->getSize(),
-                    ]);
-                }
-            }
-            OrderProgress::create([
-                'order_id' => $order->id,
-                'updated_by' => auth()->id(),
-                'stage' => 0,
-                'status' => OrderStatus::PENDING,
-                'title' => 'Order created',
-                'remarks' => 'Order created',
-            ]);
-        });
-        return redirect()->route('orders.index')->with('success', 'Order created successfully.');
+        $academicYear = AcademicYear::getOrCreateCurrentAcademicYear(auth()->user()->school_id);
+
+        FeeStructure::create([
+            'school_id' => auth()->user()->school_id,
+            'academic_year_id' => $academicYear->id,
+            'class_id' => $validated['class_id'],
+            'name' => $validated['name'],
+            'type' => $validated['type'],
+            'amount'=> $validated['amount'],
+            'frequency'=> $validated['frequency'],
+            'description'=> $validated['description'] ?? null,
+        ]);
+        return back()->with('success', 'Successfully Saved.');
     }
 
     public function approve(Request $request, Order $order)

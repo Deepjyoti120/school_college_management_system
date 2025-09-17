@@ -66,6 +66,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('fees', [FeeController::class, 'index'])->name('fees.index');
     Route::get('fees/structure', [FeeController::class, 'feeStructure'])->name('fees.structure');
     Route::get('fees/structure/create', [FeeController::class, 'feeCreate'])->name('fees.create');
+    Route::post('fees/structure/fee-store', [FeeController::class, 'feeStore'])->name('fee.store');
     Route::get('fees/generate', [FeeController::class, 'feeGenerate'])->name('fees.generate');
     // Fee Generation End
 });

@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router, useForm } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
+import { Head, useForm } from '@inertiajs/vue3';
 import Heading from '@/components/Heading.vue';
-
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -15,10 +12,7 @@ import SelectValue from '@/components/ui/select/SelectValue.vue';
 import SelectContent from '@/components/ui/select/SelectContent.vue';
 import SelectGroup from '@/components/ui/select/SelectGroup.vue';
 import SelectItem from '@/components/ui/select/SelectItem.vue';
-import SelectLabel from '@/components/ui/select/SelectLabel.vue';
 import InputError from '@/components/InputError.vue';
-import { Product } from '@/types/Product';
-import { SelectOption } from '@/types/SelectOption';
 import {
     NumberField,
     NumberFieldContent,
@@ -26,128 +20,138 @@ import {
     NumberFieldIncrement,
     NumberFieldInput,
 } from '@/components/ui/number-field'
-import FilePondUploader from '@/components/FilePondUploader.vue';
+import { SelectOption } from '@/types/SelectOption';
 
 const breadcrumbs = [
-    { title: 'Orders', href: '/orders' },
-    { title: 'Create Order', href: '/order/create' },
+    { title: 'Fees Structure', href: '/fees/structure' },
+    { title: 'Create Fees Structure', href: '/fees/structure/create' },
 ];
+
 interface Props {
-    roles: SelectOption[];
-    products: Product[];
+    classes: SelectOption[];
+    feeTypes: SelectOption[];
+    frequencyTypes: SelectOption[];
 }
 const props = defineProps<Props>();
 
 const form = useForm({
-    product_id: '',
-    quantity: 1,
-    documents: [] as File[],
-    total_price: 0,
+    class_id: '',
+    name: '',
+    type: '',
+    amount: 0,
+    frequency: '',
+    description: '',
 });
-const product = ref<Product | null>(null);
-const submit = () => {
-    form.post(route('order.store'), {
-        forceFormData: true,
-        // onSuccess: () => history.back(),
-    });
-};
-watch([product, () => form.quantity], ([newProduct, newQty], [oldProduct, oldQty]) => {
-    if (newQty < 1) {
-        form.quantity = 1;
-        return;
-    }
-    updateProductPrice();
-});
-const updateProductPrice = () => {
-    form.product_id = product.value?.id ?? '';
-    form.total_price = ((product.value?.price ?? 0) * form.quantity)
-}
-const pickFiles = (files: File[]) => {
-    form.documents = files;
-}
 
+const submit = () => {
+    form.post(route('fee.store'),
+        {
+            onSuccess: () => form.reset(),
+        }
+    );
+};
 </script>
+
 <template>
 
-    <Head title="Create order" />
+    <Head title="Create Fee Structure" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6 space-y-6">
-            <Card class="mx-auto shadow-none rounded-2xl ">
+            <Card class="mx-auto shadow-none rounded-2xl">
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 px-6">
                     <div class="md:col-span-4">
                         <CardHeader class="p-0">
-                            <Heading title="Create order" description="Create a new order" />
+                            <Heading title="Create Fee Structure"
+                                description="Define fees for classes per academic year" />
                         </CardHeader>
                     </div>
                     <div class="md:col-span-8">
                         <CardContent class="p-0">
                             <form @submit.prevent="submit" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="grid gap-2">
-                                    <Label for="product">Select Product</Label>
-                                    <Select v-model="product">
+                                    <Label>Class</Label>
+                                    <Select v-model="form.class_id">
                                         <SelectTrigger class="w-full">
-                                            <SelectValue placeholder="Choose a product" />
+                                            <SelectValue placeholder="Choose Class" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectItem v-for="product in props.products" :key="product.id"
-                                                    :value="product">
-                                                    {{ product.name }}
+                                                <SelectItem v-for="c in props.classes" :key="c.value" :value="c.value">
+                                                    {{ c.label }}
                                                 </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
-                                    <InputError :message="form.errors.product_id" />
+                                    <InputError :message="form.errors.class_id" />
                                 </div>
+
+                                <div class="grid gap-2 ">
+                                    <Label for="name">Fee Name</Label>
+                                    <Input v-model="form.name" id="name" type="text" placeholder="Enter fee name" />
+                                    <InputError :message="form.errors.name" />
+                                </div>
+
                                 <div class="grid gap-2">
-                                    <NumberField v-model="form.quantity">
-                                        <Label>Quantity</Label>
+                                    <Label>Fee Type</Label>
+                                    <Select v-model="form.type">
+                                        <SelectTrigger class="w-full">
+                                            <SelectValue placeholder="Select Fee Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem v-for="t in props.feeTypes" :key="t.value" :value="t.value">
+                                                    {{ t.label }}
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError :message="form.errors.type" />
+                                </div>
+
+                                <div class="grid gap-2">
+                                    <Label>Frequency</Label>
+                                    <Select v-model="form.frequency">
+                                        <SelectTrigger class="w-full">
+                                            <SelectValue placeholder="Select Frequency" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem v-for="f in props.frequencyTypes" :key="f.value"
+                                                    :value="f.value">
+                                                    {{ f.label }}
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError :message="form.errors.frequency" />
+                                </div>
+
+                                <div class="grid gap-2">
+                                    <NumberField v-model="form.amount">
+                                        <Label>Amount</Label>
                                         <NumberFieldContent>
                                             <NumberFieldDecrement />
                                             <NumberFieldInput />
                                             <NumberFieldIncrement />
                                         </NumberFieldContent>
-                                        <InputError :message="form.errors.quantity" />
                                     </NumberField>
+                                    <InputError :message="form.errors.amount" />
                                 </div>
+
                                 <div class="grid gap-2 col-span-2">
-                                    <Label for="documents">Documents</Label>
-                                    <FilePondUploader :allow-multiple="true"
-                                        accepted-file-types="application/pdf,image/jpeg,image/jpg,image/png"
-                                        @update:files="files => pickFiles(files)" />
-                                    <InputError :message="form.errors.documents" />
+                                    <Label for="description">Description</Label>
+                                    <textarea v-model="form.description" id="description" rows="3"
+                                        class="border rounded-md p-2 w-full"></textarea>
+                                    <InputError :message="form.errors.description" />
                                 </div>
-                                <div v-if="product" class="col-span-full">
-                                    <div
-                                        class="p-4 border rounded-2xl bg-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                                        <div class="space-y-1">
-                                            <h3 class="text-lg font-semibold">{{ product.name }}</h3>
-                                            <p class="text-sm text-muted-foreground">SKU: {{ product.sku }}</p>
-                                            <!-- <p class="text-sm text-muted-foreground">Stock Available: {{ product.stock
-                                            }}</p> -->
-                                        </div>
-                                        <div class="text-right space-y-1 md:min-w-[200px]">
-                                            <div class="text-sm text-muted-foreground">Price per unit:</div>
-                                            <div class="text-base font-medium text-foreground">₹{{
-                                                product.price }}</div>
 
-                                            <div class="text-sm text-muted-foreground mt-2">Quantity:</div>
-                                            <div class="text-base font-medium text-foreground">{{ form.quantity }}</div>
-
-                                            <div class="border-t mt-3 pt-3">
-                                                <div class="text-sm text-muted-foreground">Total Price:</div>
-                                                <div class="text-xl font-bold text-primary">₹{{
-                                                    form.total_price.toFixed(2) }}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="col-span-full pt-4 flex justify-end">
                                     <Button type="submit" class="w-full md:w-auto" :disabled="form.processing">
                                         <LoaderCircle v-if="form.processing" class="w-4 h-4 mr-2 animate-spin" />
                                         Save
                                     </Button>
                                 </div>
+
                             </form>
                         </CardContent>
                     </div>

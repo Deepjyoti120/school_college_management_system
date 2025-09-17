@@ -53,21 +53,21 @@ class FeeStructure extends Model
 
     public function getFrequencyLabelAttribute(): string
     {
-        return FrequencyType::from($this->frequency)->label();
+        return $this->frequency->label();
     }
 
     public function getFrequencyColorAttribute(): string
     {
-        return FrequencyType::from($this->frequency)->color();
+        return $this->frequency->color();
     }
 
     public function getTypeLabelAttribute(): string
     {
-        return FeeType::from($this->type)->label();
+        return $this->type->label();
     }
 
     public function getTypeColorAttribute(): string
     {
-        return FeeType::from($this->type)->color();
+        return $this->type->color();
     }
 }

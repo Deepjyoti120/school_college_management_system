@@ -36,13 +36,11 @@ import SearchInput from '@/components/SearchInput.vue';
 import Badge from '@/components/ui/badge/Badge.vue';
 import { SelectOption } from '@/types/SelectOption';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
-import { Utils } from '@/lib/utils';
-import { FeeGenerate } from '@/types/FeeGenerate';
-import { useRoute } from 'ziggy-js';
+import { FeeStructure } from '@/types/FeeStructure';
 
 
 interface Props {
-    fees: PaginatedResponse<FeeGenerate>,
+    fees: PaginatedResponse<FeeStructure>,
     filters: Record<string, any>,
     feeTypes: SelectOption[],
 }
@@ -109,7 +107,7 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
         <div class="px-4 py-6">
             <div class="flex justify-between">
                 <Heading title="Fee Structure" description="Manage or create academic fees structure" />
-                <Link :href="route('user.create')">
+                <Link :href="route('fees.create')">
                 <Button :variant="'default'" :tabindex="0" class="w-full md:w-32">
                     Create New
                 </Button>
@@ -149,74 +147,52 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                         <Table class="w-full">
                             <TableHeader class="bg-slate-100 dark:bg-slate-800">
                                 <TableRow>
-                                    <TableHead class="font-bold text-black dark:text-white">Driver Name | Phone | Role
-                                    </TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Product | Order No
-                                    </TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Price | Quantity</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Total Price</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Updated By</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Status</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Name</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Type</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Frequency</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Amount</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody v-if="false" class="bg-white dark:bg-slate-950">
+
+                            <TableBody v-if="props.fees?.data?.length > 0" class="bg-white dark:bg-slate-950">
                                 <TableRow v-for="fee in props.fees?.data" :key="fee.id">
                                     <TableCell class="text-black dark:text-gray-200">
-                                        <div class="text-black dark:text-gray-200 leading-tight">
-                                            <div class="font-medium">{{ order.creator?.name }}</div>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ (fee.creator?.country_code ?? '') + (' ' + fee.creator?.phone ||
-                                                    '') }} <Badge class="mt-1" :variant="fee.creator?.role_color"
-                                                    :class="fee.creator?.role_color">
-                                                    {{ fee.creator?.role_label }}
-                                                </Badge>
-                                            </p>
-                                        </div>
+                                        {{ fee.name }}
                                     </TableCell>
-                                    <TableCell class="text-black dark:text-gray-200">
-                                        <div class="text-black dark:text-gray-200 leading-tight">
-                                            <div class="font-medium">{{ order.product?.name }}</div>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                Order-{{ order.order_number }}
-                                            </p>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell class="text-black dark:text-gray-200">
-                                        ₹{{ order.product?.price }} * {{ order.quantity }} {{
-                                            Utils.pluralize(order?.quantity, 'bag') }}
-                                    </TableCell>
-                                    <TableCell class="text-black dark:text-gray-200">
-                                        <!-- {{ order.doj_formatted }} -->
-                                        ₹{{ order.total_price }}
-                                    </TableCell>
-                                    <TableCell class="capitalize text-black dark:text-gray-200">
-                                        <Badge v-if="order.updater" :variant="order.updater?.role_color"
-                                            :class="order.updater?.role_color">
-                                            {{ order.updater?.role_label }}
-                                        </Badge>
-                                        <span v-else>--</span>
-                                    </TableCell>
-                                    <TableCell class="capitalize text-black dark:text-gray-200">
-                                        <Badge :variant="order.status_color" :class="order.status_color">
-                                            {{ order.status_label }}
+
+                                    <TableCell>
+                                        <Badge :variant="fee.type_color" :class="fee.type_color">
+                                            {{ fee.type_label }}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell class="capitalize text-black dark:text-gray-200">
-                                        <Button :class="order?.show_action_button ? 'bg-green-400' : 'border'" size="sm"
-                                            @click="takeAction(order)" :variant="'secondary'" :tabindex="0"
-                                            class="h-8 w-8">
-                                            <Pen :size="60" />
-                                        </Button>
+                                    <TableCell>
+                                        <Badge :variant="fee.frequency_color" :class="fee.frequency_color">
+                                            {{ fee.frequency_label }}
+                                        </Badge>
                                     </TableCell>
+                                    <TableCell class="text-black dark:text-gray-200">
+                                        ₹{{ fee.amount }}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div class="flex gap-2">
+                                            <!-- <Link :href="route('fees.edit', fee.id)">
+                                            <Button size="sm" variant="secondary" class="h-8 w-8">
+                                                <Pen :size="16" />
+                                            </Button>
+                                            </Link> -->
+                                        </div>
+                                    </TableCell>  
                                 </TableRow>
                             </TableBody>
                         </Table>
+
                         <div v-if="props.fees?.data?.length === 0"
                             class="flex flex-col items-center justify-center py-10 text-gray-500 dark:text-gray-400">
                             <ArchiveX :size="60" />
-                            <p>No users found</p>
+                            <p>No fees found</p>
                         </div>
+
                     </Card>
                 </div>
             </CardContent>
