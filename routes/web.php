@@ -64,10 +64,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Order End
     // Fee Generation Start
     Route::get('fees', [FeeController::class, 'index'])->name('fees.index');
-    Route::get('fees/structure', [FeeController::class, 'feeStructure'])->name('fees.structure');
+    Route::get('/fees/structure', [FeeController::class, 'feeStructure'])->name('fees.structure');
     Route::get('fees/structure/create', [FeeController::class, 'feeCreate'])->name('fees.create');
     Route::post('fees/structure/fee-store', [FeeController::class, 'feeStore'])->name('fee.store');
     Route::get('fees/generate', [FeeController::class, 'feeGenerate'])->name('fees.generate');
+    Route::put('fees/{fee}/toggle', [FeeController::class, 'feeToggle'])->name('fee.toggle');
     // Fee Generation End
 });
 

@@ -31,6 +31,7 @@ interface Props {
     classes: SelectOption[];
     feeTypes: SelectOption[];
     frequencyTypes: SelectOption[];
+    months: SelectOption[];
 }
 const props = defineProps<Props>();
 
@@ -41,6 +42,7 @@ const form = useForm({
     amount: 0,
     frequency: '',
     description: '',
+    month: null,
 });
 
 const submit = () => {
@@ -124,6 +126,23 @@ const submit = () => {
                                         </SelectContent>
                                     </Select>
                                     <InputError :message="form.errors.frequency" />
+                                </div>
+                                <div class="grid gap-2">
+                                    <Label>Month</Label>
+                                    <Select v-model="form.month">
+                                        <SelectTrigger class="w-full">
+                                            <SelectValue placeholder="Select Month" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem v-for="f in props.months" :key="f.value"
+                                                    :value="f.value">
+                                                    {{ f.label }}
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError :message="form.errors.month" />
                                 </div>
 
                                 <div class="grid gap-2">

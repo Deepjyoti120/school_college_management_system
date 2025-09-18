@@ -37,23 +37,26 @@ import Badge from '@/components/ui/badge/Badge.vue';
 import { SelectOption } from '@/types/SelectOption';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
 import { FeeStructure } from '@/types/FeeStructure';
+import Switch from '@/components/ui/switch/Switch.vue';
 
 
 interface Props {
     fees: PaginatedResponse<FeeStructure>,
     filters: Record<string, any>,
     feeTypes: SelectOption[],
+    academicYears: SelectOption[],
 }
 const props = defineProps<Props>();
 const search = ref(props.filters?.search || '')
-const status = ref(props.filters?.statusOptions)
-const feeType = ref(props.feeTypes)
+const feeType = ref(props.filters?.feeType)
+const academicYear = ref(props.filters?.academicYear || '')
 const loading = ref(false)
 const onSearch = async () => {
     loading.value = true
-    router.get(route('fees.index'), {
+    router.get(route('fees.structure'), {
         search: search.value || '',
-        status: status.value,
+        feeType: feeType.value,
+        academicYear: academicYear.value,
     }, {
         preserveState: true,
         preserveScroll: true,
@@ -73,29 +76,35 @@ const onSearch = async () => {
 }
 const goToPage = (page: number) => {
     loading.value = true
-    router.get(route('fees.index'), {
+    router.get(route('fees.structure'), {
         page,
         search: search.value || '',
-        status: status.value,
+        feeType: feeType.value,
+        academicYear: academicYear.value,
     }, {
         preserveScroll: true,
         preserveState: true,
         onFinish: () => loading.value = false
     })
 }
-const generateFee = () => {
-    loading.value = true
-    router.get(route('fees.generate'), {
-        type: feeType.value || '',
-    }, {
-        preserveScroll: true,
-        preserveState: true,
-        onFinish: () => loading.value = false,
-        onSuccess: () => {
-            // toast.success('Fee generated successfully.');
-        },
-    })
-}
+// const generateFee = () => {
+//     loading.value = true
+//     router.get(route('fees.generate'), {
+//         type: feeType.value || '',
+//     }, {
+//         preserveScroll: true,
+//         preserveState: true,
+//         onFinish: () => loading.value = false,
+//         onSuccess: () => {
+//             // toast.success('Fee generated successfully.');
+//         },
+//     })
+// }
+
+const toggleActive = (val: boolean, fee: any) => {
+  fee.is_active = val;
+  router.put(route('fee.toggle', fee.id), { is_active: val });
+};
 const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
 
 </script>
@@ -117,14 +126,26 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
                     <div class="flex gap-4 w-full">
                         <SearchInput v-model="search" placeholder="Search by name..." />
-                        <Select v-model="status">
+                        <Select v-model="academicYear">
                             <SelectTrigger>
-                                <SelectValue placeholder="Select Status" />
+                                <SelectValue placeholder="Select Academic Year" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem v-for="r in props.academicYears" :key="r.value" :value="r.value">
+                                        {{ r.label }}
+                                    </SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                        <Select v-model="feeType">
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select FeeType" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
                                     <SelectItem value="all">All</SelectItem>
-                                    <SelectItem v-for="r in props.statusOptions" :key="r.value" :value="r.value">
+                                    <SelectItem v-for="r in props.feeTypes" :key="r.value" :value="r.value">
                                         {{ r.label }}
                                     </SelectItem>
                                 </SelectGroup>
@@ -147,8 +168,9 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                         <Table class="w-full">
                             <TableHeader class="bg-slate-100 dark:bg-slate-800">
                                 <TableRow>
-                                    <TableHead class="font-bold text-black dark:text-white">Name</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Name | Period</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Type</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Class</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Frequency</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Amount</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Action</TableHead>
@@ -158,13 +180,21 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                             <TableBody v-if="props.fees?.data?.length > 0" class="bg-white dark:bg-slate-950">
                                 <TableRow v-for="fee in props.fees?.data" :key="fee.id">
                                     <TableCell class="text-black dark:text-gray-200">
-                                        {{ fee.name }}
+                                        <div class="text-black dark:text-gray-200 leading-tight">
+                                            <div class="font-medium">{{ fee.name }}</div>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ fee.month_name }} {{ fee.month_name ? '|' : '' }} {{ fee.year }}</p> 
+                                        </div>
                                     </TableCell>
-
                                     <TableCell>
-                                        <Badge :variant="fee.type_color" :class="fee.type_color">
-                                            {{ fee.type_label }}
-                                        </Badge>
+                                        <div class="text-black dark:text-gray-200 leading-tight">
+                                            <Badge :variant="fee.type_color" :class="fee.type_color">
+                                                {{ fee.type_label }}
+                                            </Badge>
+                                           
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        {{ fee.class.name }}
                                     </TableCell>
                                     <TableCell>
                                         <Badge :variant="fee.frequency_color" :class="fee.frequency_color">
@@ -175,14 +205,8 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                                         ₹{{ fee.amount }}
                                     </TableCell>
                                     <TableCell>
-                                        <div class="flex gap-2">
-                                            <!-- <Link :href="route('fees.edit', fee.id)">
-                                            <Button size="sm" variant="secondary" class="h-8 w-8">
-                                                <Pen :size="16" />
-                                            </Button>
-                                            </Link> -->
-                                        </div>
-                                    </TableCell>  
+                                         <Switch @update:modelValue="(val) => toggleActive(val, fee)"  v-model="fee.is_active"/>
+                                    </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>

@@ -61,7 +61,6 @@ const onSearch = async () => {
     router.get(route('users.index'), {
         search: search.value || '',
         role: role.value,
-
     }, {
         preserveState: true,
         preserveScroll: true,
@@ -93,7 +92,6 @@ const toggleActive = (val: boolean, user: any) => {
 </script>
 
 <template>
-
     <Head title="Users" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6">

@@ -44,23 +44,50 @@ class FeeController extends Controller
     }
     public function feeStructure(Request $request)
     {
-        $fees = FeeStructure::query()->with(['school'])
+        $schoolId = auth()->user()->school_id;
+        $defaultAcademicYear = AcademicYear::getOrCreateCurrentAcademicYear($schoolId);
+        $request->academicYear = $request->academicYear ?? $defaultAcademicYear->id;
+        // dd($request->feeType);
+        $fees = FeeStructure::query()->with(['school', 'class'])
             ->when($request->search, function ($q) use ($request) {
                 $search = strtolower($request->search);
-                $q->whereHas('product', function ($query) use ($search) {
-                    $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
-                });
+                $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                // $q->whereHas('product', function ($query) use ($search) {
+                //     $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                // });
             })
-            ->when($request->status && $request->status !== 'all', fn($q) => $q->where('status', $request->status))
+            ->when($request->feeType && $request->feeType !== 'all', fn($q) => $q->where('type', $request->feeType))
+            ->when($request->academicYear, fn($q) => $q->where('academic_year_id', $request->academicYear))
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
         return Inertia::render('fee/IndexStructure', [
             'fees' => $fees,
-            'filters' => $request->only(['search', 'status']),
+            'filters' => [
+                'search',
+                'feeType' => $request->feeType,
+                'academicYear' => (string) $request->academicYear,
+            ],
             'feeTypes' => FeeType::options(),
             'frequency' => FrequencyType::options(),
+            'academicYears' => AcademicYear::where('school_id', $schoolId)
+                ->orderBy('start_date', 'desc')
+                ->get(['id', 'name'])->map(fn($m) => [
+                    'label' => $m->name,
+                    'value' => $m->id,
+                ])
         ]);
+    }
+    public function feeToggle(Request $request, FeeStructure $fee)
+    {
+
+        $validated = $request->validate([
+            'is_active' => ['required', 'boolean'],
+        ]);
+
+        $fee->is_active = $validated['is_active'];
+        $fee->save();
+        return back()->with('success', 'FeeStructure updated successfully.');
     }
     public function feeGenerate(Request $request)
     {
@@ -152,30 +179,36 @@ class FeeController extends Controller
                 'label' => $f->label(),
                 'value' => $f->value,
             ]),
+            'months' => collect(range(1, 12))->map(fn($m) => [
+                'label' => Carbon::create()->month($m)->format('F'),
+                'value' => $m,
+            ]),
         ]);
     }
 
     public function feeStore(Request $request)
     {
         $validated = $request->validate([
-            'class_id'=> ['required', 'exists:school_classes,id'],
-            'name'=> ['required', 'string', 'max:255'],
-            'type'=> ['required', 'in:' . implode(',', FeeType::values())],
-            'amount'=> ['required', 'numeric', 'min:0'],
-            'frequency'=> ['required', 'in:' . implode(',', FrequencyType::values())],
-            'description'=> ['nullable', 'string', 'max:1000'],
+            'class_id' => ['required', 'exists:school_classes,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'type' => ['required', 'in:' . implode(',', FeeType::values())],
+            'amount' => ['required', 'numeric', 'min:100'],
+            'frequency' => ['required', 'in:' . implode(',', FrequencyType::values())],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'month' => ['nullable', 'integer', 'between:1,12'],
         ]);
         $academicYear = AcademicYear::getOrCreateCurrentAcademicYear(auth()->user()->school_id);
-
         FeeStructure::create([
             'school_id' => auth()->user()->school_id,
             'academic_year_id' => $academicYear->id,
             'class_id' => $validated['class_id'],
             'name' => $validated['name'],
             'type' => $validated['type'],
-            'amount'=> $validated['amount'],
-            'frequency'=> $validated['frequency'],
-            'description'=> $validated['description'] ?? null,
+            'amount' => $validated['amount'],
+            'frequency' => $validated['frequency'],
+            'description' => $validated['description'] ?? null,
+            'year' => now()->year,
+            'month' => $validated['month'] ?? null,
         ]);
         return back()->with('success', 'Successfully Saved.');
     }

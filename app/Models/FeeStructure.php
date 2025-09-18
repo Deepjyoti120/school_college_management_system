@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\FeeType;
 use App\Enums\FrequencyType;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,12 +21,16 @@ class FeeStructure extends Model
         'amount',
         'frequency',
         'description',
+        'month',
+        'year',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'frequency' => FrequencyType::class,
         'type' => FeeType::class,
+        'month' => 'integer',
+        'year' => 'integer',
     ];
 
     protected $appends = [
@@ -33,6 +38,7 @@ class FeeStructure extends Model
         'frequency_color',
         'type_label',
         'type_color',
+        'month_name',
     ];
 
 
@@ -69,5 +75,10 @@ class FeeStructure extends Model
     public function getTypeColorAttribute(): string
     {
         return $this->type->color();
+    }
+
+    public function getMonthNameAttribute(): ?string
+    {
+        return $this->month ? Carbon::create()->month($this->month)->format('F') : null;
     }
 }

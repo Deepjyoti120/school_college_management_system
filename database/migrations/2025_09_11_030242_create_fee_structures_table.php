@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('fee_structures', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->boolean('is_active')->default(true);
             $table->foreignUlid('school_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('academic_year_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('class_id')->nullable()->constrained('school_classes')->nullOnDelete();
@@ -21,6 +22,8 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->string('frequency');
             $table->text('description')->nullable();
+            $table->integer('month')->nullable();
+            $table->integer('year')->nullable();
             $table->timestamps();
         });
     }
