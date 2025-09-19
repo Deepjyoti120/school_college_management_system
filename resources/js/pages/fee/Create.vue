@@ -129,6 +129,7 @@ const submit = () => {
                                 </div>
                                 <div class="grid gap-2">
                                     <Label>Month</Label>
+                                    {{ form.month }}
                                     <Select v-model="form.month">
                                         <SelectTrigger class="w-full">
                                             <SelectValue placeholder="Select Month" />

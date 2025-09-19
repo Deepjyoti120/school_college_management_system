@@ -167,6 +167,17 @@ class FeeController extends Controller
     public function feeCreate()
     {
         $schoolId = auth()->user()->school_id;
+        $academicYear = AcademicYear::getOrCreateCurrentAcademicYear($schoolId);
+        $months = collect();
+        $start = $academicYear->start_date->copy()->startOfMonth();
+        $end = $academicYear->end_date->copy()->endOfMonth();
+        while ($start->lte($end)) {
+            $months->push([
+                'label' => $start->format('F Y'),
+                'value' => $start->format('Y-m'),
+            ]);
+            $start->addMonth();
+        }
         return Inertia::render('fee/Create', [
             'classes' => SchoolClass::where('school_id', $schoolId)
                 ->get(['id', 'name'])
@@ -179,10 +190,7 @@ class FeeController extends Controller
                 'label' => $f->label(),
                 'value' => $f->value,
             ]),
-            'months' => collect(range(1, 12))->map(fn($m) => [
-                'label' => Carbon::create()->month($m)->format('F'),
-                'value' => $m,
-            ]),
+            'months' => $months,
         ]);
     }
 
@@ -195,9 +203,15 @@ class FeeController extends Controller
             'amount' => ['required', 'numeric', 'min:100'],
             'frequency' => ['required', 'in:' . implode(',', FrequencyType::values())],
             'description' => ['nullable', 'string', 'max:1000'],
-            'month' => ['nullable', 'integer', 'between:1,12'],
+            'month' => ['nullable', 'date_format:Y-m'],
+            // 'month' => ['nullable', 'integer', 'between:1,12'],
         ]);
         $academicYear = AcademicYear::getOrCreateCurrentAcademicYear(auth()->user()->school_id);
+        $year = null;
+        $month = null;
+        if (!empty($validated['month'])) {
+            [$year, $month] = explode('-', $validated['month']);
+        }
         FeeStructure::create([
             'school_id' => auth()->user()->school_id,
             'academic_year_id' => $academicYear->id,
@@ -207,8 +221,8 @@ class FeeController extends Controller
             'amount' => $validated['amount'],
             'frequency' => $validated['frequency'],
             'description' => $validated['description'] ?? null,
-            'year' => now()->year,
-            'month' => $validated['month'] ?? null,
+            'year' => $year ?? now()->year,
+            'month' => $month,
         ]);
         return back()->with('success', 'Successfully Saved.');
     }
