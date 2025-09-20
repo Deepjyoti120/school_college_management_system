@@ -44,7 +44,19 @@ class SchoolUser extends Seeder
             ]);
 
             // classes and sub classes
-            $classes = ['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5'];
+            $classes = [
+                'Class 1',
+                'Class 2',
+                'Class 3',
+                'Class 4',
+                'Class 5',
+                'Class 6',
+                'Class 7',
+                'Class 8',
+                'Class 8',
+                'Class 9',
+                'Class 10',
+            ];
             $sections = ['A', 'B', 'C', 'D', 'E'];
 
             foreach ($classes as $className) {

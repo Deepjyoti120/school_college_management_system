@@ -56,6 +56,25 @@ class AuthController extends Controller
         ], 'Login successful');
     }
 
+    public function emailLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+
+        if (!$token = auth('api')->setTTL(60 * 24 * 30)->attempt($credentials)) {
+            return ApiResponse::error('Invalid email or password', 401);
+        }
+        $user = auth('api')->user();
+        return ApiResponse::success([
+            'token' => $token,
+            'user' => $user,
+        ], 'Login successful');
+    }
+
     public function refresh()
     {
         try {
