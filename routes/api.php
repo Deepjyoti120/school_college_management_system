@@ -18,7 +18,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['jwt.auth'])->group(function () {
         Route::get('/me', [UserController::class, 'me']);
         Route::get('/users', [AuthController::class, 'me']);
-        Route::get('/payments', [PaymentController::class, 'me']);
+        Route::get('/payments', [PaymentController::class, 'pendingPayments']);
     });
 });
 // Auth::attempt(['email' => 'deepjyoti120281@gmail.com', 'password' => 'secret1234'])

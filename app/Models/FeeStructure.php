@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\FeeType;
 use App\Enums\FrequencyType;
+use App\Enums\RazorpayPaymentStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +40,7 @@ class FeeStructure extends Model
         'type_label',
         'type_color',
         'month_name',
+        'payment_status',
     ];
 
 
@@ -80,5 +82,25 @@ class FeeStructure extends Model
     public function getMonthNameAttribute(): ?string
     {
         return $this->month ? Carbon::create()->month($this->month)->format('F') : null;
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function payment()
+    {
+        $user = auth()->user();
+        return $this->hasOne(Payment::class)
+            ->where('user_id', $user->id)
+            ->where('month', $this->month)
+            ->where('year', $this->year);
+    }
+
+    public function getPaymentStatusAttribute(): string
+    {
+        $payment = $this->payment;
+        return $payment ? $payment->status : RazorpayPaymentStatus::PENDING->value;
     }
 }
