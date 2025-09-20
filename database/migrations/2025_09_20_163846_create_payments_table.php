@@ -22,6 +22,8 @@ return new class extends Migration
             $table->integer('year')->nullable();
             $table->string('status')->default('pending');
             $table->decimal('amount', 10, 2);
+            $table->decimal('gst_amount', 10, 2)->default(0);
+            $table->decimal('total_amount', 10, 2);
             $table->string('currency', 10)->default('INR');
             $table->date('payment_date');
             $table->string('razorpay_order_id')->index();

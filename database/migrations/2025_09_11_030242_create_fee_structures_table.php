@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('type');
             $table->decimal('amount', 10, 2);
+            $table->decimal('gst_amount', 10, 2)->default(0);
+            $table->decimal('total_amount', 10, 2);
             $table->string('frequency');
             $table->text('description')->nullable();
             $table->integer('month')->nullable();

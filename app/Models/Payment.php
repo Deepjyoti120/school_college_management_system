@@ -20,6 +20,8 @@ class Payment extends Model
         'year',
         'status',
         'amount',
+        'gst_amount',
+        'total_amount',
         'currency',
         'payment_date',
         'razorpay_order_id',
@@ -32,6 +34,8 @@ class Payment extends Model
     protected $casts = [
         'payment_date' => 'date',
         'amount' => 'decimal:2',
+        'gst_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
         'status' => RazorpayPaymentStatus::class
     ];
 

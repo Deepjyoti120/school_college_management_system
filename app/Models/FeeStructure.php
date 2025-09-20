@@ -20,6 +20,8 @@ class FeeStructure extends Model
         'name',
         'type',
         'amount',
+        'gst_amount',
+        'total_amount',
         'frequency',
         'description',
         'month',
@@ -28,6 +30,8 @@ class FeeStructure extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'gst_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
         'frequency' => FrequencyType::class,
         'type' => FeeType::class,
         'month' => 'integer',
