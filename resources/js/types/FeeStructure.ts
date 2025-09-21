@@ -12,6 +12,8 @@ export interface FeeStructure {
   type_label: string;
   type_color: string;
   amount: string;
+  gst_amount: string;
+  total_amount: string;
   frequency: string;
   frequency_label: string;
   frequency_color: string;

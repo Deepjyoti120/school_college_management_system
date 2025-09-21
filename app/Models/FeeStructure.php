@@ -47,6 +47,31 @@ class FeeStructure extends Model
         'payment_status',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($fee) {
+            $fee->applyGst();
+        });
+
+        static::updating(function ($fee) {
+            $fee->applyGst();
+        });
+    }
+    const GST_RATE = 18;
+
+    public function applyGst()
+    {
+        $school = $this->school;
+        if ($school && $school->is_gst_applicable) {
+            $rate = $school->gst_rate ?? self::GST_RATE;
+            $this->gst_amount = round(($this->amount * $rate) / 100, 2);
+            $this->total_amount = $this->amount + $this->gst_amount;
+        } else {
+            $this->gst_amount = 0;
+            $this->total_amount = $this->amount;
+        }
+    }
+
 
     public function school()
     {

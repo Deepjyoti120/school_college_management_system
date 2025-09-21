@@ -102,8 +102,8 @@ const goToPage = (page: number) => {
 // }
 
 const toggleActive = (val: boolean, fee: any) => {
-  fee.is_active = val;
-  router.put(route('fee.toggle', fee.id), { is_active: val });
+    fee.is_active = val;
+    router.put(route('fee.toggle', fee.id), { is_active: val });
 };
 const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
 
@@ -169,10 +169,10 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                             <TableHeader class="bg-slate-100 dark:bg-slate-800">
                                 <TableRow>
                                     <TableHead class="font-bold text-black dark:text-white">Name | Period</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Type</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Type | Frequency</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Class</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Frequency</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Amount</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Amount | GST</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Total Amount</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -182,30 +182,35 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                                     <TableCell class="text-black dark:text-gray-200">
                                         <div class="text-black dark:text-gray-200 leading-tight">
                                             <div class="font-medium">{{ fee.name }}</div>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ fee.month_name }} {{ fee.month_name ? '|' : '' }} {{ fee.year }}</p> 
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ fee.month_name }} {{
+                                                fee.month_name ? '|' : '' }} {{ fee.year }}</p>
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <div class="text-black dark:text-gray-200 leading-tight">
+                                        <div class="text-black dark:text-gray-200 leading-tight grid gap-0.5">
                                             <Badge :variant="fee.type_color" :class="fee.type_color">
                                                 {{ fee.type_label }}
                                             </Badge>
-                                           
+                                            <p>
+                                                <Badge :variant="fee.frequency_color" :class="fee.frequency_color">
+                                                    {{ fee.frequency_label }}
+                                                </Badge>
+                                            </p>
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         {{ fee.class.name }}
                                     </TableCell>
-                                    <TableCell>
-                                        <Badge :variant="fee.frequency_color" :class="fee.frequency_color">
-                                            {{ fee.frequency_label }}
-                                        </Badge>
-                                    </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
                                         ₹{{ fee.amount }}
+                                        <p> ₹{{ fee.gst_amount }}</p>
+                                    </TableCell>
+                                    <TableCell class="text-black dark:text-gray-200">
+                                        ₹{{ fee.total_amount }}
                                     </TableCell>
                                     <TableCell>
-                                         <Switch @update:modelValue="(val) => toggleActive(val, fee)"  v-model="fee.is_active"/>
+                                        <Switch @update:modelValue="(val) => toggleActive(val, fee)"
+                                            v-model="fee.is_active" />
                                     </TableCell>
                                 </TableRow>
                             </TableBody>

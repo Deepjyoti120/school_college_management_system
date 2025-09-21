@@ -53,7 +53,6 @@ class SchoolUser extends Seeder
                 'Class 6',
                 'Class 7',
                 'Class 8',
-                'Class 8',
                 'Class 9',
                 'Class 10',
             ];

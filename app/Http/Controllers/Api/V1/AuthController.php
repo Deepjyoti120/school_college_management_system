@@ -69,6 +69,9 @@ class AuthController extends Controller
             return ApiResponse::error('Invalid email or password', 401);
         }
         $user = auth('api')->user();
+        if (!$user->is_active) {
+            return ApiResponse::error('Your account is not active. Please contact support.', 403);
+        }
         return ApiResponse::success([
             'token' => $token,
             'user' => $user,
