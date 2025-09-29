@@ -12,10 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     // Route::post('/otp-request', [AuthController::class, 'otpRequest']);
-<<<<<<< HEAD
-=======
     // Route::post('/login', [AuthController::class, 'login']);
->>>>>>> 66fb157e00204ad1e997333875da84861bee3dea
     Route::post('/login', [AuthController::class, 'emailLogin']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::middleware(['jwt.auth'])->group(function () {

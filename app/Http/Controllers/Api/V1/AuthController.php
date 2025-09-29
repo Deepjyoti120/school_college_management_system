@@ -59,7 +59,6 @@ class AuthController extends Controller
     public function emailLogin(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
         if (!$token = auth('api')->attempt($credentials)) {
             return ApiResponse::error('Invalid credentials', Response::HTTP_UNAUTHORIZED);
         }
