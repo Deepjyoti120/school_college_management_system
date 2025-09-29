@@ -81,19 +81,19 @@ const data = {
                     url: '/fees/structure',
                     icon: LayoutPanelTop,
                     isActive: false,
-                },
-                {
-                    title: 'Fees Generation',
-                    url: '/fees',
-                    icon: WalletMinimal,
-                    isActive: false,
-                },
-                {
-                    title: 'Orders',
-                    url: '/orders',
-                    icon: Car,
-                    isActive: false,
-                },
+                }
+                // {
+                //     title: 'Fees Generation',
+                //     url: '/fees',
+                //     icon: WalletMinimal,
+                //     isActive: false,
+                // },
+                // {
+                //     title: 'Orders',
+                //     url: '/orders',
+                //     icon: Car,
+                //     isActive: false,
+                // },
             ],
         },
     ],
