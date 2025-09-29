@@ -212,6 +212,9 @@ class FeeController extends Controller
         if (!empty($validated['month'])) {
             [$year, $month] = explode('-', $validated['month']);
         }
+        // $gstRate = FeeStructure::GST_RATE;
+        // $gstAmount = round(($validated['amount'] * $gstRate) / 100, 2);
+        // $totalAmount = $validated['amount'] + $gstAmount;
         FeeStructure::create([
             'school_id' => auth()->user()->school_id,
             'academic_year_id' => $academicYear->id,
@@ -223,6 +226,8 @@ class FeeController extends Controller
             'description' => $validated['description'] ?? null,
             'year' => $year ?? now()->year,
             'month' => $month,
+            // 'gst_amount' => $gstAmount,
+            // 'total_amount' => $totalAmount,
         ]);
         return back()->with('success', 'Successfully Saved.');
     }

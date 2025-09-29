@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('logo_path')->nullable();
             $table->string('cover_path')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_gst_applicable')->default(true);
+            $table->decimal('gst_rate', 5, 2)->default(18.00);
             $table->timestamps();
         });
     }

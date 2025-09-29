@@ -25,6 +25,8 @@ class School extends Model
         'logo_path',
         'cover_path',
         'is_active',
+        'is_gst_applicable',
+        'gst_rate',
     ];
 
     protected $casts = [
@@ -50,5 +52,4 @@ class School extends Model
     {
         return $this->hasMany(SchoolClass::class);
     }
-
 }

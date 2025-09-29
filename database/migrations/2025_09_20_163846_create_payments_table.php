@@ -11,21 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fee_structures', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->boolean('is_active')->default(true);
             $table->foreignUlid('school_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('academic_year_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('class_id')->nullable()->constrained('school_classes')->nullOnDelete();
-            $table->string('name');
-            $table->string('type');
+            $table->foreignUlid('fee_structure_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignUlid('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->integer('month')->nullable();
+            $table->integer('year')->nullable();
+            $table->string('status')->default('pending');
             $table->decimal('amount', 10, 2);
             $table->decimal('gst_amount', 10, 2)->default(0);
             $table->decimal('total_amount', 10, 2);
-            $table->string('frequency');
-            $table->text('description')->nullable();
-            $table->integer('month')->nullable();
-            $table->integer('year')->nullable();
+            $table->string('currency', 10)->default('INR');
+            $table->date('payment_date');
+            $table->string('razorpay_order_id')->index();
+            $table->string('razorpay_payment_id')->nullable()->index();
+            $table->string('razorpay_signature')->nullable();
             $table->timestamps();
         });
     }
@@ -35,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fee_structures');
+        Schema::dropIfExists('payments');
     }
 };
