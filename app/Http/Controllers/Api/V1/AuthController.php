@@ -63,6 +63,10 @@ class AuthController extends Controller
             return ApiResponse::error('Invalid credentials', Response::HTTP_UNAUTHORIZED);
         }
         $user = auth('api')->user();
+        if (!$user->is_active) {
+            auth('api')->logout();
+            return ApiResponse::error('Your account is inactive. Please contact support.', Response::HTTP_FORBIDDEN);
+        }
         // update fcm_token from body and 
         $user->update([
             'fcm_token' => $request->input('fcm_token'),
