@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -60,7 +61,7 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
         if (!$token = auth('api')->attempt($credentials)) {
-            return ApiResponse::error('Invalid credentials', Response::HTTP_UNAUTHORIZED);
+            return ApiResponse::error('Invalid credentials', Response::HTTP_BAD_REQUEST,);
         }
         $user = auth('api')->user();
         if (!$user->is_active) {
@@ -77,7 +78,6 @@ class AuthController extends Controller
             'user' => $user,
         ], 'Login successful');
     }
-
     public function refresh()
     {
         try {
@@ -93,6 +93,24 @@ class AuthController extends Controller
             return ApiResponse::error('Token refresh failed', Response::HTTP_BAD_REQUEST);
         }
     }
+
+    // public function refresh()
+    // {
+    //     try {
+    //         $newToken = auth('api')->setTTL(10)->refresh();
+    //         $user = auth('api')->setToken($newToken)->user();
+    //         return ApiResponse::success([
+    //             'token' => $newToken,
+    //             'user' => $user,
+    //         ], 'Token refreshed');
+    //     } catch (TokenExpiredException $e) {
+    //         return ApiResponse::error('Refresh token expired', Response::HTTP_UNAUTHORIZED);
+    //     } catch (\Exception $e) {
+    //         return ApiResponse::error('Token refresh failed', Response::HTTP_BAD_REQUEST);
+    //     }
+    // }
+
+
 
     public function otpRequest()
     {
