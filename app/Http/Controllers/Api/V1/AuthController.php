@@ -58,20 +58,16 @@ class AuthController extends Controller
 
     public function emailLogin(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
-
         $credentials = $request->only('email', 'password');
-
-        if (!$token = auth('api')->setTTL(60 * 24 * 30)->attempt($credentials)) {
-            return ApiResponse::error('Invalid email or password', 401);
+        if (!$token = auth('api')->attempt($credentials)) {
+            return ApiResponse::error('Invalid credentials', Response::HTTP_UNAUTHORIZED);
         }
         $user = auth('api')->user();
-        if (!$user->is_active) {
-            return ApiResponse::error('Your account is not active. Please contact support.', 403);
-        }
+        // update fcm_token from body and 
+        $user->update([
+            'fcm_token' => $request->input('fcm_token'),
+            'device_info' => $request->input('device_info'),
+        ]);
         return ApiResponse::success([
             'token' => $token,
             'user' => $user,
