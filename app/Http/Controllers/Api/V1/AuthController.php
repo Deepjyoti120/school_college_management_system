@@ -56,6 +56,25 @@ class AuthController extends Controller
         ], 'Login successful');
     }
 
+    public function emailLogin(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (!$token = auth('api')->attempt($credentials)) {
+            return ApiResponse::error('Invalid credentials', Response::HTTP_UNAUTHORIZED);
+        }
+        $user = auth('api')->user();
+        // update fcm_token from body and 
+        $user->update([
+            'fcm_token' => $request->input('fcm_token'),
+            'device_info' => $request->input('device_info'),
+        ]);
+        return ApiResponse::success([
+            'token' => $token,
+            'user' => $user,
+        ], 'Login successful');
+    }
+
     public function refresh()
     {
         try {
