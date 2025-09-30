@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('razorpay_order_id')->index();
             $table->string('razorpay_payment_id')->nullable()->index();
             $table->string('razorpay_signature')->nullable();
+            $table->boolean('is_webhook')->default(false);
             $table->timestamps();
         });
     }

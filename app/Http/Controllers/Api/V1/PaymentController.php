@@ -100,70 +100,33 @@ class PaymentController extends Controller
         return ApiResponse::error('Unable to create payment record. Please try again.');
     }
 
-    public function paymentSuccessOrFailed(Request $request)
+    public function paymentSuccess(Request $request)
     {
         $string = $request->razorpay_order_id . '|' . $request->razorpay_payment_id;
-        $expectedSignature = hash_hmac('sha256', $string, config('freshman.razor_pay_secret'));
+        $expectedSignature = hash_hmac('sha256', $string, config('services.razorpay.secret'));
         if (hash_equals($expectedSignature, $request->razorpay_signature) == true) {
-            // $billingId = '';
-            $monthlyBilling =  MonthlyBilling::where('razorpay_order_id', $request->razorpay_order_id)->latest('id')->first();
-            if ($monthlyBilling) {
-                $monthlyBilling->update([
-                    'razorpay_payment_id' => $request->razorpay_payment_id,
-                    'razorpay_signature' => $request->razorpay_signature,
-                    'updated_at' => now(),
-                    'paid' => true,
-                    'payment_status' => RazorpayPaymentStatus::PAID,
-                ]);
-                // $billingId = $monthlyBilling->tenant_id;
-                $financialYear = FinancialYear::where('start_after', '<=', now())
-                    ->latest('id')->first();
-                $startMonth = $financialYear->start_month;
-                $endMonth = $financialYear->end_month;
-                $currentYear = $monthlyBilling->year;
-                MonthlyBilling::where('paid', false)
-                    ->where('lease_id', $monthlyBilling->lease_id)
-                    ->where(function ($query) use ($startMonth, $endMonth, $currentYear) {
-                        $query->where(function ($subQuery) use ($startMonth, $currentYear) {
-                            $subQuery->where('year', $currentYear)
-                                ->whereBetween('month', [$startMonth, 12]);
-                        });
-                        $query->orWhere(function ($subQuery) use ($endMonth, $currentYear) {
-                            $subQuery->where('year', $currentYear + 1)
-                                ->whereBetween('month', [1, $endMonth]);
-                        });
-                    })
-                    ->update([
-                        'razorpay_payment_id' => $request->razorpay_payment_id,
-                        'razorpay_signature' => $request->razorpay_signature,
-                        'updated_at' => now(),
-                        'paid' => true,
-                        'payment_status' => RazorpayPaymentStatus::PAID,
-                    ]);
-            } else {
-                $arrearBilling = ArrearBilling::where('razorpay_order_id', $request->razorpay_order_id)->latest('id')->first();
-                $arrearBilling->update([
-                    'razorpay_payment_id' => $request->razorpay_payment_id,
-                    'razorpay_signature' => $request->razorpay_signature,
-                    'updated_at' => now(),
-                    'paid' => true,
-                    'payment_status' => RazorpayPaymentStatus::PAID,
-                ]);
-                // $billingId = $arrearBilling->tenant_id;
-            }
             $payment = Payment::where('razorpay_order_id', $request->razorpay_order_id)->firstOrFail();
             $payment->update([
                 'description' => 'Payment Success',
-                'payment_status' => RazorpayPaymentStatus::PAID,
+                'status' => RazorpayPaymentStatus::PAID,
                 'payment_date' => now(),
                 'razorpay_payment_id' => $request->razorpay_payment_id,
                 'razorpay_signature' => $request->razorpay_signature,
-                'paid' => true,
-                // 'payment_method' => '',
             ]);
-            $this->respondOk(Response::HTTP_OK, 'Payment Successful');
+            return ApiResponse::success([], 'success');
         } else {
-            return $this->respondWithError(Response::HTTP_BAD_REQUEST, 'Invalid payment signature');
+            return ApiResponse::error([], 'Invalid payment signature');
         }
+    }
+    public function paymentFailed(Request $request)
+    {
+        $payment = Payment::where('razorpay_order_id', $request->razorpay_order_id)->firstOrFail();
+        $payment->update([
+            'description' => $request->description ?? 'Payment Failed',
+            'status' => RazorpayPaymentStatus::FAILED,
+            'payment_date' => now(),
+            'razorpay_payment_id' => $request->razorpay_payment_id ?? null,
+        ]);
+        return  ApiResponse::success([], 'success');
     }
 }
