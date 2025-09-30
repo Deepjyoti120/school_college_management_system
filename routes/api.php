@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,9 +16,10 @@ Route::prefix('v1')->group(function () {
     // Route::post('/login', [AuthController::class, 'login']);
     Route::post('/login', [AuthController::class, 'emailLogin']);
     Route::get('/refresh', [AuthController::class, 'refresh']);
+    Route::post('webhook-razorpay', WebhookController::class);
     Route::middleware(['jwt.auth'])->group(function () {
         Route::get('/me', [UserController::class, 'me']);
-        Route::get('/users', [AuthController::class, 'me']);
+        // Route::get('/users', [AuthController::class, 'me']);
         Route::get('/payments', [PaymentController::class, 'pendingPayments']);
     });
 });

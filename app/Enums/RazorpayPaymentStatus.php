@@ -8,6 +8,7 @@ enum RazorpayPaymentStatus: string
     case CAPTURED = 'captured';
     case FAILED   = 'failed';
     case REFUNDED = 'refunded';
+    case AUTHORIZED = "authorized";
 
     /**
      * Human-readable label
@@ -19,6 +20,7 @@ enum RazorpayPaymentStatus: string
             self::CAPTURED => 'Captured',
             self::FAILED   => 'Failed',
             self::REFUNDED => 'Refunded',
+            self::AUTHORIZED => 'Authorized',
         };
     }
 
@@ -32,6 +34,7 @@ enum RazorpayPaymentStatus: string
             self::CAPTURED => 'success',
             self::FAILED   => 'danger',
             self::REFUNDED => 'warning',
+            self::AUTHORIZED => 'info',
         };
     }
 
