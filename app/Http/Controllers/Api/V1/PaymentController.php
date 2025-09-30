@@ -16,7 +16,7 @@ use Razorpay\Api\Api;
 class PaymentController extends Controller
 {
     use GeneratesUniqueNumber;
-    
+
     protected function initRazorPay()
     {
         return new Api(
@@ -54,7 +54,7 @@ class PaymentController extends Controller
             'amount' => $amount,
             'currency' => 'INR'
         ]);
-        $payment =   Payment::updateOrCreate(
+        $payment = Payment::updateOrCreate(
             [
                 'user_id' => $user->id,
                 'class_id' => $user->class_id,
