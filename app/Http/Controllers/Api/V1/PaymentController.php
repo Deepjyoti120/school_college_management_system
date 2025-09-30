@@ -7,11 +7,8 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\FeeStructure;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Firebase\JWT\JWT;
 use Razorpay\Api\Api;
 
 class PaymentController extends Controller
@@ -19,9 +16,9 @@ class PaymentController extends Controller
 
     protected function initRazorPay()
     {
-        return new  Api(
-            config('freshman.razor_pay_key'),
-            config('freshman.razor_pay_secret')
+        return new Api(
+            config('services.razorpay.key'),
+            config('services.razorpay.secret')
         );
     }
     /**
@@ -61,11 +58,6 @@ class PaymentController extends Controller
             $late_fine = $monthlyBilling->late_fine;
             $amount_due = $monthlyBilling->amount_due;
             $due_date = $monthlyBilling->due_date;
-            // if ($currentDay > 7) {
-            //     $lateFine = ($monthlyBilling->month_due * MonthlyBilling::LATE_FEE_PERCENTAGE) / 100;
-            //     $amount = $amount + $lateFine;
-            //     $late_fine = $lateFine;
-            // }
         } else if ($type == 'year') {
             $arrearBilling =  ArrearBilling::with(['tenant'])->findOrFail($id);
             $amount = $arrearBilling->amount_due + $arrearBilling->late_fine;
@@ -107,19 +99,12 @@ class PaymentController extends Controller
             'razorpay_receipt_id' => $order['receipt'],
             'type' => $type,
         ]);
-        // $data = [
-        //     'amount' => $amount,
-        //     'order_id' => $order['id'],
-        //     'name' => $name,
-        //     'phone' => $phone,
-        //     'previousUrl' => ''
-        // ];
         $data = [
             'key' => config('freshman.razor_pay_key'),
             'order_id' => $order['id'],
             'amount' => $amount,
             'name' => $name,
-            'description' => '', // 'Payment for ' . ucfirst($type),
+            'description' => '',
             'retry' => [
                 'enabled' => false,
                 'max_count' => 1
@@ -136,7 +121,7 @@ class PaymentController extends Controller
         return $this->respondWithSuccess($data);
     }
 
-     public function paymentSuccessOrFailed(Request $request)
+    public function paymentSuccessOrFailed(Request $request)
     {
         $string = $request->razorpay_order_id . '|' . $request->razorpay_payment_id;
         $expectedSignature = hash_hmac('sha256', $string, config('freshman.razor_pay_secret'));
@@ -153,29 +138,29 @@ class PaymentController extends Controller
                 ]);
                 // $billingId = $monthlyBilling->tenant_id;
                 $financialYear = FinancialYear::where('start_after', '<=', now())
-                            ->latest('id')->first();
-                    $startMonth = $financialYear->start_month;
-                    $endMonth = $financialYear->end_month;
-                    $currentYear = $monthlyBilling->year;
-                    MonthlyBilling::where('paid', false)
-                        ->where('lease_id', $monthlyBilling->lease_id)
-                        ->where(function ($query) use ($startMonth, $endMonth, $currentYear) {
-                            $query->where(function ($subQuery) use ($startMonth, $currentYear) {
-                                $subQuery->where('year', $currentYear)
-                                         ->whereBetween('month', [$startMonth, 12]);
-                            });
-                            $query->orWhere(function ($subQuery) use ($endMonth, $currentYear) {
-                                $subQuery->where('year', $currentYear + 1)
-                                         ->whereBetween('month', [1, $endMonth]);
-                            });
-                        })
-                        ->update([
-                            'razorpay_payment_id' => $request->razorpay_payment_id,
-                            'razorpay_signature' => $request->razorpay_signature,
-                            'updated_at' => now(),
-                            'paid' => true,
-                            'payment_status' => RazorpayPaymentStatus::PAID,
-                        ]);
+                    ->latest('id')->first();
+                $startMonth = $financialYear->start_month;
+                $endMonth = $financialYear->end_month;
+                $currentYear = $monthlyBilling->year;
+                MonthlyBilling::where('paid', false)
+                    ->where('lease_id', $monthlyBilling->lease_id)
+                    ->where(function ($query) use ($startMonth, $endMonth, $currentYear) {
+                        $query->where(function ($subQuery) use ($startMonth, $currentYear) {
+                            $subQuery->where('year', $currentYear)
+                                ->whereBetween('month', [$startMonth, 12]);
+                        });
+                        $query->orWhere(function ($subQuery) use ($endMonth, $currentYear) {
+                            $subQuery->where('year', $currentYear + 1)
+                                ->whereBetween('month', [1, $endMonth]);
+                        });
+                    })
+                    ->update([
+                        'razorpay_payment_id' => $request->razorpay_payment_id,
+                        'razorpay_signature' => $request->razorpay_signature,
+                        'updated_at' => now(),
+                        'paid' => true,
+                        'payment_status' => RazorpayPaymentStatus::PAID,
+                    ]);
             } else {
                 $arrearBilling = ArrearBilling::where('razorpay_order_id', $request->razorpay_order_id)->latest('id')->first();
                 $arrearBilling->update([
@@ -192,7 +177,7 @@ class PaymentController extends Controller
                 'description' => 'Payment Success',
                 'payment_status' => RazorpayPaymentStatus::PAID,
                 'payment_date' => now(),
-                'razorpay_payment_id' => $request->razorpay_payment_id, 
+                'razorpay_payment_id' => $request->razorpay_payment_id,
                 'razorpay_signature' => $request->razorpay_signature,
                 'paid' => true,
                 // 'payment_method' => '',
