@@ -21,6 +21,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/me', [UserController::class, 'me']);
         // Route::get('/users', [AuthController::class, 'me']);
         Route::get('/payments', [PaymentController::class, 'pendingPayments']);
+        Route::get('/payment/init', [PaymentController::class, 'paymentInit']);
+        Route::post('payment/success', Payment\SuccessController::class);
+        Route::post('payment/failed', Payment\FailedController::class);
     });
 });
 // Auth::attempt(['email' => 'deepjyoti120281@gmail.com', 'password' => 'secret1234'])
