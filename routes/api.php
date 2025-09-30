@@ -16,14 +16,14 @@ Route::prefix('v1')->group(function () {
     // Route::post('/login', [AuthController::class, 'login']);
     Route::post('/login', [AuthController::class, 'emailLogin']);
     Route::get('/refresh', [AuthController::class, 'refresh']);
-    Route::post('webhook-razorpay', WebhookController::class);
+    // Route::post('webhook-razorpay', WebhookController::class);
     Route::middleware(['jwt.auth'])->group(function () {
         Route::get('/me', [UserController::class, 'me']);
         // Route::get('/users', [AuthController::class, 'me']);
-        Route::get('/payments', [PaymentController::class, 'pendingPayments']);
-        Route::get('/payment/init', [PaymentController::class, 'paymentInit']);
-        Route::post('payment/success', Payment\SuccessController::class);
-        Route::post('payment/failed', Payment\FailedController::class);
+        // Route::get('/payments', [PaymentController::class, 'pendingPayments']);
+        // Route::get('/payment/init', [PaymentController::class, 'paymentInit']);
+        // Route::post('payment/success', Payment\SuccessController::class);
+        // Route::post('payment/failed', Payment\FailedController::class);
     });
 });
 // Auth::attempt(['email' => 'deepjyoti120281@gmail.com', 'password' => 'secret1234'])
