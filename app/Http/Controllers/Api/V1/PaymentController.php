@@ -83,7 +83,7 @@ class PaymentController extends Controller
                 'name' => $name,
                 'description' => '',
                 'retry' => [
-                    'enabled' => false,
+                    'enabled' => true,
                     'max_count' => 1
                 ],
                 'send_sms_hash' => true,

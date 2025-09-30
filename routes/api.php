@@ -20,8 +20,8 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['jwt.auth'])->group(function () {
         Route::get('/me', [UserController::class, 'me']);
         // Route::get('/users', [AuthController::class, 'me']);
-        Route::get('/payments', [PaymentController::class, 'pendingPayments']);
-        Route::get('/payment/init', [PaymentController::class, 'paymentInit']);
+        Route::get('payments', [PaymentController::class, 'pendingPayments']);
+        Route::get('payment/init', [PaymentController::class, 'paymentInit']);
         // Route::post('payment/success-or-failed', Payment\SuccessController::class);
         // Route::post('payment/failed', Payment\FailedController::class);
     });
