@@ -38,7 +38,6 @@ class PaymentController extends Controller
     public function paymentInit(Request $request)
     {
         $id = $request->query('id');
-        $type = $request->query('type');
         $amount = 0;
         $name = '';
         $phone = '';
@@ -47,28 +46,17 @@ class PaymentController extends Controller
         $late_fine = 0;
         $amount_due = 0;
         $due_date = '';
-        if ($type == 'month') {
-            $monthlyBilling =  MonthlyBilling::with(['tenant'])->findOrFail($id);
-            $amount = $monthlyBilling->amount_due + $monthlyBilling->late_fine;
-            $name =   $monthlyBilling->tenant->name;
-            $phone = $monthlyBilling->tenant->phone;
-            $email = $monthlyBilling->tenant->email;
-            $tenant_id = $monthlyBilling->tenant_id;
-            $currentDay = now()->day;
-            $late_fine = $monthlyBilling->late_fine;
-            $amount_due = $monthlyBilling->amount_due;
-            $due_date = $monthlyBilling->due_date;
-        } else if ($type == 'year') {
-            $arrearBilling =  ArrearBilling::with(['tenant'])->findOrFail($id);
-            $amount = $arrearBilling->amount_due + $arrearBilling->late_fine;
-            $name =   $arrearBilling->tenant->name;
-            $phone = $arrearBilling->tenant->phone;
-            $email = $arrearBilling->tenant->email;
-            $tenant_id = $arrearBilling->tenant_id;
-            $late_fine = $arrearBilling->late_fine;
-            $amount_due = $arrearBilling->amount_due;
-            $due_date = $arrearBilling->due_date;
-        }
+        $feeStructure =  FeeStructure::findOrFail($id);
+        $user = auth()->user();
+        $amount = $feeStructure->total_amount;
+        $name =   $monthlyBilling->tenant->name;
+        $phone = $monthlyBilling->tenant->phone;
+        $email = $monthlyBilling->tenant->email;
+        $tenant_id = $monthlyBilling->tenant_id;
+        $currentDay = now()->day;
+        $late_fine = $monthlyBilling->late_fine;
+        $amount_due = $monthlyBilling->amount_due;
+        $due_date = $monthlyBilling->due_date;
         $amount = round($amount * 100);
         $api = $this->initRazorPay();
         $order = $api->order->create([
@@ -99,8 +87,8 @@ class PaymentController extends Controller
             'razorpay_receipt_id' => $order['receipt'],
             'type' => $type,
         ]);
-        $data = [
-            'key' => config('freshman.razor_pay_key'),
+        $data = [ 
+            'key' =>  config('services.razorpay.key'),
             'order_id' => $order['id'],
             'amount' => $amount,
             'name' => $name,
