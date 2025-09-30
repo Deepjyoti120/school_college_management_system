@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\RazorpayPaymentStatus;
+use App\GeneratesUniqueNumber;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\FeeStructure;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Razorpay\Api\Api;
 
 class PaymentController extends Controller
 {
-
+    use GeneratesUniqueNumber;
+    
     protected function initRazorPay()
     {
         return new Api(
@@ -38,25 +41,12 @@ class PaymentController extends Controller
     public function paymentInit(Request $request)
     {
         $id = $request->query('id');
-        $amount = 0;
-        $name = '';
-        $phone = '';
-        $email = '';
-        $tenant_id = '';
-        $late_fine = 0;
-        $amount_due = 0;
-        $due_date = '';
         $feeStructure =  FeeStructure::findOrFail($id);
         $user = auth()->user();
         $amount = $feeStructure->total_amount;
-        $name =   $monthlyBilling->tenant->name;
-        $phone = $monthlyBilling->tenant->phone;
-        $email = $monthlyBilling->tenant->email;
-        $tenant_id = $monthlyBilling->tenant_id;
-        $currentDay = now()->day;
-        $late_fine = $monthlyBilling->late_fine;
-        $amount_due = $monthlyBilling->amount_due;
-        $due_date = $monthlyBilling->due_date;
+        $name =   $user->name;
+        $phone = $user->phone;
+        $email = $user->email;
         $amount = round($amount * 100);
         $api = $this->initRazorPay();
         $order = $api->order->create([
@@ -64,49 +54,50 @@ class PaymentController extends Controller
             'amount' => $amount,
             'currency' => 'INR'
         ]);
-        if ($type == 'month') {
-            $monthlyBilling->update([
+        $payment =   Payment::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'class_id' => $user->class_id,
+                'school_id' => $user->school_id,
+                'academic_year_id' => $feeStructure->academic_year_id,
+                'fee_structure_id' => $feeStructure->id,
+            ],
+            [
+                'month' => now()->month,
+                'year' => now()->year,
+                'status' => RazorpayPaymentStatus::PENDING,
+                'amount' => $feeStructure->amount,
+                'gst_amount' => $feeStructure->gst_amount,
+                'total_amount' => $feeStructure->total_amount,
+                'payment_date' => now(),
                 'razorpay_order_id' => $order['id'],
-            ]);
-        } else if ($type == 'year') {
-            $arrearBilling->update([
-                'razorpay_order_id' => $order['id'],
-            ]);
+                // 'razorpay_payment_id' => null,
+                // 'razorpay_signature'  => null,
+            ]
+        );
+        if ($payment) {
+            $data = [
+                'key' =>  config('services.razorpay.key'),
+                'order_id' => $order['id'],
+                'amount' => $amount,
+                'name' => $name,
+                'description' => '',
+                'retry' => [
+                    'enabled' => false,
+                    'max_count' => 1
+                ],
+                'send_sms_hash' => true,
+                'prefill' => [
+                    'contact' => $phone,
+                    'email' => $email
+                ],
+                // 'external' => [
+                //     'wallets' => ['paytm']
+                // ]
+            ];
+            return  ApiResponse::success($data, 'success');
         }
-        $actualAmount = $amount / 100;
-        Payment::create([
-            'tenant_id' => $tenant_id,
-            'description' => 'Payment for ' . $type,
-            'amount_due' => $amount_due,
-            'paid_amount' => $actualAmount,
-            'total_amount' => $actualAmount,
-            'late_fine' => $late_fine,
-            'due_date' => $due_date,
-            'payment_status' => RazorpayPaymentStatus::PENDING,
-            'razorpay_order_id' => $order['id'],
-            'razorpay_receipt_id' => $order['receipt'],
-            'type' => $type,
-        ]);
-        $data = [ 
-            'key' =>  config('services.razorpay.key'),
-            'order_id' => $order['id'],
-            'amount' => $amount,
-            'name' => $name,
-            'description' => '',
-            'retry' => [
-                'enabled' => false,
-                'max_count' => 1
-            ],
-            'send_sms_hash' => true,
-            'prefill' => [
-                'contact' => $phone,
-                'email' => $email
-            ],
-            // 'external' => [
-            //     'wallets' => ['paytm']
-            // ]
-        ];
-        return $this->respondWithSuccess($data);
+        return ApiResponse::error('Unable to create payment record. Please try again.');
     }
 
     public function paymentSuccessOrFailed(Request $request)
