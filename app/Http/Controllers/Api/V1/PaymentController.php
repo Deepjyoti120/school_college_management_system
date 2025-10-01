@@ -34,10 +34,23 @@ class PaymentController extends Controller
         $feeStructures = FeeStructure::with(['school', 'academicYear', 'class'])->where('class_id', $user->class_id)
             ->where('is_active', true)
             ->where('academic_year_id', $defaultAcademicYear->id)
-            // ->with(['payment'])
             ->get();
         return ApiResponse::success($feeStructures, 'success');
     }
+    public function paymentsHistory(Request $request)
+    {
+        $request->validate([
+            'academic_year_id' => 'required|exists:academic_years,id',
+        ]);
+        $user = auth()->user();
+        $payments = Payment::where('user_id', $user->id)
+            ->when($request->academic_year_id, function ($query, $academicYearId) {
+                $query->where('academic_year_id', $academicYearId);
+            })
+            ->get();
+        return ApiResponse::success($payments, 'success');
+    }
+
     public function paymentInit(Request $request)
     {
         $id = $request->query('id');
