@@ -50,4 +50,13 @@ class Payment extends Model
     {
         return $this->belongsTo(FeeStructure::class);
     }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
+    public function class()
+    {
+        return $this->belongsTo(SchoolClass::class);
+    }
 }

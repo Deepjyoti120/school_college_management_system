@@ -43,7 +43,7 @@ class PaymentController extends Controller
             'academic_year_id' => 'required|exists:academic_years,id',
         ]);
         $user = auth()->user();
-        $payments = Payment::where('user_id', $user->id)
+        $payments = Payment::with(['school', 'class'])->where('user_id', $user->id)
             ->when($request->academic_year_id, function ($query, $academicYearId) {
                 $query->where('academic_year_id', $academicYearId);
             })

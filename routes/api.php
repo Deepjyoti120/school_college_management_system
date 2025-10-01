@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AcademicYearsController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -20,6 +21,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['jwt.auth'])->group(function () {
         Route::get('/me', [UserController::class, 'me']);
         // Route::get('/users', [AuthController::class, 'me']);
+        Route::get('academic-years', [AcademicYearsController::class, 'academicYears']);
         Route::get('payments', [PaymentController::class, 'pendingPayments']);
         Route::get('payments/history', [PaymentController::class, 'paymentsHistory']);
         Route::get('payment/init', [PaymentController::class, 'paymentInit']);
