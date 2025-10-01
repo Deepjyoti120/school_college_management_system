@@ -23,7 +23,7 @@ Route::prefix('v1')->group(function () {
         // Route::get('/users', [AuthController::class, 'me']);
         Route::get('academic-years', [AcademicYearsController::class, 'academicYears']);
         Route::get('payments', [PaymentController::class, 'pendingPayments']);
-        Route::get('payments/history', [PaymentController::class, 'paymentsHistory']);
+        Route::post('payments/history', [PaymentController::class, 'paymentsHistory']);
         Route::get('payment/init', [PaymentController::class, 'paymentInit']);
         Route::post('payment/success', [PaymentController::class, 'paymentSuccess']);
         Route::post('payment/failed', [PaymentController::class, 'paymentFailed']);

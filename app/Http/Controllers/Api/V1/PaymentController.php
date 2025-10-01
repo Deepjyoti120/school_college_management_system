@@ -40,13 +40,17 @@ class PaymentController extends Controller
     public function paymentsHistory(Request $request)
     {
         $request->validate([
-            'academic_year_id' => 'required|exists:academic_years,id',
+            'academic_year_id' => 'nullable|exists:academic_years,id',
         ]);
         $user = auth()->user();
-        $payments = Payment::with(['school', 'class'])->where('user_id', $user->id)
-            ->when($request->academic_year_id, function ($query, $academicYearId) {
-                $query->where('academic_year_id', $academicYearId);
-            })
+        $defaultAcademicYear = AcademicYear::getOrCreateCurrentAcademicYear($user->school_id);
+        $payments = Payment::with(['school', 'class', 'feeStructure'])
+            ->where('user_id', $user->id)
+            ->where('status', RazorpayPaymentStatus::PAID)
+            ->where('academic_year_id', $request->academic_year_id ?? $defaultAcademicYear->id)
+            // ->when($request->academic_year_id, function ($query, $academicYearId) {
+            //     $query->where('academic_year_id', $academicYearId);
+            // })
             ->get();
         return ApiResponse::success($payments, 'success');
     }
