@@ -103,7 +103,7 @@ const breadcrumbs = [{title: 'Payments', href: '/payments'}];
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6">
             <div class="flex justify-between">
-                <Heading title="Payments" description="" /> 
+                <Heading title="Payments" description="View and manage your payments, and transaction history in one place." /> 
             </div>
             <CardContent>
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
