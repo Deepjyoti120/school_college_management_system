@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
+use App\Enums\RazorpayPaymentStatus;
 use App\Enums\UserRole;
+use App\Models\FeeStructure;
 use App\Models\Order;
+use App\Models\Payment;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,10 +32,62 @@ class DashboardController extends Controller
             'stats' => null,
             'showRevenue' => null,
             // 'charts' => $charts,
-            // 'stats' => $this->getQuickStats(),
+            'stats' => $this->getQuickStats(),
             // 'showRevenue' => auth()->user()->role === UserRole::COM || auth()->user()->role === UserRole::GM,
         ]);
     }
+
+
+    protected function getQuickStats()
+    {
+        $user = auth()->user();
+        $schoolId = $user->school_id;
+
+        return [
+            // total students in the same school
+            'totalStudents' => User::where('school_id', $schoolId)
+                ->where('role', 'student')
+                ->count(),
+
+            'totalFeeStructures' => FeeStructure::where('school_id', $schoolId)->count(),
+
+            'totalPayments' => Payment::where('school_id', $schoolId)->count(),
+
+            'pendingPayments' => Payment::where('school_id', $schoolId)
+                ->where('status', RazorpayPaymentStatus::PENDING)
+                ->count(),
+
+            'successfulPayments' => Payment::where('school_id', $schoolId)
+                ->whereIn('status', [RazorpayPaymentStatus::PAID, RazorpayPaymentStatus::CAPTURED])
+                ->count(),
+
+            'revenueThisMonth' => Payment::where('school_id', $schoolId)
+                ->whereIn('status', [RazorpayPaymentStatus::PAID, RazorpayPaymentStatus::CAPTURED])
+                ->whereMonth('payment_date', now()->month)
+                ->sum('total_amount'),
+
+            'avgPaymentValue' => number_format(
+                Payment::where('school_id', $schoolId)
+                    ->whereIn('status', [RazorpayPaymentStatus::PAID, RazorpayPaymentStatus::CAPTURED])
+                    ->avg('total_amount'),
+                2
+            ),
+
+            'firstPaymentThisMonth' => Payment::where('school_id', $schoolId)
+                ->whereMonth('payment_date', now()->month)
+                ->orderBy('payment_date', 'asc')
+                ->first()?->payment_date,
+
+            'paymentsToday' => Payment::where('school_id', $schoolId)
+                ->whereDate('payment_date', today())
+                ->count(),
+
+            'myPayments' => Payment::where('school_id', $schoolId)
+                ->where('user_id', $user->id)
+                ->count(),
+        ];
+    }
+
 
     // protected function getStatusDistribution()
     // {
@@ -150,52 +206,6 @@ class DashboardController extends Controller
     //     return $fullRange->sortBy('days_start')->values();
     // }
 
-    // protected function getQuickStats()
-    // {
-    //     return [
-    //         'totalOrders' => Order::when(auth()->user()->role === UserRole::DEL, fn($q) => $q->where('created_by', auth()->id()))
-    //             ->when(auth()->user()->role === UserRole::FAC, fn($q) => $q->where('created_by', auth()->id()))->forFacUser()
-    //             ->count(),
-    //         'pendingOrders' => Order::when(auth()->user()->role === UserRole::DEL, fn($q) => $q->where('created_by', auth()->id()))
-    //             ->when(auth()->user()->role !== UserRole::FAC, fn($q) => $q->where('status',  OrderStatus::PENDING))
-    //             ->when(auth()->user()->role === UserRole::FAC, function ($q) {
-    //                 return $q->whereHas(
-    //                     'updater',
-    //                     fn($u) =>
-    //                     $u->whereIn('role', [UserRole::GM])
-    //                 );
-    //             })
-    //             ->forFacUser()->count(),
-    //         'rejectedOrders' => Order::where('status', OrderStatus::REJECTED)->when(auth()->user()->role === UserRole::DEL, fn($q) => $q->where('created_by', auth()->id()))->forFacUser()->count(),
-    //         'dispatchedOrders' => Order::where('status', OrderStatus::DISPATCHED)->when(auth()->user()->role === UserRole::DEL, fn($q) => $q->where('created_by', auth()->id()))->forFacUser()->count(),
-    //         'dispatchedToday' => Order::where('status', OrderStatus::DISPATCHED)
-    //             ->when(auth()->user()->role === UserRole::DEL, fn($q) => $q->where('created_by', auth()->id()))->forFacUser()
-    //             ->whereDate('updated_at', today())
-    //             ->count(),
-    //         'avgProcessingTime' => number_format(DB::table('orders as o')
-    //             ->join('order_progress as op', function ($join) {
-    //                 $join->on('o.id', '=', 'op.order_id')
-    //                     ->where('op.stage', '=', Order::FAC_STAGE);
-    //             })
-    //             ->where('o.status', OrderStatus::DISPATCHED->value)
-    //             ->avg(DB::raw('EXTRACT(DAY FROM (op.created_at - o.created_at))')), 0),
-    //         'revenueThisMonth' => Order::forFacUser()->where('status', OrderStatus::DISPATCHED->value)
-    //             ->whereMonth('updated_at', now()->month)
-    //             ->sum('total_price'),
-    //         'avgOrderValue' => number_format(Order::forFacUser()->where('status', OrderStatus::DISPATCHED->value)
-    //             ->avg('total_price'), 2),
-    //         'fastestProcessingTime' => DB::table('orders as o')
-    //             ->join('order_progress as op', function ($join) {
-    //                 $join->on('o.id', '=', 'op.order_id')
-    //                     ->where('op.stage', '=', Order::FAC_STAGE);
-    //             })
-    //             ->where('o.status', OrderStatus::DISPATCHED->value)
-    //             ->min(DB::raw('EXTRACT(DAY FROM (op.created_at - o.created_at))')),
-    //         'ordersByCurrentUser' => auth()->check()
-    //             ? Order::where('created_by', auth()->id())->forFacUser()->count()
-    //             : 0,
-    //     ];
-    // }
     // protected function getOrdersByDayOfWeek()
     // {
     //     $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
