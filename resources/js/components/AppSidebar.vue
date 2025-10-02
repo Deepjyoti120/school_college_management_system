@@ -5,8 +5,11 @@ import {
     BaggageClaimIcon,
     Car,
     Command,
+    FileChartColumnIncreasing,
     Frame,
     GalleryVerticalEnd,
+    IndianRupee,
+    IndianRupeeIcon,
     LayoutPanelTop,
     Map,
     PieChart,
@@ -75,12 +78,6 @@ const data = {
                     url: '/dashboard',
                     icon: SquareTerminal,
                     isActive: false,
-                },
-                {
-                    title: 'Fees Structure',
-                    url: '/fees/structure',
-                    icon: LayoutPanelTop,
-                    isActive: false,
                 }
                 // {
                 //     title: 'Fees Generation',
@@ -141,6 +138,14 @@ const data = {
 }
 
 if (user.role === UserRole.SUPER_ADMIN) {
+    const platFormsItems = [
+        {
+            title: 'Fees Structure',
+            url: '/fees/structure',
+            icon: LayoutPanelTop,
+            isActive: false,
+        }
+    ];
     const adminItems = [
         {
             title: "Admin",
@@ -153,7 +158,8 @@ if (user.role === UserRole.SUPER_ADMIN) {
                 },
             ],
         },
-    ]
+    ];
+    data.navMain[0].items.push(...platFormsItems);
     data.navMain.push(...adminItems);
 }
 if (user.role === UserRole.PRINCIPAL) {
@@ -170,6 +176,21 @@ if (user.role === UserRole.PRINCIPAL) {
             ],
         },
     ]
+    const platFormsItems = [
+        {
+            title: 'Fees Structure',
+            url: '/fees/structure',
+            icon: LayoutPanelTop,
+            isActive: false,
+        },
+        {
+            title: 'Payments',
+            url: '/payments',
+            icon: IndianRupeeIcon,
+            isActive: false,
+        },
+    ];
+    data.navMain[0].items.push(...platFormsItems);
     data.navMain.push(...items);
 }
 const settings =

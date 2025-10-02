@@ -30,3 +30,11 @@ export enum FrequencyType {
   MONTHLY = 'monthly',
   YEARLY = 'yearly',
 }
+export enum RazorpayPaymentStatus {
+  PENDING = "pending",
+  CAPTURED = "captured",
+  FAILED = "failed",
+  REFUNDED = "refunded",
+  AUTHORIZED = "authorized",
+  PAID = "paid",
+}

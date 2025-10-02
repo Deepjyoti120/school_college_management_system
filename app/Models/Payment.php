@@ -51,7 +51,6 @@ class Payment extends Model
         return $this->status?->label();
     }
 
-
     public function getAmountInPaiseAttribute(): int
     {
         return (int) round($this->amount * 100);
@@ -66,8 +65,14 @@ class Payment extends Model
     {
         return $this->belongsTo(School::class);
     }
+
     public function class()
     {
         return $this->belongsTo(SchoolClass::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

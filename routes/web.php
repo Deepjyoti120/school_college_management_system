@@ -8,6 +8,7 @@ use App\Http\Controllers\Category;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Restaurent;
 
@@ -69,6 +70,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('fees/structure/fee-store', [FeeController::class, 'feeStore'])->name('fee.store');
     Route::get('fees/generate', [FeeController::class, 'feeGenerate'])->name('fees.generate');
     Route::put('fees/{fee}/toggle', [FeeController::class, 'feeToggle'])->name('fee.toggle');
+    // payments
+    Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
     // Fee Generation End
 });
 
