@@ -206,6 +206,9 @@ class FeeController extends Controller
             'month' => ['nullable', 'date_format:Y-m'],
             // 'month' => ['nullable', 'integer', 'between:1,12'],
         ]);
+        if (config('services.demo.mode')) {
+            return back()->with('error', 'This action is not allowed in demo mode');
+        }
         $academicYear = AcademicYear::getOrCreateCurrentAcademicYear(auth()->user()->school_id);
         $year = null;
         $month = null;

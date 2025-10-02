@@ -15,7 +15,9 @@ class ToggleStatusController extends Controller
         $validated = $request->validate([
             'is_active' => ['required', 'boolean'],
         ]);
-
+        if (config('services.demo.mode')) {
+            return back()->with('error', 'This action is not allowed in demo mode');
+        }
         $user->is_active = $validated['is_active'];
         $user->save();
         return back()->with('success', 'User status updated successfully.');
