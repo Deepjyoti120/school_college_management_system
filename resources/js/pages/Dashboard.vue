@@ -3,6 +3,9 @@ import Heading from '@/components/Heading.vue'
 import { Card, CardContent } from '@/components/ui/card'
 import CardHeader from '@/components/ui/card/CardHeader.vue'
 import CardTitle from '@/components/ui/card/CardTitle.vue'
+import BarChart from '@/components/ui/custom-chart/BarChart.vue'
+import LineChart from '@/components/ui/custom-chart/LineChart.vue'
+import PieChart from '@/components/ui/custom-chart/PieChart.vue'
 // import BarChart from '@/components/ui/custom-chart/BarChart.vue'
 // import LineChart from '@/components/ui/custom-chart/LineChart.vue'
 // import PieChart from '@/components/ui/custom-chart/PieChart.vue'
@@ -31,11 +34,11 @@ const props = defineProps({
     showRevenue: Boolean,
 })
 
-const completionRate = computed(() => {
-    return props.stats.totalOrders > 0
-        ? ((props.stats.totalOrders - props.stats.pendingOrders) / props.stats.totalOrders) * 100
-        : 0
-})
+// const completionRate = computed(() => {
+//     return props.stats.totalOrders > 0
+//         ? ((props.stats.totalOrders - props.stats.pendingOrders) / props.stats.totalOrders) * 100
+//         : 0
+// })
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -54,8 +57,6 @@ const breadcrumbs: BreadcrumbItem[] = [
             </div>
             <CardContent>
                 <div class="grid gap-4 md:grid-cols-2" :class="showRevenue ? 'lg:grid-cols-4' : 'lg:grid-cols-3'">
-
-                    <!-- Total Students -->
                     <Card class="shadow-none">
                         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle class="text-sm font-medium">Total Students</CardTitle>
@@ -68,8 +69,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <div class="text-2xl font-bold">{{ stats.totalStudents }}</div>
                         </CardContent>
                     </Card>
-
-                    <!-- Payments -->
                     <Card class="shadow-none">
                         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle class="text-sm font-medium">Payments</CardTitle>
@@ -85,8 +84,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                             </p>
                         </CardContent>
                     </Card>
-
-                    <!-- Successful Payments -->
                     <Card class="shadow-none">
                         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle class="text-sm font-medium">Successful Payments</CardTitle>
@@ -102,8 +99,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                             </p>
                         </CardContent>
                     </Card>
-
-                    <!-- Revenue -->
                     <Card v-if="showRevenue" class="shadow-none">
                         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle class="text-sm font-medium">Revenue</CardTitle>
@@ -119,8 +114,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                             </p>
                         </CardContent>
                     </Card>
-
-                    <!-- My Payments (for student role) -->
                     <Card v-if="stats.myPayments > 0" class="shadow-none">
                         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle class="text-sm font-medium">My Payments</CardTitle>
@@ -133,20 +126,47 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <div class="text-2xl font-bold">{{ stats.myPayments }}</div>
                         </CardContent>
                     </Card>
-
                 </div>
-
                 <!-- Charts -->
-                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 mt-6">
-                    <!-- Order Status Donut Chart -->
-                    <!-- <Card class="shadow-none">
+                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 mt-6">
+                    <Card class="shadow-none">
                         <CardHeader>
-                            <CardTitle>Order Status</CardTitle>
+                            <CardTitle>Payment Status</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <PieChart :data="charts?.statusDistribution" />
+                            <PieChart :data="charts?.paymentStatusDistribution" />
                         </CardContent>
-                    </Card> -->
+                    </Card>
+                    <Card class="shadow-none">
+                        <CardHeader>
+                            <CardTitle>Revenue by Month</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <LineChart :data="charts?.revenueByMonth" />
+                        </CardContent>
+                    </Card>
+                    <Card class="shadow-none">
+                        <CardHeader>
+                            <CardTitle>Fee Collection by Class</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <BarChart :data="charts?.feeCollectionByClass.map(item => ({
+                                product: item.class,
+                                quantity: item.amount
+                            }))" color="#3b82f6" />
+                        </CardContent>
+                    </Card>
+                    <Card class="shadow-none">
+                        <CardHeader>
+                            <CardTitle>Payments (Last 7 Days)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <BarChart :data="charts?.paymentsLast7Days.map(item => ({
+                                product: item.date,
+                                quantity: item.count
+                            }))" color="#10b981" />
+                        </CardContent>
+                    </Card>
 
                     <!-- <Card class="shadow-none">
                         <CardHeader>

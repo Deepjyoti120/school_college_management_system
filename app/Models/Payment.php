@@ -30,7 +30,7 @@ class Payment extends Model
         'is_webhook',
     ];
 
-    protected $appends = ['amount_in_paise'];
+    protected $appends = ['amount_in_paise', 'status_color', 'status_label'];
 
     protected $casts = [
         'payment_date' => 'date',
@@ -40,6 +40,17 @@ class Payment extends Model
         'status' => RazorpayPaymentStatus::class,
         'is_webhook' => 'boolean',
     ];
+
+    public function getStatusColorAttribute(): ?string
+    {
+        return $this->status?->color();
+    }
+
+    public function getStatusLabelAttribute(): ?string
+    {
+        return $this->status?->label();
+    }
+
 
     public function getAmountInPaiseAttribute(): int
     {

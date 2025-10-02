@@ -18,20 +18,17 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // $charts = [
-        //     'statusDistribution' => $this->getStatusDistribution(),
-        //     'stageProgress' => $this->getStageProgress(),
-        //     'orderVolume' => $this->getOrderVolume(),
-        //     'productSales' => $this->getProductSales(),
-        //     'processingTime' => $this->getProcessingTime(),
-        //     'ordersByDayOfWeek' => $this->getOrdersByDayOfWeek(),
-        //     'ordersByHourOfDay' => $this->getOrdersByHourOfDay(),
-        // ];
+        $charts = [
+            'paymentStatusDistribution' => $this->getPaymentStatusDistribution(),
+            'revenueByMonth' => $this->getRevenueByMonth(),
+            'feeCollectionByClass' => $this->getFeeCollectionByClass(),
+            'paymentsLast7Days' => $this->getPaymentsLast7Days(),
+        ];
         return Inertia::render('Dashboard', [
             'charts' => null,
             'stats' => null,
-            'showRevenue' => null,
-            // 'charts' => $charts,
+            'showRevenue' => true,
+            'charts' => $charts,
             'stats' => $this->getQuickStats(),
             // 'showRevenue' => auth()->user()->role === UserRole::COM || auth()->user()->role === UserRole::GM,
         ]);
@@ -87,6 +84,82 @@ class DashboardController extends Controller
                 ->count(),
         ];
     }
+
+    protected function getPaymentsLast7Days()
+    {
+        return Payment::select(
+            DB::raw('DATE(payment_date) as date'),
+            DB::raw('count(*) as count')
+        )
+            ->where('school_id', auth()->user()->school_id)
+            ->where('payment_date', '>=', now()->subDays(7))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(fn($item) => [
+                'date' =>  Carbon::parse($item->date)->format('M d'),
+                'count' => $item->count,
+            ]);
+    }
+
+    protected function getFeeCollectionByClass()
+    {
+        return Payment::query()
+            ->join('school_classes', 'payments.class_id', '=', 'school_classes.id') // adjust table name if different
+            ->where('payments.school_id', auth()->user()->school_id)
+            ->whereIn('payments.status', [
+                RazorpayPaymentStatus::PAID->value,
+                RazorpayPaymentStatus::CAPTURED->value,
+            ])
+            ->select('school_classes.name as class', DB::raw('SUM(payments.total_amount) as amount'))
+            ->groupBy('school_classes.name')
+            ->orderBy('school_classes.name')
+            ->get()
+            ->map(fn($item) => [
+                'class' => $item->class ?? 'Unknown',
+                'amount' => (float)$item->amount,
+            ]);
+    }
+
+
+    protected function getPaymentStatusDistribution()
+    {
+        return Payment::select('status', DB::raw('count(*) as count'))
+            ->where('school_id', auth()->user()->school_id)
+            ->groupBy('status')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'label' => $item->status->name,
+                    'value' => $item->count,
+                    'color' => $item->status_color,
+                ];
+            });
+    }
+
+    protected function getRevenueByMonth()
+    {
+        return Payment::select(
+            DB::raw('EXTRACT(MONTH FROM payment_date) as month'),
+            DB::raw('EXTRACT(YEAR FROM payment_date) as year'),
+            DB::raw('SUM(total_amount) as total')
+        )
+            ->where('school_id', auth()->user()->school_id)
+            ->whereIn('status', [
+                RazorpayPaymentStatus::PAID->value,
+                RazorpayPaymentStatus::CAPTURED->value,
+            ])
+            ->groupBy(DB::raw('EXTRACT(YEAR FROM payment_date), EXTRACT(MONTH FROM payment_date)'))
+            ->orderBy(DB::raw('year, month'))
+            ->get()
+            ->map(fn($item) => [
+                'month'   => Carbon::createFromDate($item->year, $item->month, 1)->format('M Y'),
+                'revenue' => (float)$item->total,
+            ]);
+    }
+
+
+
 
 
     // protected function getStatusDistribution()
