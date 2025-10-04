@@ -129,7 +129,7 @@ class FeeStructure extends Model
 
     public function getPaymentStatusAttribute(): string
     {
-        $payment = $this->payment;
-        return $payment ? $payment->status : RazorpayPaymentStatus::PENDING->value;
+        $payment = $this->payment()->first();
+        return $payment?->status ?? RazorpayPaymentStatus::PENDING->value;
     }
 }
