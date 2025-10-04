@@ -31,7 +31,7 @@ class PaymentController extends Controller
     {
         $user = auth()->user();
         $defaultAcademicYear = AcademicYear::getOrCreateCurrentAcademicYear($user->school_id);
-        $feeStructures = FeeStructure::with(['school', 'academicYear', 'class', 'payment'])->where('class_id', $user->class_id)
+        $feeStructures = FeeStructure::with(['school', 'academicYear', 'class', 'payments'])->where('class_id', $user->class_id)
             ->where('is_active', true)
             ->where('academic_year_id', $defaultAcademicYear->id)
             ->get();

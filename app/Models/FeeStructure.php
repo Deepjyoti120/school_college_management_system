@@ -118,18 +118,27 @@ class FeeStructure extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function payment()
+    public function latestPaymentForUser($userId)
     {
-        $user = auth()->user();
-        return $this->hasOne(Payment::class)
-            ->where('user_id', $user->id)
-            ->where('month', $this->month)
-            ->where('year', $this->year);
+        if ($this->relationLoaded('payments')) {
+            return $this->payments
+                ->where('user_id', $userId)
+                ->sortByDesc('payment_date')
+                ->first();
+        }
+        return $this->payments()
+            ->where('user_id', $userId)
+            ->latest('payment_date')
+            ->first();
     }
-
+    
+    // Payment status accessor
     public function getPaymentStatusAttribute(): string
     {
-        $payment = $this->payment()->first();
-        return $payment?->status ?? RazorpayPaymentStatus::PENDING->value;
+        $user = auth()->user();
+        if (!$user) return RazorpayPaymentStatus::PENDING->value;
+
+        $payment = $this->latestPaymentForUser($user->id);
+        return $payment?->status->value ?? RazorpayPaymentStatus::PENDING->value;
     }
 }
