@@ -131,7 +131,7 @@ class FeeStructure extends Model
             ->latest('payment_date')
             ->first();
     }
-    
+
     // Payment status accessor
     public function getPaymentStatusAttribute(): string
     {
@@ -140,5 +140,13 @@ class FeeStructure extends Model
 
         $payment = $this->latestPaymentForUser($user->id);
         return $payment?->status->value ?? RazorpayPaymentStatus::PENDING->value;
+    }
+    
+    public function scopePendingForUser($query, $userId)
+    {
+        return $query->whereDoesntHave('payments', function ($q) use ($userId) {
+            $q->where('user_id', $userId)
+                ->where('status', RazorpayPaymentStatus::PAID->value);
+        });
     }
 }
