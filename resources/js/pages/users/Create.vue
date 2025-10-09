@@ -16,10 +16,6 @@ import InputError from '@/components/InputError.vue';
 import { SelectOption } from '@/types/SelectOption';
 import { onMounted, ref, watch } from 'vue';
 
-const breadcrumbs = [
-    { title: 'Users', href: '/users' },
-    { title: 'Create user', href: '/users/create' },
-];
 interface Props {
     roles: SelectOption[],
     classes: SelectOption[],
@@ -68,10 +64,14 @@ const submit = () => {
     });
 };
 
+const breadcrumbs = [
+    { title: 'Users', href: '/users' },
+    { title: props.user ? 'Edit User' : 'Create User', href: props.user ? `/users/create/${props.user.id}` : '/users/create' },
+];
 </script>
 <template>
 
-    <Head title="Create user" />
+    <Head :title="props.user ? 'Edit User' : 'Create User'" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6 space-y-6">
             <Card class="mx-auto shadow-none rounded-2xl ">
