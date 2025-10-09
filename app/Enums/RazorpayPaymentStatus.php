@@ -37,7 +37,7 @@ enum RazorpayPaymentStatus: string
             self::FAILED   => 'danger',
             self::REFUNDED => 'warning',
             self::AUTHORIZED => 'info',
-            self::PAID => 'primary',
+            self::PAID => 'success',
         };
     }
 

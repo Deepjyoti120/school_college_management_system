@@ -1,6 +1,10 @@
 import { UserRole } from "./enums";
+import { School } from "./school";
+import { SchoolClass } from "./SchoolClass";
+import { SchoolSection } from "./SchoolSection";
 
 export interface User {
+  id: string;
   name: string;
   email: string;
   password: string;
@@ -18,4 +22,10 @@ export interface User {
   role_label?: string;
   role_color?: string;
   profile_url?: string | null;
+  school?: School | null; 
+  class?: SchoolClass | null; 
+  section?: SchoolSection | null; 
+  dob_formatted?: string | null;
+  doj_formatted?: string | null;
+  roll_number?: string | null;
 }

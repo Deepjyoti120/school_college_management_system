@@ -14,7 +14,7 @@ import SelectGroup from '@/components/ui/select/SelectGroup.vue';
 import SelectItem from '@/components/ui/select/SelectItem.vue';
 import InputError from '@/components/InputError.vue';
 import { SelectOption } from '@/types/SelectOption';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const breadcrumbs = [
     { title: 'Users', href: '/users' },
@@ -23,36 +23,51 @@ const breadcrumbs = [
 interface Props {
     roles: SelectOption[],
     classes: SelectOption[],
+    user: Record<string, any> | null,
 }
 const props = defineProps<Props>()
+
 const form = useForm({
-    name: '',
-    email: '',
-    dob: '',
-    doj: '',
+    id: props.user?.id || null,
+    name: props.user?.name || '',
+    email: props.user?.email || '',
+    dob: props.user?.dob || '',
+    doj: props.user?.doj || '',
     password: '',
     password_confirmation: '',
-    role: '',
-    class_id: '',
-    section_id: '',
-    phone: '',
-    roll_number: '',
+    role: props.user?.role || '',
+    class_id: props.user?.class_id || '',
+    section_id: props.user?.section_id || '',
+    phone: props.user?.phone || '',
+    roll_number: props.user?.roll_number || '',
 });
+
 const sections = ref<SelectOption[]>([]);
+onMounted(async () => {
+    if (form.class_id) {
+        const res = await fetch(route('class.sections', { class_id: form.class_id }));
+        sections.value = await res.json();
+        if (!sections.value.find(s => s.value === form.section_id)) {
+            form.section_id = '';
+        }
+    }
+});
 
 watch(() => form.class_id, async (newVal) => {
-    form.section_id = ''
-    sections.value = []
+    form.section_id = '';
+    sections.value = [];
     if (newVal) {
-        const res = await fetch(route('class.sections', { class_id: newVal }))
-        sections.value = await res.json()
+        const res = await fetch(route('class.sections', { class_id: newVal }));
+        sections.value = await res.json();
     }
-})
+});
+
 const submit = () => {
     form.post(route('user.store'), {
         onSuccess: () => form.reset(),
     });
 };
+
 </script>
 <template>
 
@@ -63,7 +78,9 @@ const submit = () => {
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 px-6">
                     <div class="md:col-span-4">
                         <CardHeader class="p-0">
-                            <Heading title="Create user" description="Create a new user" />
+                            <Heading :title="props.user ? 'Edit User' : 'Create User'"
+                                :description="props.user ? 'Update existing user details' : 'Create a new user'" />
+
                         </CardHeader>
                     </div>
                     <div class="md:col-span-8">

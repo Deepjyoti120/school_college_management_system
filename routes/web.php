@@ -39,11 +39,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // })->name('dashboard');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('users', Users\Index::class)->name('users.index');
-    Route::get('user/create', Users\Create::class)->name('user.create');
+    Route::get('user/create/{user?}', Users\Create::class)->name('user.create');
     Route::get('class/{class_id}/sections', [Users\Create::class, 'sections'])
     ->name('class.sections');
     Route::post('user/store', Users\Store::class)->name('user.store');
     Route::put('user/{user}/toggle', Users\ToggleStatusController::class)->name('user.toggle');
+    Route::get('user/{user}/profile', Users\ProfileStatusController::class)->name('user.profile');
     // Category
     Route::get('categories', Category\Index::class)->name('categories.index');
     Route::post('category/create', Category\CreateController::class)->name('category.create');

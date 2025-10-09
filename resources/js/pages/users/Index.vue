@@ -29,7 +29,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import Button from '@/components/ui/button/Button.vue';
-import { ArchiveX, LoaderCircle, Pen } from 'lucide-vue-next';
+import { ArchiveX, LoaderCircle, LucideCircleArrowRight, LucideEye, LucideView, Pen, View } from 'lucide-vue-next';
 import Heading from '@/components/Heading.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import Badge from '@/components/ui/badge/Badge.vue';
@@ -92,6 +92,7 @@ const toggleActive = (val: boolean, user: any) => {
 </script>
 
 <template>
+
     <Head title="Users" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6">
@@ -180,10 +181,21 @@ const toggleActive = (val: boolean, user: any) => {
                                             @update:modelValue="(val) => toggleActive(val, user)" />
                                     </TableCell>
                                     <TableCell class="capitalize text-black dark:text-gray-200">
-                                        <Button size="sm" @click="updateUser(user)" :variant="'outline'" :tabindex="0"
-                                            class="h-8 w-8">
-                                            <Pen :size="60" />
-                                        </Button>
+                                        <div class="flex gap-2">
+                                            <Link :href="route('user.create', user.id)">
+                                            <Button size="sm" variant="outline" class="h-8 w-8">
+                                                <Pen :size="60" />
+                                            </Button>
+                                            </Link>
+                                            <Link :href="route('user.profile', user.id)">
+                                            <Button size="sm" variant="outline" :tabindex="0" class="h-8 w-8">
+                                                <LucideEye :size="60" />
+                                            </Button>
+                                            </Link>
+                                            <!-- <Button v-if="user.role === ''"  @click="updateUser(user)" size="sm" variant="outline" :tabindex="0" class="h-8 w-8">
+                                                <LucideCircleArrowRight :size="60" />
+                                            </Button> -->
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
