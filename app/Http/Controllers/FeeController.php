@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\FeeType;
 use App\Enums\FrequencyType;
 use App\Enums\OrderStatus;
+use App\Enums\RazorpayPaymentStatus;
 use App\Enums\UserRole;
 use App\Models\AcademicYear;
 use App\Models\FeeGenerate;
@@ -48,18 +49,39 @@ class FeeController extends Controller
         $defaultAcademicYear = AcademicYear::getOrCreateCurrentAcademicYear($schoolId);
         $request->academicYear = $request->academicYear ?? $defaultAcademicYear->id;
         // dd($request->feeType);
-        $fees = FeeStructure::query()->with(['school', 'class'])
+        // $fees = FeeStructure::query()->with(['school', 'class'])
+        //     ->when($request->search, function ($q) use ($request) {
+        //         $search = strtolower($request->search);
+        //         $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+        //         // $q->whereHas('product', function ($query) use ($search) {
+        //         //     $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+        //         // });
+        //     })
+        //     ->when($request->feeType && $request->feeType !== 'all', fn($q) => $q->where('type', $request->feeType))
+        //     ->when($request->academicYear, fn($q) => $q->where('academic_year_id', $request->academicYear))
+        //     ->orderBy('created_at', 'desc')
+        //     ->paginate(10)
+        //     ->withQueryString();
+        $fees = FeeStructure::query()
+            ->with(['school', 'class'])
+            ->withCount(['users as user_count'])
+            ->withSum(['payments as total_paid' => function ($q) {
+                $q->where('status', RazorpayPaymentStatus::PAID);
+            }], 'total_amount')
             ->when($request->search, function ($q) use ($request) {
                 $search = strtolower($request->search);
                 $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
-                // $q->whereHas('product', function ($query) use ($search) {
-                //     $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
-                // });
             })
             ->when($request->feeType && $request->feeType !== 'all', fn($q) => $q->where('type', $request->feeType))
             ->when($request->academicYear, fn($q) => $q->where('academic_year_id', $request->academicYear))
             ->orderBy('created_at', 'desc')
             ->paginate(10)
+            ->through(function ($fee) {
+                $fee->total_payable = $fee->total_amount * $fee->user_count; // assuming FeeStructure has `amount` field
+                $fee->total_paid = $fee->total_paid ?? 0;
+                $fee->pending_amount = $fee->total_payable - $fee->total_paid;
+                return $fee;
+            })
             ->withQueryString();
         return Inertia::render('fee/IndexStructure', [
             'fees' => $fees,

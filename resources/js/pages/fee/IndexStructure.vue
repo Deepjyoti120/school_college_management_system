@@ -30,7 +30,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import Button from '@/components/ui/button/Button.vue';
-import { ArchiveX, LoaderCircle, Pen, } from 'lucide-vue-next';
+import { ArchiveX, LoaderCircle, LucideCheckCircle, LucideClock, LucideWallet, Pen, } from 'lucide-vue-next';
 import Heading from '@/components/Heading.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import Badge from '@/components/ui/badge/Badge.vue';
@@ -173,6 +173,8 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                                     <TableHead class="font-bold text-black dark:text-white">Class</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Amount | GST</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Total Amount</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Payable | Paid | Pending Amount
+                                    </TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -208,6 +210,27 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                                     <TableCell class="text-black dark:text-gray-200">
                                         ₹{{ fee.total_amount }}
                                     </TableCell>
+                                    <TableCell class="flex items-center gap-4 text-black dark:text-gray-200">
+                                        <div class="flex flex-col text-black dark:text-gray-200">
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex items-center gap-1">
+                                                    <LucideWallet class="w-4 h-4 text-blue-500" />
+                                                    <span>₹{{ fee.total_payable }}</span>
+                                                </div>
+                                                <span class="text-gray-400">|</span>
+                                                <div class="flex items-center gap-1">
+                                                    <LucideCheckCircle class="w-4 h-4 text-green-500" />
+                                                    <span>₹{{ fee.total_paid }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-1 mt-1">
+                                                <LucideClock class="w-4 h-4 text-yellow-500" />
+                                                <span>Pending: ₹{{ fee.pending_amount }}</span>
+                                            </div>
+                                        </div>
+
+                                    </TableCell>
+
                                     <TableCell>
                                         <Switch @update:modelValue="(val) => toggleActive(val, fee)"
                                             v-model="fee.is_active" />

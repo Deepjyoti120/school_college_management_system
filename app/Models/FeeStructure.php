@@ -141,12 +141,17 @@ class FeeStructure extends Model
         $payment = $this->latestPaymentForUser($user->id);
         return $payment?->status->value ?? RazorpayPaymentStatus::PENDING->value;
     }
-    
+
     public function scopePendingForUser($query, $userId)
     {
         return $query->whereDoesntHave('payments', function ($q) use ($userId) {
             $q->where('user_id', $userId)
                 ->where('status', RazorpayPaymentStatus::PAID->value);
         });
+    }
+    public function users()
+    {
+        return $this->hasMany(User::class, 'class_id', 'class_id')
+            ->whereColumn('users.school_id', 'fee_structures.school_id');
     }
 }

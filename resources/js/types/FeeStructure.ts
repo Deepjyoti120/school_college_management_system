@@ -14,6 +14,9 @@ export interface FeeStructure {
   amount: string;
   gst_amount: string;
   total_amount: string;
+  total_payable: string;
+  total_paid: string;
+  pending_amount: string;
   frequency: string;
   frequency_label: string;
   frequency_color: string;
