@@ -2,6 +2,7 @@ import { RazorpayPaymentStatus } from "./enums";
 import { FeeStructure } from "./FeeStructure";
 import { School } from "./school";
 import { SchoolClass } from "./SchoolClass";
+import { User } from "./User";
 
 export interface Payment {
   id: string;
@@ -31,4 +32,5 @@ export interface Payment {
   fee_structure?: FeeStructure;
   school?: School;
   class?: SchoolClass;
+  user?: User;
 }

@@ -164,7 +164,8 @@ const breadcrumbs = [{title: 'Payments', href: '/payments'}];
                         <Table class="w-full">
                             <TableHeader class="bg-slate-100 dark:bg-slate-800">
                                 <TableRow>
-                                    <TableHead class="font-bold text-black dark:text-white">Name | Period</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Name | Phone</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Fee Name | Period</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Type | Frequency</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Class</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Amount | GST</TableHead>
@@ -175,6 +176,17 @@ const breadcrumbs = [{title: 'Payments', href: '/payments'}];
 
                             <TableBody v-if="props.payments?.data?.length > 0" class="bg-white dark:bg-slate-950">
                                 <TableRow v-for="payment in props.payments?.data" :key="payment.id">
+                                    <TableCell class="text-black dark:text-gray-200">
+                                        <div class="text-black dark:text-gray-200 leading-tight">
+                                            <div class="font-medium">{{ payment.user?.name }}</div>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                <!-- {{ payment.fee_structure?.month_name }} 
+                                                {{
+                                                payment.fee_structure?.month_name ? '|' : '' }}  -->
+                                                {{ payment.user?.phone ?? '' }}
+                                            </p>
+                                        </div>
+                                    </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
                                         <div class="text-black dark:text-gray-200 leading-tight">
                                             <div class="font-medium">{{ payment.fee_structure?.name }}</div>
