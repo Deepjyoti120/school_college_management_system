@@ -164,7 +164,7 @@ const breadcrumbs = [{title: 'Payments', href: '/payments'}];
                         <Table class="w-full">
                             <TableHeader class="bg-slate-100 dark:bg-slate-800">
                                 <TableRow>
-                                    <TableHead class="font-bold text-black dark:text-white">Name | Phone</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Name | Email | Phone</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Fee Name | Period</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Type | Frequency</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Class</TableHead>
@@ -180,9 +180,8 @@ const breadcrumbs = [{title: 'Payments', href: '/payments'}];
                                         <div class="text-black dark:text-gray-200 leading-tight">
                                             <div class="font-medium">{{ payment.user?.name }}</div>
                                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                <!-- {{ payment.fee_structure?.month_name }} 
-                                                {{
-                                                payment.fee_structure?.month_name ? '|' : '' }}  -->
+                                                {{ payment.user?.email }} |
+                                                <!-- {{ payment.fee_structure?.month_name ? '|' : '' }}  -->
                                                 {{ payment.user?.phone ?? '' }}
                                             </p>
                                         </div>
