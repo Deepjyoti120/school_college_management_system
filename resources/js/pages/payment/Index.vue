@@ -38,6 +38,9 @@ import { SelectOption } from '@/types/SelectOption';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
 import Switch from '@/components/ui/switch/Switch.vue';
 import { Payment } from '@/types/Payment';
+import Avatar from '@/components/ui/avatar/Avatar.vue';
+import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue';
+import { getInitials } from '@/composables/useInitials';
 
 
 interface Props {
@@ -95,15 +98,17 @@ const goToPage = (page: number) => {
 //     fee.is_active = val;
 //     router.put(route('fee.toggle', fee.id), { is_active: val });
 // };
-const breadcrumbs = [{title: 'Payments', href: '/payments'}];
+const breadcrumbs = [{ title: 'Payments', href: '/payments' }];
 </script>
 
 <template>
+
     <Head title="Payments" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6">
             <div class="flex justify-between">
-                <Heading title="Payments" description="View and manage your payments, and transaction history in one place." /> 
+                <Heading title="Payments"
+                    description="View and manage your payments, and transaction history in one place." />
             </div>
             <CardContent>
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
@@ -164,8 +169,10 @@ const breadcrumbs = [{title: 'Payments', href: '/payments'}];
                         <Table class="w-full">
                             <TableHeader class="bg-slate-100 dark:bg-slate-800">
                                 <TableRow>
-                                    <TableHead class="font-bold text-black dark:text-white">Name | Email | Phone</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Fee Name | Period</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Name | Email | Phone
+                                    </TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Fee Name | Period
+                                    </TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Type | Frequency</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Class</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Amount | GST</TableHead>
@@ -177,29 +184,39 @@ const breadcrumbs = [{title: 'Payments', href: '/payments'}];
                             <TableBody v-if="props.payments?.data?.length > 0" class="bg-white dark:bg-slate-950">
                                 <TableRow v-for="payment in props.payments?.data" :key="payment.id">
                                     <TableCell class="text-black dark:text-gray-200">
-                                        <div class="text-black dark:text-gray-200 leading-tight">
-                                            <div class="font-medium">{{ payment.user?.name }}</div>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ payment.user?.email }} |
-                                                <!-- {{ payment.fee_structure?.month_name ? '|' : '' }}  -->
-                                                {{ payment.user?.phone ?? '' }}
-                                            </p>
+                                        <div class="flex items-center gap-x-4">
+                                            <Avatar class="h-8 w-8 overflow-hidden rounded-lg bg-amber-300">
+                                                <AvatarFallback class="rounded-lg text-black dark:text-white">
+                                                    {{ getInitials(payment.user?.name) }}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div class="text-black dark:text-gray-200 leading-tight">
+                                                <div class="font-medium">{{ payment.user?.name }}</div>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {{ payment.user?.email }} |
+                                                    <!-- {{ payment.fee_structure?.month_name ? '|' : '' }}  -->
+                                                    {{ payment.user?.phone ?? '' }}
+                                                </p>
+                                            </div>
                                         </div>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
                                         <div class="text-black dark:text-gray-200 leading-tight">
                                             <div class="font-medium">{{ payment.fee_structure?.name }}</div>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ payment.fee_structure?.month_name }} {{
-                                                payment.fee_structure?.month_name ? '|' : '' }} {{ payment.year }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{
+                                                payment.fee_structure?.month_name }} {{
+                                                    payment.fee_structure?.month_name ? '|' : '' }} {{ payment.year }}</p>
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div class="text-black dark:text-gray-200 leading-tight grid gap-0.5">
-                                            <Badge :variant="payment.fee_structure?.type_color" :class="payment.fee_structure?.type_color">
+                                            <Badge :variant="payment.fee_structure?.type_color"
+                                                :class="payment.fee_structure?.type_color">
                                                 {{ payment.fee_structure?.type_label }}
                                             </Badge>
                                             <p>
-                                                <Badge :variant="payment.fee_structure?.frequency_color" :class="payment.fee_structure?.frequency_color">
+                                                <Badge :variant="payment.fee_structure?.frequency_color"
+                                                    :class="payment.fee_structure?.frequency_color">
                                                     {{ payment.fee_structure?.frequency_label }}
                                                 </Badge>
                                             </p>
@@ -247,7 +264,8 @@ const breadcrumbs = [{title: 'Payments', href: '/payments'}];
                         </PaginationItem>
                     </template>
                     <PaginationEllipsis v-if="props.payments?.last_page > 5" :index="4" />
-                    <PaginationNext v-if="props.payments?.next_page_url" @click="goToPage(props.payments?.current_page + 1)" />
+                    <PaginationNext v-if="props.payments?.next_page_url"
+                        @click="goToPage(props.payments?.current_page + 1)" />
                 </PaginationContent>
             </Pagination>
         </div>
