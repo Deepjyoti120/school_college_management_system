@@ -193,8 +193,11 @@ const breadcrumbs = [{ title: 'Payments', href: '/payments' }];
                                             <div class="text-black dark:text-gray-200 leading-tight">
                                                 <div class="font-medium">{{ payment.user?.name }}</div>
                                                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                    {{ payment.user?.email }} |
+                                                    {{ payment.user?.email }}
                                                     <!-- {{ payment.fee_structure?.month_name ? '|' : '' }}  -->
+                                                    <!-- {{ payment.user?.phone ?? '' }} -->
+                                                </p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">
                                                     {{ payment.user?.phone ?? '' }}
                                                 </p>
                                             </div>
