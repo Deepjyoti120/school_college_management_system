@@ -30,7 +30,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import Button from '@/components/ui/button/Button.vue';
-import { ArchiveX, LoaderCircle, LucideCheckCircle, LucideClock, LucideWallet, Pen, } from 'lucide-vue-next';
+import { ArchiveX, LoaderCircle, LucideCheckCircle, LucideClock, LucideEye, LucideWallet, Pen, } from 'lucide-vue-next';
 import Heading from '@/components/Heading.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import Badge from '@/components/ui/badge/Badge.vue';
@@ -38,6 +38,8 @@ import { SelectOption } from '@/types/SelectOption';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
 import { FeeStructure } from '@/types/FeeStructure';
 import Switch from '@/components/ui/switch/Switch.vue';
+import Sheet from '@/components/ui/sheet/Sheet.vue';
+import FeeDetails from './FeeDetails.vue';
 
 
 interface Props {
@@ -100,7 +102,15 @@ const goToPage = (page: number) => {
 //         },
 //     })
 // }
-
+const isSheetOpen = ref(false);
+const sheetCloseBtn = async () => {
+    isSheetOpen.value = false;
+}
+const feeStructure = ref<FeeStructure | null>(null);
+const takeAction = (feeS: FeeStructure) => {
+    feeStructure.value = feeS;
+    isSheetOpen.value = true;
+}
 const toggleActive = (val: boolean, fee: any) => {
     fee.is_active = val;
     router.put(route('fee.toggle', fee.id), { is_active: val });
@@ -122,6 +132,9 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                 </Button>
                 </Link>
             </div>
+            <Sheet v-model:open="isSheetOpen"> 
+                <FeeDetails :fee-structure="feeStructure!" :open="isSheetOpen" @close="sheetCloseBtn" />
+            </Sheet>
             <CardContent>
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
                     <div class="flex gap-4 w-full">
@@ -173,9 +186,11 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                                     <TableHead class="font-bold text-black dark:text-white">Class</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Amount | GST</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Total Amount</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Payable | Paid | Pending Amount
+                                    <TableHead class="font-bold text-black dark:text-white">Payable | Paid | Pending
+                                        Amount
                                     </TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Action</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Active</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">View</TableHead>
                                 </TableRow>
                             </TableHeader>
 
@@ -230,10 +245,23 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                                         </div>
 
                                     </TableCell>
-
                                     <TableCell>
                                         <Switch @update:modelValue="(val) => toggleActive(val, fee)"
                                             v-model="fee.is_active" />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div class="flex items-center gap-2 ">
+                                            <!-- <Link :href="route('user.profile', fee.id)"> -->
+                                            <!-- <Button size="sm" variant="outline" :tabindex="0" class="h-8 w-8">
+                                                <LucideEye :size="60" />
+                                            </Button> -->
+                                            <!-- </Link> -->
+
+                                            <Button  @click="takeAction(fee)"  size="sm" variant="outline"
+                                                :tabindex="0" class="h-8 w-8">
+                                                <LucideEye :size="60" />
+                                            </Button>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
