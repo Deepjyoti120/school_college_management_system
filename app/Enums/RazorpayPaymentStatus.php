@@ -32,12 +32,13 @@ enum RazorpayPaymentStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::PENDING  => 'secondary',
+            self::PENDING  => 'destructive',
             self::CAPTURED => 'success',
-            self::FAILED   => 'danger',
+            self::FAILED   => 'destructive',
             self::REFUNDED => 'warning',
-            self::AUTHORIZED => 'info',
-            self::PAID => 'success',
+            self::AUTHORIZED => 'primary',
+            self::PAID => 'default',    
+            default => 'default',
         };
     }
 

@@ -1,4 +1,5 @@
-import { UserRole } from "./enums";
+import { RazorpayPaymentStatus, UserRole } from "./enums";
+import { Payment } from "./Payment";
 import { School } from "./school";
 import { SchoolClass } from "./SchoolClass";
 import { SchoolSection } from "./SchoolSection";
@@ -27,5 +28,7 @@ export interface User {
   section?: SchoolSection | null; 
   dob_formatted?: string | null;
   doj_formatted?: string | null;
+  payment_status?: RazorpayPaymentStatus | null;
   roll_number?: string | null;
+  payment?: Payment | null;
 }

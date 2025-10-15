@@ -78,7 +78,7 @@ class FeeController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->through(function ($fee) {
-                $fee->total_payable = $fee->total_amount * $fee->user_count; // assuming FeeStructure has `amount` field
+                $fee->total_payable = $fee->total_amount * $fee->user_count; 
                 $fee->total_paid = $fee->total_paid ?? 0;
                 $fee->pending_amount = $fee->total_payable - $fee->total_paid;
                 return $fee;
@@ -327,20 +327,31 @@ class FeeController extends Controller
     }
     public function feeUsers(Request $request, FeeStructure $fee)
     {
-        $users = User::query()
+        $users = User::with(['payments' => function ($q) use ($fee) {
+            $q->where('fee_structure_id', $fee->id)
+                ->where('school_id', $fee->school_id)
+                ->where('academic_year_id', $fee->academic_year_id);
+        }])
+            ->where('users.school_id', $fee->school_id)
+            ->where('users.class_id', $fee->class_id)
+            ->whereIn('users.role', UserRole::allowedForUser(auth()->user()->role))
+            ->where('users.id', '!=', auth()->id())
+            ->when($request->role && $request->role !== 'all', fn($q) => $q->where('users.role', $request->role))
             ->when($request->search, function ($q) use ($request) {
                 $search = strtolower($request->search);
                 $q->where(function ($q) use ($search) {
-                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
-                        ->orWhereRaw('LOWER(email) LIKE ?', ["%{$search}%"]);
+                    $q->whereRaw('LOWER(users.name) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(users.email) LIKE ?', ["%{$search}%"]);
                 });
             })
-            ->where('id', '!=', auth()->id())
-            ->whereIn('role', UserRole::allowedForUser(auth()->user()->role))
-            ->when($request->role && $request->role !== 'all', fn($q) => $q->where('role', $request->role))
-            ->orderBy('created_at')
+            ->orderBy('users.created_at')
             ->paginate(10)
             ->withQueryString();
+        $users->getCollection()->transform(function ($user) {
+            $user->payment = $user->payments->first() ?? null;
+            unset($user->payments);
+            return $user;
+        });
         return ApiResponse::paginated($users, 'Users fetched successfully.');
     }
 }

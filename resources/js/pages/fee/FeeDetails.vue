@@ -5,7 +5,7 @@ import SheetTitle from '@/components/ui/sheet/SheetTitle.vue';
 import SheetDescription from '@/components/ui/sheet/SheetDescription.vue';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import { ref, watch } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -15,7 +15,7 @@ import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LoaderCircle, ArchiveX } from 'lucide-vue-next';
+import { LoaderCircle, ArchiveX, LucideEye, Pen } from 'lucide-vue-next';
 import { getInitials } from '@/composables/useInitials';
 import { User } from '@/types/User';
 import { SelectOption } from '@/types/SelectOption';
@@ -52,9 +52,9 @@ const loadUsers = async (page = 1) => {
             search: search.value || '',
         });
 
-        const res = await fetch(`${route('fee.users', props.feeStructure?.id)}?${query}`);
+        const res = await fetch(`${route('fee.users', props.feeStructure)}?${query}`);
         const data = await res.json();
-
+        console.log(data);
         users.value = data.data || [];
         totalPages.value = data.meta?.last_page || 1;
     } catch (err) {
@@ -75,15 +75,12 @@ const goToPage = async (p: number) => {
 <template>
     <SheetContent class="w-[100vw] sm:w-[100vw] md:w-[80vw] lg:max-w-[60vw]">
         <SheetHeader>
-            <SheetTitle>Fee Details</SheetTitle>
+            <SheetTitle>Fee Details of {{ props.feeStructure?.name }}</SheetTitle>
             <SheetDescription>Details of Student Payments and Dues</SheetDescription>
         </SheetHeader>
 
         <ScrollArea class="h-full overflow-auto">
             <div class="p-4 space-y-4">
-                <div class="text-lg font-semibold">{{ props.feeStructure?.name || 'Fee Structure' }}</div>
-
-                <!-- Search & Filter -->
                 <div class="flex flex-col md:flex-row gap-4 items-end">
                     <SearchInput v-model="search" placeholder="Search by name or email..." class="flex-1" />
                     <Select v-model="role">
@@ -107,16 +104,18 @@ const goToPage = async (p: number) => {
                 <div v-if="loading" class="flex justify-center py-10">
                     <LoaderCircle class="animate-spin w-6 h-6" />
                 </div>
+
                 <div v-else>
                     <Card class="shadow-none my-4 bg-slate-50 dark:bg-slate-900">
                         <Table class="w-full">
                             <TableHeader class="bg-slate-100 dark:bg-slate-800">
                                 <TableRow>
-                                    <TableHead class="font-bold text-black dark:text-white">Name | Email</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">DOB</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">DOJ</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Name | Email | Phone
+                                    </TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">DOB | DOJ</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Payment Status</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Total Amount</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Role</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Is Active</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -132,14 +131,27 @@ const goToPage = async (p: number) => {
                                             <div class="text-black dark:text-gray-200 leading-tight">
                                                 <div class="font-medium">{{ user.name }}</div>
                                                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.phone }}</p>
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
                                         {{ user.dob_formatted }}
+                                        <p>
+                                            {{ user.doj_formatted }}
+                                        </p>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
-                                        {{ user.doj_formatted }}
+                                        <Badge v-if="user?.payment" :variant="user?.payment?.status_color"
+                                            :class="user?.payment?.status_color">
+                                            {{ user?.payment?.status_label }}
+                                        </Badge>
+                                        <Badge v-else :variant="'destructive'">
+                                            Pending
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell class="text-black dark:text-gray-200">
+                                      {{user?.payment ? ' ₹ '+ user?.payment?.total_amount : '₹ ' + feeStructure?.total_amount }}
                                     </TableCell>
                                     <TableCell class="capitalize text-black dark:text-gray-200">
                                         <Badge :variant="user.role_color" :class="user.role_color">
@@ -147,24 +159,12 @@ const goToPage = async (p: number) => {
                                         </Badge>
                                     </TableCell>
                                     <TableCell class="capitalize text-black dark:text-gray-200">
-                                        <Switch :disabled="!props.canUserCreate" v-model="user.is_active"
-                                            @update:modelValue="(val) => toggleActive(val, user)" />
-                                    </TableCell>
-                                    <TableCell class="capitalize text-black dark:text-gray-200">
                                         <div class="flex gap-2">
-                                            <Link :href="route('user.create', user.id)">
-                                            <Button size="sm" variant="outline" class="h-8 w-8">
-                                                <Pen :size="60" />
-                                            </Button>
-                                            </Link>
-                                            <Link :href="route('user.profile', user.id)">
+                                            <Link :href="route('user.profile', user.id)" target="_blank">
                                             <Button size="sm" variant="outline" :tabindex="0" class="h-8 w-8">
                                                 <LucideEye :size="60" />
                                             </Button>
                                             </Link>
-                                            <!-- <Button v-if="user.role === ''"  @click="updateUser(user)" size="sm" variant="outline" :tabindex="0" class="h-8 w-8">
-                                                <LucideCircleArrowRight :size="60" />
-                                            </Button> -->
                                         </div>
                                     </TableCell>
                                 </TableRow>
