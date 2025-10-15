@@ -47,6 +47,7 @@ interface Props {
     filters: Record<string, any>,
     feeTypes: SelectOption[],
     academicYears: SelectOption[],
+   roles: SelectOption[],
 }
 const props = defineProps<Props>();
 const search = ref(props.filters?.search || '')
@@ -134,7 +135,7 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                 </Link>
             </div>
             <Sheet v-model:open="isSheetOpen">
-                <FeeDetails :fee-structure="feeStructure!" :open="isSheetOpen" @close="sheetCloseBtn" />
+                <FeeDetails :roles="roles" :fee-structure="feeStructure!" :open="isSheetOpen" @close="sheetCloseBtn" />
             </Sheet>
             <CardContent>
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">

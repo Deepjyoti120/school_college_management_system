@@ -7,6 +7,7 @@ use App\Enums\FrequencyType;
 use App\Enums\OrderStatus;
 use App\Enums\RazorpayPaymentStatus;
 use App\Enums\UserRole;
+use App\Helpers\ApiResponse;
 use App\Models\AcademicYear;
 use App\Models\FeeGenerate;
 use App\Models\FeeStructure;
@@ -90,6 +91,7 @@ class FeeController extends Controller
                 'feeType' => $request->feeType,
                 'academicYear' => (string) $request->academicYear,
             ],
+            'roles' => UserRole::optionsForUser(auth()->user()->role),
             'feeTypes' => FeeType::options(),
             'frequency' => FrequencyType::options(),
             'academicYears' => AcademicYear::where('school_id', $schoolId)
@@ -322,5 +324,23 @@ class FeeController extends Controller
             ]);
         });
         return back()->with('success', 'Successfully Saved.');
+    }
+    public function feeUsers(Request $request, FeeStructure $fee)
+    {
+        $users = User::query()
+            ->when($request->search, function ($q) use ($request) {
+                $search = strtolower($request->search);
+                $q->where(function ($q) use ($search) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(email) LIKE ?', ["%{$search}%"]);
+                });
+            })
+            ->where('id', '!=', auth()->id())
+            ->whereIn('role', UserRole::allowedForUser(auth()->user()->role))
+            ->when($request->role && $request->role !== 'all', fn($q) => $q->where('role', $request->role))
+            ->orderBy('created_at')
+            ->paginate(10)
+            ->withQueryString();
+        return ApiResponse::paginated($users, 'Users fetched successfully.');
     }
 }
