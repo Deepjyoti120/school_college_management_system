@@ -109,7 +109,7 @@ const goToPage = async (p: number) => {
                 </div>
                 <div v-else>
                     <Card class="shadow-none my-4 bg-slate-50 dark:bg-slate-900">
-                      <Table class="w-full">
+                        <Table class="w-full">
                             <TableHeader class="bg-slate-100 dark:bg-slate-800">
                                 <TableRow>
                                     <TableHead class="font-bold text-black dark:text-white">Name | Email</TableHead>
@@ -170,18 +170,18 @@ const goToPage = async (p: number) => {
                                 </TableRow>
                             </TableBody>
                         </Table>
-                            <div v-if="users.length === 0" class="flex flex-col items-center py-10 text-gray-500">
-                                <ArchiveX :size="40" />
-                                <p>No users found</p>
-                            </div>
-                            <div v-if="users.length > 0" class="flex justify-center mt-4 gap-2">
-                                <Button @click="goToPage(pageNum - 1)" :disabled="pageNum === 1">Previous</Button>
-                                <Button v-for="p in totalPages" :key="p"
-                                    :variant="p === pageNum ? 'default' : 'outline'" @click="goToPage(p)">
-                                    {{ p }}
-                                </Button>
-                                <Button @click="goToPage(pageNum + 1)" :disabled="pageNum === totalPages">Next</Button>
-                            </div> 
+                        <div v-if="users.length === 0" class="flex flex-col items-center py-10 text-gray-500">
+                            <ArchiveX :size="40" />
+                            <p>No users found</p>
+                        </div>
+                        <div v-if="users.length > 0" class="flex justify-center mt-4 gap-2">
+                            <Button @click="goToPage(pageNum - 1)" :disabled="pageNum === 1">Previous</Button>
+                            <Button v-for="p in totalPages" :key="p" :variant="p === pageNum ? 'default' : 'outline'"
+                                @click="goToPage(p)">
+                                {{ p }}
+                            </Button>
+                            <Button @click="goToPage(pageNum + 1)" :disabled="pageNum === totalPages">Next</Button>
+                        </div>
                     </Card>
                 </div>
             </div>
