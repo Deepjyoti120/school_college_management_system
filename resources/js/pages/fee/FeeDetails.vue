@@ -79,7 +79,7 @@ watch(
 </script>
 
 <template>
-    <SheetContent>
+   <SheetContent class="w-[100vw] sm:w-[100vw] md:w-[80vw] lg:max-w-[60vw]">
         <SheetHeader>
             <SheetTitle>Fee Details</SheetTitle>
             <!-- <SheetDescription>

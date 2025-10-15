@@ -102,11 +102,12 @@ const goToPage = (page: number) => {
 //         },
 //     })
 // }
+const feeStructure = ref<FeeStructure | null>(null);
 const isSheetOpen = ref(false);
 const sheetCloseBtn = async () => {
+    feeStructure.value = null;
     isSheetOpen.value = false;
 }
-const feeStructure = ref<FeeStructure | null>(null);
 const takeAction = (feeS: FeeStructure) => {
     feeStructure.value = feeS;
     isSheetOpen.value = true;
@@ -132,7 +133,7 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                 </Button>
                 </Link>
             </div>
-            <Sheet v-model:open="isSheetOpen"> 
+            <Sheet v-model:open="isSheetOpen">
                 <FeeDetails :fee-structure="feeStructure!" :open="isSheetOpen" @close="sheetCloseBtn" />
             </Sheet>
             <CardContent>
@@ -257,8 +258,8 @@ const breadcrumbs = [{ title: 'Fee Structure', href: '/fees/structure' }];
                                             </Button> -->
                                             <!-- </Link> -->
 
-                                            <Button  @click="takeAction(fee)"  size="sm" variant="outline"
-                                                :tabindex="0" class="h-8 w-8">
+                                            <Button @click="takeAction(fee)" size="sm" variant="outline" :tabindex="0"
+                                                class="h-8 w-8">
                                                 <LucideEye :size="60" />
                                             </Button>
                                         </div>
