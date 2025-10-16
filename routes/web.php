@@ -45,6 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('user/store', Users\Store::class)->name('user.store');
     Route::put('user/{user}/toggle', Users\ToggleStatusController::class)->name('user.toggle');
     Route::get('user/{user}/profile', Users\ProfileStatusController::class)->name('user.profile');
+    Route::get('user/{user}/payments', Users\UserPaymentController::class)->name('user.payments');
     // Category
     Route::get('categories', Category\Index::class)->name('categories.index');
     Route::post('category/create', Category\CreateController::class)->name('category.create');
@@ -53,7 +54,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Restaurents
     Route::get('restaurents', Restaurent\Index::class)->name('restaurents.index');
     // Route::post('restaurent/create', Restaurent\CreateController::class)->name('restaurent.create');
-
     // Products Start
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
     // Products End
