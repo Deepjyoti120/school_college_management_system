@@ -20,6 +20,7 @@ class UserPaymentController extends Controller
         // $request->academicYear = $request->academicYear ?? $defaultAcademicYear->id;
         // $request->paymentStatus = $request->paymentStatus ?? 'paid';
         $payments = Payment::query()->with(['feeStructure.class', 'user'])
+            ->where('user_id', $user->id)
             ->when($request->search, function ($q) use ($request) {
                 $search = strtolower($request->search);
                 $q->where(function ($query) use ($search) {
