@@ -139,8 +139,6 @@ const goToPage = async (p: number) => {
                 <Table class="w-full">
                     <TableHeader class="bg-slate-100 dark:bg-slate-800">
                         <TableRow>
-                            <TableHead class="font-bold text-black dark:text-white">Name | Email | Phone
-                            </TableHead>
                             <TableHead class="font-bold text-black dark:text-white">Fee Name | Period
                             </TableHead>
                             <TableHead class="font-bold text-black dark:text-white">Type | Frequency</TableHead>
@@ -152,26 +150,6 @@ const goToPage = async (p: number) => {
                     </TableHeader>
                     <TableBody v-if="(payments?.data ?? []).length > 0" class="bg-white dark:bg-slate-950">
                         <TableRow v-for="payment in payments?.data" :key="payment.id">
-                            <TableCell class="text-black dark:text-gray-200">
-                                <div class="flex items-center gap-x-4">
-                                    <Avatar class="h-8 w-8 overflow-hidden rounded-lg bg-amber-300">
-                                        <AvatarFallback class="rounded-lg text-black dark:text-white">
-                                            {{ getInitials(payment.user?.name) }}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div class="text-black dark:text-gray-200 leading-tight">
-                                        <div class="font-medium">{{ payment.user?.name }}</div>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            {{ payment.user?.email }}
-                                            <!-- {{ payment.fee_structure?.month_name ? '|' : '' }}  -->
-                                            <!-- {{ payment.user?.phone ?? '' }} -->
-                                        </p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            {{ payment.user?.phone ?? '' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </TableCell>
                             <TableCell class="text-black dark:text-gray-200">
                                 <div class="text-black dark:text-gray-200 leading-tight">
                                     <div class="font-medium">{{ payment.fee_structure?.name }}</div>
