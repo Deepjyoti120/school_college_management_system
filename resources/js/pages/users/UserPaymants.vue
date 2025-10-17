@@ -30,8 +30,9 @@ import { SelectOption } from '@/types/SelectOption';
 import { Payment } from '@/types/Payment';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
 import Button from '@/components/ui/button/Button.vue';
-import { ArchiveX, LoaderCircle } from 'lucide-vue-next';
+import { ArchiveX, LoaderCircle, LucideCheckCircle, LucideClock, LucideWallet } from 'lucide-vue-next';
 import Table from '@/components/ui/table/Table.vue';
+import { FeeStructure } from '@/types/FeeStructure';
 
 interface Props {
     user: User;
@@ -39,7 +40,7 @@ interface Props {
     paymentStatuses: SelectOption[],
     academicYears: SelectOption[],
 }
-const payments = ref<PaginatedResponse<Payment>>();
+const fees = ref<PaginatedResponse<FeeStructure>>();
 const loading = ref(false);
 const search = ref('');
 const feeType = ref('')
@@ -54,7 +55,7 @@ const loadPayments = async (page = 1) => {
     loading.value = true;
     try {
         const query = new URLSearchParams({
-            page: page.toString(), 
+            page: page.toString(),
             search: search.value || '',
             feeType: feeType.value || '',
             paymentStatus: paymentStatus.value || '',
@@ -63,7 +64,7 @@ const loadPayments = async (page = 1) => {
         const res = await fetch(`${route('user.payments', props.user)}?${query}`);
         const data = await res.json();
         console.log(data);
-        payments.value = data || null;
+        fees.value = data || null;
         // totalPages.value = data.meta?.last_page || 1;
     } catch (err) {
         console.error(err);
@@ -75,7 +76,7 @@ const onSearch = async () => {
     await loadPayments(1);
 };
 const goToPage = async (p: number) => {
-    if (p >= 1 && p <= (payments.value?.total ?? 0)) await loadPayments(p);
+    if (p >= 1 && p <= (fees.value?.total ?? 0)) await loadPayments(p);
 };
 </script>
 
@@ -139,61 +140,84 @@ const goToPage = async (p: number) => {
                 <Table class="w-full">
                     <TableHeader class="bg-slate-100 dark:bg-slate-800">
                         <TableRow>
-                            <TableHead class="font-bold text-black dark:text-white">Fee Name | Period
-                            </TableHead>
+                            <TableHead class="font-bold text-black dark:text-white">Name | Period</TableHead>
                             <TableHead class="font-bold text-black dark:text-white">Type | Frequency</TableHead>
                             <TableHead class="font-bold text-black dark:text-white">Class</TableHead>
                             <TableHead class="font-bold text-black dark:text-white">Amount | GST</TableHead>
                             <TableHead class="font-bold text-black dark:text-white">Total Amount</TableHead>
-                            <TableHead class="font-bold text-black dark:text-white">Status</TableHead>
+                            <TableHead class="font-bold text-black dark:text-white">Payable | Paid | Pending
+                                Amount
+                            </TableHead>
+                            <TableHead class="font-bold text-black dark:text-white">Active</TableHead>
+                            <TableHead class="font-bold text-black dark:text-white">View</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody v-if="(payments?.data ?? []).length > 0" class="bg-white dark:bg-slate-950">
-                        <TableRow v-for="payment in payments?.data" :key="payment.id">
+                    <TableBody v-if="(fees?.data?.length ?? 0) > 0" class="bg-white dark:bg-slate-950">
+                        <TableRow v-for="fee in fees?.data" :key="fee.id">
                             <TableCell class="text-black dark:text-gray-200">
                                 <div class="text-black dark:text-gray-200 leading-tight">
-                                    <div class="font-medium">{{ payment.fee_structure?.name }}</div>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{
-                                        payment.fee_structure?.month_name }} {{
-                                            payment.fee_structure?.month_name ? '|' : '' }} {{ payment.year }}</p>
+                                    <div class="font-medium">{{ fee.name }}</div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ fee.month_name }} {{
+                                        fee.month_name ? '|' : '' }} {{ fee.year }}</p>
                                 </div>
                             </TableCell>
                             <TableCell>
                                 <div class="text-black dark:text-gray-200 leading-tight grid gap-0.5">
-                                    <Badge :variant="payment.fee_structure?.type_color"
-                                        :class="payment.fee_structure?.type_color">
-                                        {{ payment.fee_structure?.type_label }}
+                                    <Badge :variant="fee.type_color" :class="fee.type_color">
+                                        {{ fee.type_label }}
                                     </Badge>
                                     <p>
-                                        <Badge :variant="payment.fee_structure?.frequency_color"
-                                            :class="payment.fee_structure?.frequency_color">
-                                            {{ payment.fee_structure?.frequency_label }}
+                                        <Badge :variant="fee.frequency_color" :class="fee.frequency_color">
+                                            {{ fee.frequency_label }}
                                         </Badge>
                                     </p>
                                 </div>
                             </TableCell>
                             <TableCell>
-                                {{ payment.fee_structure?.class.name }}
+                                {{ fee.class.name }}
                             </TableCell>
                             <TableCell class="text-black dark:text-gray-200">
-                                ₹{{ payment.amount }}
-                                <p> ₹{{ payment.gst_amount }}</p>
+                                ₹{{ fee.amount }}
+                                <p> ₹{{ fee.gst_amount }}</p>
                             </TableCell>
                             <TableCell class="text-black dark:text-gray-200">
-                                ₹{{ payment.total_amount }}
+                                ₹{{ fee.total_amount }}
+                            </TableCell>
+                            <TableCell class="flex items-center gap-4 text-black dark:text-gray-200">
+                                <div class="flex flex-col text-black dark:text-gray-200">
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-1">
+                                            <LucideWallet class="w-4 h-4 text-blue-500" />
+                                            <span>₹{{ fee.total_payable }}</span>
+                                        </div>
+                                        <span class="text-gray-400">|</span>
+                                        <div class="flex items-center gap-1">
+                                            <LucideCheckCircle class="w-4 h-4 text-green-500" />
+                                            <span>₹{{ fee.total_paid }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <LucideClock class="w-4 h-4 text-yellow-500" />
+                                        <span>Pending: ₹{{ fee.pending_amount }}</span>
+                                    </div>
+                                </div>
+
                             </TableCell>
                             <TableCell>
-                                <div class="text-black dark:text-gray-200 leading-tight grid gap-0.5">
-                                    <Badge :variant="payment.status_color" :class="payment.status_color">
-                                        {{ payment.status_label }}
-                                    </Badge>
+                                <!-- <Switch @update:modelValue="(val) => toggleActive(val, fee)" v-model="fee.is_active" /> -->
+                            </TableCell>
+                            <TableCell>
+                                <div class="flex items-center gap-2 "> 
+                                    <!-- <Button @click="takeAction(fee)" size="sm" variant="outline" :tabindex="0"
+                                        class="h-8 w-8">
+                                        <LucideEye :size="60" />
+                                    </Button> -->
                                 </div>
                             </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
-
-                <div v-if="payments?.data?.length === 0"
+                <div v-if="fees?.data?.length === 0"
                     class="flex flex-col items-center justify-center py-10 text-gray-500 dark:text-gray-400">
                     <ArchiveX :size="60" />
                     <p>No payments found</p>
@@ -201,18 +225,18 @@ const goToPage = async (p: number) => {
             </Card>
         </div>
     </CardContent>
-    <Pagination v-if="payments?.data?.length != 0" :items-per-page="payments?.per_page ?? 0" :total="payments?.total"
-        :default-page="payments?.current_page">
+    <Pagination v-if="fees?.data?.length != 0" :items-per-page="fees?.per_page ?? 0" :total="fees?.total"
+        :default-page="fees?.current_page">
         <PaginationContent v-slot="{ items }">
-            <PaginationPrevious v-if="payments?.prev_page_url" @click="goToPage(payments.current_page - 1)" />
+            <PaginationPrevious v-if="fees?.prev_page_url" @click="goToPage(fees.current_page - 1)" />
             <template v-for="(item, index) in items" :key="index">
                 <PaginationItem v-if="item.type === 'page'" :value="item.value"
-                    :is-active="item.value === payments?.current_page" @click="goToPage(item.value)">
+                    :is-active="item.value === fees?.current_page" @click="goToPage(item.value)">
                     {{ item.value }}
                 </PaginationItem>
             </template>
-            <PaginationEllipsis v-if="(payments?.last_page ?? 0) > 5" :index="4" />
-            <PaginationNext v-if="payments?.next_page_url" @click="goToPage(payments?.current_page + 1)" />
+            <PaginationEllipsis v-if="(fees?.last_page ?? 0) > 5" :index="4" />
+            <PaginationNext v-if="fees?.next_page_url" @click="goToPage(fees?.current_page + 1)" />
         </PaginationContent>
     </Pagination>
 </template>

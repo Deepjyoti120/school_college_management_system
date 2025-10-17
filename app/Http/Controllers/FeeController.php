@@ -49,20 +49,6 @@ class FeeController extends Controller
         $schoolId = auth()->user()->school_id;
         $defaultAcademicYear = AcademicYear::getOrCreateCurrentAcademicYear($schoolId);
         $request->academicYear = $request->academicYear ?? $defaultAcademicYear->id;
-        // dd($request->feeType);
-        // $fees = FeeStructure::query()->with(['school', 'class'])
-        //     ->when($request->search, function ($q) use ($request) {
-        //         $search = strtolower($request->search);
-        //         $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
-        //         // $q->whereHas('product', function ($query) use ($search) {
-        //         //     $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
-        //         // });
-        //     })
-        //     ->when($request->feeType && $request->feeType !== 'all', fn($q) => $q->where('type', $request->feeType))
-        //     ->when($request->academicYear, fn($q) => $q->where('academic_year_id', $request->academicYear))
-        //     ->orderBy('created_at', 'desc')
-        //     ->paginate(10)
-        //     ->withQueryString();
         $fees = FeeStructure::query()
             ->with(['school', 'class'])
             ->withCount(['users as user_count'])
