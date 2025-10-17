@@ -145,11 +145,8 @@ const goToPage = async (p: number) => {
                             <TableHead class="font-bold text-black dark:text-white">Class</TableHead>
                             <TableHead class="font-bold text-black dark:text-white">Amount | GST</TableHead>
                             <TableHead class="font-bold text-black dark:text-white">Total Amount</TableHead>
-                            <TableHead class="font-bold text-black dark:text-white">Payable | Paid | Pending
-                                Amount
+                            <TableHead class="font-bold text-black dark:text-white">Status
                             </TableHead>
-                            <TableHead class="font-bold text-black dark:text-white">Active</TableHead>
-                            <TableHead class="font-bold text-black dark:text-white">View</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody v-if="(fees?.data?.length ?? 0) > 0" class="bg-white dark:bg-slate-950">
@@ -184,35 +181,9 @@ const goToPage = async (p: number) => {
                                 ₹{{ fee.total_amount }}
                             </TableCell>
                             <TableCell class="flex items-center gap-4 text-black dark:text-gray-200">
-                                <div class="flex flex-col text-black dark:text-gray-200">
-                                    <div class="flex items-center gap-2">
-                                        <div class="flex items-center gap-1">
-                                            <LucideWallet class="w-4 h-4 text-blue-500" />
-                                            <span>₹{{ fee.total_payable }}</span>
-                                        </div>
-                                        <span class="text-gray-400">|</span>
-                                        <div class="flex items-center gap-1">
-                                            <LucideCheckCircle class="w-4 h-4 text-green-500" />
-                                            <span>₹{{ fee.total_paid }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-1 mt-1">
-                                        <LucideClock class="w-4 h-4 text-yellow-500" />
-                                        <span>Pending: ₹{{ fee.pending_amount }}</span>
-                                    </div>
-                                </div>
-
-                            </TableCell>
-                            <TableCell>
-                                <!-- <Switch @update:modelValue="(val) => toggleActive(val, fee)" v-model="fee.is_active" /> -->
-                            </TableCell>
-                            <TableCell>
-                                <div class="flex items-center gap-2 "> 
-                                    <!-- <Button @click="takeAction(fee)" size="sm" variant="outline" :tabindex="0"
-                                        class="h-8 w-8">
-                                        <LucideEye :size="60" />
-                                    </Button> -->
-                                </div>
+                                <Badge :variant="fee.payment_status_color" :class="fee.payment_status_color">
+                                    {{ fee.payment_status_label }}
+                                </Badge>
                             </TableCell>
                         </TableRow>
                     </TableBody>

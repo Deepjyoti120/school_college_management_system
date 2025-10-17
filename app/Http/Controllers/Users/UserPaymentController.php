@@ -48,10 +48,13 @@ class UserPaymentController extends Controller
             ->with(['school', 'class'])
             ->where('school_id', $user->school_id)
             ->where('class_id', $user->class_id)
-            ->withCount(['users as user_count'])
-            ->withSum(['payments as total_paid' => function ($q) {
-                $q->where('status', RazorpayPaymentStatus::PAID);
-            }], 'total_amount')
+            // ->withCount(['users as user_count'])
+            // ->withSum(['payments as total_paid' => function ($q) {
+            //     $q->where('status', RazorpayPaymentStatus::PAID);
+            // }], 'total_amount')
+            ->withExists(['payments as is_paid' => function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            }])
             ->when($request->search, function ($q) use ($request) {
                 $search = strtolower($request->search);
                 $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
@@ -60,12 +63,12 @@ class UserPaymentController extends Controller
             ->when($request->academicYear, fn($q) => $q->where('academic_year_id', $request->academicYear))
             ->orderBy('created_at', 'desc')
             ->paginate(10)
-            ->through(function ($fee) {
-                $fee->total_payable = $fee->total_amount * $fee->user_count;
-                $fee->total_paid = $fee->total_paid ?? 0;
-                $fee->pending_amount = $fee->total_payable - $fee->total_paid;
-                return $fee;
-            })
+            // ->through(function ($fee) {
+            //     $fee->total_payable = $fee->total_amount * $fee->user_count;
+            //     $fee->total_paid = $fee->total_paid ?? 0;
+            //     $fee->pending_amount = $fee->total_payable - $fee->total_paid;
+            //     return $fee;
+            // })
             ->withQueryString();
         return ApiResponse::paginated($fees, 'Users fetched successfully.');
     }

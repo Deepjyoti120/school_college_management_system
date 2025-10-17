@@ -20,6 +20,8 @@ export interface FeeStructure {
   frequency: string;
   frequency_label: string;
   frequency_color: string;
+  payment_status_color: string;
+  payment_status_label: string;
   description?: string | null;
   month_name?: string;
   class: SchoolClass;

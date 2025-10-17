@@ -45,6 +45,8 @@ class FeeStructure extends Model
         'type_color',
         'month_name',
         'payment_status',
+        'payment_status_label',
+        'payment_status_color',
     ];
 
     protected static function booted()
@@ -133,13 +135,22 @@ class FeeStructure extends Model
     }
 
     // Payment status accessor
-    public function getPaymentStatusAttribute(): string
+    public function getPaymentStatusAttribute(): RazorpayPaymentStatus
     {
         $user = auth()->user();
-        if (!$user) return RazorpayPaymentStatus::PENDING->value;
-
+        if (!$user) return RazorpayPaymentStatus::PENDING;
         $payment = $this->latestPaymentForUser($user->id);
-        return $payment?->status->value ?? RazorpayPaymentStatus::PENDING->value;
+        return $payment?->status ?? RazorpayPaymentStatus::PENDING;
+    }
+
+    public function getPaymentStatusLabelAttribute(): string
+    {
+        return $this->payment_status->label();
+    }
+
+    public function getPaymentStatusColorAttribute(): string
+    {
+        return $this->payment_status->color();
     }
 
     public function scopePendingForUser($query, $userId)
