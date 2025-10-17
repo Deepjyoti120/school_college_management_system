@@ -64,9 +64,10 @@ class UserPaymentController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             // ->through(function ($fee) {
-            //     $fee->total_payable = $fee->total_amount * $fee->user_count;
-            //     $fee->total_paid = $fee->total_paid ?? 0;
-            //     $fee->pending_amount = $fee->total_payable - $fee->total_paid;
+            //     // $fee->total_payable = $fee->total_amount * $fee->user_count;
+            //     // $fee->total_paid = $fee->total_paid ?? 0;
+            //     // $fee->pending_amount = $fee->total_payable - $fee->total_paid;
+            //     // $fee->status = $fee->is_paid;
             //     return $fee;
             // })
             ->withQueryString();

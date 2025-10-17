@@ -26,6 +26,7 @@ export interface FeeStructure {
   month_name?: string;
   class: SchoolClass;
   is_active: boolean;
+  is_paid: boolean;
   created_at: string;
   updated_at: string;
 }

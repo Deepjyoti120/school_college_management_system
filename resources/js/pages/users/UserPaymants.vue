@@ -181,8 +181,11 @@ const goToPage = async (p: number) => {
                                 ₹{{ fee.total_amount }}
                             </TableCell>
                             <TableCell class="flex items-center gap-4 text-black dark:text-gray-200">
-                                <Badge :variant="fee.payment_status_color" :class="fee.payment_status_color">
-                                    {{ fee.payment_status_label }}
+                                <Badge v-if="fee.is_paid" :variant="'outline'">
+                                    Paid
+                                </Badge>
+                                <Badge v-else :variant="'destructive'">
+                                    Pending
                                 </Badge>
                             </TableCell>
                         </TableRow>
