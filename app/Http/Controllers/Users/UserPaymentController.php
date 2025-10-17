@@ -71,7 +71,7 @@ class UserPaymentController extends Controller
                 }
             })
             ->withExists(['payments as is_paid' => function ($q) use ($user) {
-                $q->where('user_id', $user->id);
+                $q->where('user_id', $user->id)->where('status', RazorpayPaymentStatus::PAID->value);
             }])
             ->when($request->search, function ($q) use ($request) {
                 $search = strtolower($request->search);
