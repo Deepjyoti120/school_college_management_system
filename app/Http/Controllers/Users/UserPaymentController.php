@@ -52,6 +52,24 @@ class UserPaymentController extends Controller
             // ->withSum(['payments as total_paid' => function ($q) {
             //     $q->where('status', RazorpayPaymentStatus::PAID);
             // }], 'total_amount')
+            ->when($request->paymentStatus && $request->paymentStatus !== 'all', function ($q) use ($request, $user) {
+                if ($request->paymentStatus === 'paid') {
+                    $q->whereHas('payments', function ($sub) use ($user) {
+                        $sub->where('user_id', $user->id)
+                            ->where('status', 'paid');
+                    });
+                } elseif ($request->paymentStatus === 'pending') {
+                    $q->whereDoesntHave('payments', function ($sub) use ($user) {
+                        $sub->where('user_id', $user->id)
+                            ->where('status', 'paid');
+                    });
+                } else {
+                    $q->whereHas('payments', function ($sub) use ($user, $request) {
+                        $sub->where('user_id', $user->id)
+                            ->where('status', $request->paymentStatus);
+                    });
+                }
+            })
             ->withExists(['payments as is_paid' => function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             }])
