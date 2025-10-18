@@ -172,7 +172,7 @@ const breadcrumbs = [
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
-                                    <InputError :message="form.errors.role" />
+                                    <InputError :message="form.errors.board" />
                                 </div>
 
                                 <div class="grid gap-2 col-span-full md:col-span-1">
