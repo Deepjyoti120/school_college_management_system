@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Enums\BoardTypes;
 use App\Enums\UserRole;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
@@ -44,6 +45,7 @@ class Create extends Controller
 
         return Inertia::render('users/Create', [
             'roles' => self::getFilterRoles(),
+            'boards' =>BoardTypes::options(),
             'classes' => SchoolClass::where('school_id', $school_id)
                 ->get(['id', 'name'])
                 ->map(fn($c) => [
@@ -58,6 +60,7 @@ class Create extends Controller
                 'doj' => optional($user->doj)->format('Y-m-d'),
                 'phone' => $user->phone,
                 'role' => $user->role,
+                'board' => $user->board,
                 'class_id' => $user->class_id,
                 'section_id' => $user->section_id,
                 'roll_number' => $user->roll_number,

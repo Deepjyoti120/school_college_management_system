@@ -18,6 +18,7 @@ import { onMounted, ref, watch } from 'vue';
 
 interface Props {
     roles: SelectOption[],
+    boards: SelectOption[],
     classes: SelectOption[],
     user: Record<string, any> | null,
 }
@@ -32,6 +33,7 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     role: props.user?.role || '',
+    board: props.user?.board || '',
     class_id: props.user?.class_id || '',
     section_id: props.user?.section_id || '',
     phone: props.user?.phone || '',
@@ -149,6 +151,22 @@ const breadcrumbs = [
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectItem v-for="r in props.roles" :key="r.value" :value="r.value">
+                                                    {{ r.label }}
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError :message="form.errors.role" />
+                                </div>
+                                <div class="grid gap-2">
+                                    <Label for="board">Board</Label>
+                                    <Select v-model="form.board">
+                                        <SelectTrigger class="w-full">
+                                            <SelectValue placeholder="Board" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem v-for="r in props.boards" :key="r.value" :value="r.value">
                                                     {{ r.label }}
                                                 </SelectItem>
                                             </SelectGroup>

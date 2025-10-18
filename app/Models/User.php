@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\BoardTypes;
 use App\Enums\UserRole;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -42,6 +43,7 @@ class User extends Authenticatable implements JWTSubject
         'section_id',
         'school_id',
         'roll_number',
+        'board',
     ];
 
     /**
@@ -68,6 +70,7 @@ class User extends Authenticatable implements JWTSubject
             'doj' => 'date',
             'password' => 'hashed',
             'role' => UserRole::class,
+            'board' => BoardTypes::class,
             'device_info' => 'array',
         ];
     }
@@ -92,7 +95,15 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    protected $appends = ['role_label', 'role_color', 'profile_url', 'dob_formatted', 'doj_formatted'];
+    protected $appends = [
+        'role_label',
+        'role_color',
+        'board_label',
+        'board_color',
+        'profile_url',
+        'dob_formatted',
+        'doj_formatted',
+    ];
 
     public function getDobFormattedAttribute()
     {
@@ -111,6 +122,16 @@ class User extends Authenticatable implements JWTSubject
     public function getRoleColorAttribute(): string
     {
         return $this->role->color();
+    }
+
+    public function getBoardLabelAttribute(): ?string
+    {
+        return $this->board?->label();
+    }
+
+    public function getBoardColorAttribute(): ?string
+    {
+        return $this->board?->color();
     }
 
     public function getProfileUrlAttribute(): ?string

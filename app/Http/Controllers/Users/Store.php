@@ -17,6 +17,7 @@ class Store extends Controller
         $rules = [
             'name' => ['required', 'string'],
             'role' => ['required', 'string'],
+            'board' => ['nullable', 'string'],
             'dob' => ['required', 'date'],
             'doj' => ['required', 'date'],
             'email' => ['required', 'email', 'unique:users,email' . ($isEdit ? ',' . $userId : '')],

@@ -13,6 +13,7 @@ export interface User {
   doj: string;
   role: UserRole;
   phone: string | null;
+  board: string | null;
   latitude: number | null;
   longitude: number | null;
   profile_photo: string | null;
