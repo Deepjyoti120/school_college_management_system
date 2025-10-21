@@ -17,11 +17,18 @@ class Index extends Controller
     public function __invoke(Request $request)
     {
         $users = User::query()
+            // ->when($request->search, function ($q) use ($request) {
+            //     $search = strtolower($request->search);
+            //     $q->where(function ($q) use ($search) {
+            //         $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+            //             ->orWhereRaw('LOWER(email) LIKE ?', ["%{$search}%"]);
+            //     });
+            // })
             ->when($request->search, function ($q) use ($request) {
-                $search = strtolower($request->search);
+                $search = $request->search;
                 $q->where(function ($q) use ($search) {
-                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
-                        ->orWhereRaw('LOWER(email) LIKE ?', ["%{$search}%"]);
+                    $q->where('name', 'ILIKE', "%{$search}%")
+                        ->orWhere('email', 'ILIKE', "%{$search}%");
                 });
             })
             ->where('id', '!=', auth()->id())
