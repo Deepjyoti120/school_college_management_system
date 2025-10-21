@@ -16,6 +16,10 @@ class Index extends Controller
      */
     public function __invoke(Request $request)
     {
+        $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $users = User::query()
             // ->when($request->search, function ($q) use ($request) {
             //     $search = strtolower($request->search);
@@ -31,8 +35,8 @@ class Index extends Controller
                         ->orWhere('email', 'ILIKE', "%{$search}%");
                 });
             })
-            // ->where('id', '!=', auth()->id())
-            // ->whereIn('role', UserRole::allowedForUser(auth()->user()->role))
+            ->where('id', '!=', $user->id)
+            ->whereIn('role', UserRole::allowedForUser($user->role))
             ->when($request->role && $request->role !== 'all', fn($q) => $q->where('role', $request->role))
             ->orderBy('created_at')
             ->paginate(10)
@@ -41,8 +45,8 @@ class Index extends Controller
         return Inertia::render('users/Index', [
             'users' => $users,
             'filters' => $request->only(['search', 'role']),
-            'roles' => UserRole::optionsForUser(auth()->user()->role),
-            'canUserCreate' => UserRole::PRINCIPAL === auth()->user()->role,
+            'roles' => UserRole::optionsForUser($user->role),
+            'canUserCreate' => UserRole::PRINCIPAL === $user->role,
         ]);
     }
 }
