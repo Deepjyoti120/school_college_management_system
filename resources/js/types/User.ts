@@ -30,6 +30,7 @@ export interface User {
   dob_formatted?: string | null;
   doj_formatted?: string | null;
   payment_status?: RazorpayPaymentStatus | null;
-  roll_number?: string | null;
+  roll_number?: number | null;
+  discount_amount?: string | null;
   payment?: Payment | null;
 }

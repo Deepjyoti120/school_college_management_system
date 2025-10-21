@@ -5,9 +5,8 @@ import SheetTitle from '@/components/ui/sheet/SheetTitle.vue';
 import SheetDescription from '@/components/ui/sheet/SheetDescription.vue';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import { ref, watch } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import Card from '@/components/ui/card/Card.vue';
-import CardContent from '@/components/ui/card/CardContent.vue';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Badge from '@/components/ui/badge/Badge.vue';
 import Avatar from '@/components/ui/avatar/Avatar.vue';
@@ -15,7 +14,7 @@ import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LoaderCircle, ArchiveX, LucideEye, Pen } from 'lucide-vue-next';
+import { LoaderCircle, ArchiveX, LucideEye } from 'lucide-vue-next';
 import { getInitials } from '@/composables/useInitials';
 import { User } from '@/types/User';
 import { SelectOption } from '@/types/SelectOption';
@@ -114,7 +113,9 @@ const goToPage = async (p: number) => {
                                     </TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">DOB | DOJ</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Payment Status</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Total Amount</TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Total Amount | Discount
+                                    </TableHead>
+                                    <TableHead class="font-bold text-black dark:text-white">Payable Amount</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Role</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Action</TableHead>
                                 </TableRow>
@@ -151,7 +152,16 @@ const goToPage = async (p: number) => {
                                         </Badge>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
-                                      {{user?.payment ? ' ₹ '+ user?.payment?.total_amount : '₹ ' + feeStructure?.total_amount }}
+                                        {{ user?.payment ? ' ₹ ' + user?.payment?.total_amount : '₹ ' +
+                                            feeStructure?.total_amount }}
+                                        <p>
+                                            {{ user?.discount_amount ? ' ₹ -' + user?.discount_amount : '' }}
+                                        </p>
+                                    </TableCell>
+                                    <TableCell class="text-black dark:text-gray-200">
+                                        {{'₹ ' + (Number(user?.payment ? + user?.payment?.total_amount :
+                                            feeStructure?.total_amount) - Number(user?.discount_amount ?? 0))
+                                        }}
                                     </TableCell>
                                     <TableCell class="capitalize text-black dark:text-gray-200">
                                         <Badge :variant="user.role_color" :class="user.role_color">

@@ -64,7 +64,7 @@ class FeeController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->through(function ($fee) {
-                $fee->total_payable = $fee->total_amount * $fee->user_count; 
+                $fee->total_payable = $fee->total_amount * $fee->user_count;
                 $fee->total_paid = $fee->total_paid ?? 0;
                 $fee->pending_amount = $fee->total_payable - $fee->total_paid;
                 return $fee;
@@ -313,11 +313,17 @@ class FeeController extends Controller
     }
     public function feeUsers(Request $request, FeeStructure $fee)
     {
-        $users = User::with(['payments' => function ($q) use ($fee) {
-            $q->where('fee_structure_id', $fee->id)
-                ->where('school_id', $fee->school_id)
-                ->where('academic_year_id', $fee->academic_year_id);
-        }])
+        $users = User::with([
+            'payments' => function ($q) use ($fee) {
+                $q->where('fee_structure_id', $fee->id)
+                    ->where('school_id', $fee->school_id)
+                    ->where('academic_year_id', $fee->academic_year_id);
+            },
+            'discounts' => function ($q) use ($fee) {
+                $q->where('fee_structure_id', $fee->id)
+                    ->where('is_active', true);
+            }
+        ])
             ->where('users.school_id', $fee->school_id)
             ->where('users.class_id', $fee->class_id)
             ->whereIn('users.role', UserRole::allowedForUser(auth()->user()->role))
@@ -330,6 +336,10 @@ class FeeController extends Controller
                         ->orWhereRaw('LOWER(users.email) LIKE ?', ["%{$search}%"]);
                 });
             })
+            ->withSum(['discounts as discount_amount' => function ($q) use ($fee) {
+                $q->where('fee_structure_id', $fee->id)
+                    ->where('is_active', true);
+            }], 'amount')
             ->orderBy('users.created_at')
             ->paginate(10)
             ->withQueryString();
