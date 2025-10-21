@@ -45,7 +45,14 @@ class UserPaymentController extends Controller
         //     ->paginate(10)
         //     ->withQueryString();
         $fees = FeeStructure::query()
-            ->with(['school', 'class'])
+            ->with([
+                'school',
+                'class',
+                'discounts' => function ($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                        ->where('is_active', true);
+                }
+            ])
             ->where('school_id', $user->school_id)
             ->where('class_id', $user->class_id)
             // ->withCount(['users as user_count'])
@@ -79,6 +86,10 @@ class UserPaymentController extends Controller
             })
             ->when($request->feeType && $request->feeType !== 'all', fn($q) => $q->where('type', $request->feeType))
             ->when($request->academicYear, fn($q) => $q->where('academic_year_id', $request->academicYear))
+            ->withSum(['discounts as discount_amount' => function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->where('is_active', true);
+            }], 'amount')
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             // ->through(function ($fee) {

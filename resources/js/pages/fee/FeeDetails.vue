@@ -159,7 +159,7 @@ const goToPage = async (p: number) => {
                                         </p>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
-                                        {{'₹ ' + (Number(user?.payment ? + user?.payment?.total_amount :
+                                        {{'₹' + (Number(user?.payment ? + user?.payment?.total_amount :
                                             feeStructure?.total_amount) - Number(user?.discount_amount ?? 0))
                                         }}
                                     </TableCell>

@@ -165,4 +165,8 @@ class FeeStructure extends Model
         return $this->hasMany(User::class, 'class_id', 'class_id')
             ->whereColumn('users.school_id', 'fee_structures.school_id');
     }
+    public function discounts()
+    {
+        return $this->hasMany(Discount::class);
+    }
 }
