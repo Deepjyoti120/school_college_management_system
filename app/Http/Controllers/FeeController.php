@@ -9,6 +9,7 @@ use App\Enums\RazorpayPaymentStatus;
 use App\Enums\UserRole;
 use App\Helpers\ApiResponse;
 use App\Models\AcademicYear;
+use App\Models\Discount;
 use App\Models\FeeGenerate;
 use App\Models\FeeStructure;
 use App\Models\Order;
@@ -379,6 +380,10 @@ class FeeController extends Controller
             ->where('fee_structure_id', $fee->id)
             ->where('is_active', true)
             ->first();
+        if (!$discount) {
+            $discount = new Discount();
+            $discount->amount = 0;
+        }
         return ApiResponse::success($discount, 'Custom amount fetched successfully.');
     }
 }
