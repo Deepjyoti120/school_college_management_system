@@ -19,6 +19,7 @@ class Discount extends Model
     
     protected $casts = [
         'is_active' => 'boolean',
+        'amount' => 'decimal:2',
     ];
 
     public function user()

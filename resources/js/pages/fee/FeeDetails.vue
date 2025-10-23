@@ -14,11 +14,13 @@ import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LoaderCircle, ArchiveX, LucideEye } from 'lucide-vue-next';
+import { LoaderCircle, ArchiveX, LucideEye, CirclePercent } from 'lucide-vue-next';
 import { getInitials } from '@/composables/useInitials';
 import { User } from '@/types/User';
 import { SelectOption } from '@/types/SelectOption';
 import { FeeStructure } from '@/types/FeeStructure';
+import CustomDiscount from './CustomDiscount.vue';
+import Sheet from '@/components/ui/sheet/Sheet.vue';
 const emit = defineEmits(['close']);
 const props = defineProps<{
     open: boolean;
@@ -69,6 +71,19 @@ const onSearch = async () => {
 const goToPage = async (p: number) => {
     if (p >= 1 && p <= totalPages.value) await loadUsers(p);
 };
+//  open custom discount sheet
+// const feeStructureForDiscount = ref<FeeStructure | null>(null);
+const user = ref<User | null>(null);
+const isSheetOpen = ref(false);
+const sheetCloseBtn = async () => {
+    user.value = null;
+    isSheetOpen.value = false;
+    loadUsers();
+}
+const takeAction = (userData: User) => {
+    user.value = userData;
+    isSheetOpen.value = true;
+}
 </script>
 
 <template>
@@ -77,7 +92,6 @@ const goToPage = async (p: number) => {
             <SheetTitle>Fee Details of {{ props.feeStructure?.name }}</SheetTitle>
             <SheetDescription>Details of Student Payments and Dues</SheetDescription>
         </SheetHeader>
-
         <ScrollArea class="h-full overflow-auto">
             <div class="p-4 space-y-4">
                 <div class="flex flex-col md:flex-row gap-4 items-end">
@@ -159,7 +173,7 @@ const goToPage = async (p: number) => {
                                         </p>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
-                                        {{'₹' + (Number(user?.payment ? + user?.payment?.total_amount :
+                                        {{ '₹' + (Number(user?.payment ? + user?.payment?.total_amount :
                                             feeStructure?.total_amount) - Number(user?.discount_amount ?? 0))
                                         }}
                                     </TableCell>
@@ -175,6 +189,10 @@ const goToPage = async (p: number) => {
                                                 <LucideEye :size="60" />
                                             </Button>
                                             </Link>
+                                            <Button @click="takeAction(user!)" size="sm"
+                                                variant="outline" :tabindex="0" class="h-8 w-8">
+                                                <CirclePercent :size="60" />
+                                            </Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -197,4 +215,8 @@ const goToPage = async (p: number) => {
             </div>
         </ScrollArea>
     </SheetContent>
+
+    <Sheet v-model:open="isSheetOpen">
+        <CustomDiscount :user="user" :fee-structure="feeStructure" :open="isSheetOpen" @close="sheetCloseBtn" />
+    </Sheet>
 </template>

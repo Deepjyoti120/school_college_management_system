@@ -350,4 +350,35 @@ class FeeController extends Controller
         });
         return ApiResponse::paginated($users, 'Users fetched successfully.');
     }
+
+    public function customAmount(Request $request, FeeStructure $fee, User $user)
+    {
+        $validated = $request->validate([
+            'amount' => ['required', 'numeric', 'min:0']
+        ]);
+        // DB::transaction(function () use ($validated, $fee, $user) {
+        if ($validated['amount'] == 0) {
+            $user->discounts()->where('fee_structure_id', $fee->id)->delete();
+            return;
+        } else {
+            $user->discounts()->updateOrCreate(
+                [
+                    'fee_structure_id' => $fee->id,
+                ],
+                [
+                    'amount' => $validated['amount']
+                ]
+            );
+        }
+        // });
+        return back()->with('success', 'Successfully Saved.');
+    }
+    public function getCustomAmount(Request $request, FeeStructure $fee, User $user)
+    {
+        $discount = $user->discounts()
+            ->where('fee_structure_id', $fee->id)
+            ->where('is_active', true)
+            ->first();
+        return ApiResponse::success($discount, 'Custom amount fetched successfully.');
+    }
 }
