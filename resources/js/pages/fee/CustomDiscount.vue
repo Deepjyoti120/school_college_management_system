@@ -108,7 +108,7 @@ const actionBtnPressed = () => {
                 </Card>
                 <Card>
                     <CardContent class="p-4 space-y-2">
-                        <h3 class="font-semibold text-base text-gray-900">Fee Details</h3>
+                        <h3 class="font-semibold text-base">Fee Details</h3>
                         <div class="text-sm grid grid-cols-2 gap-x-4 gap-y-1">
                             <p><span class="font-medium ">Fee Name:</span> {{ props.feeStructure?.name }}
                             </p>
