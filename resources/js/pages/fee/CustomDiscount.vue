@@ -129,7 +129,7 @@ const actionBtnPressed = () => {
                         <div class="grid gap-2">
                             <Label for="amount">Discount Amount</Label>
                             <Input id="amount" ref="currentNameInput" v-bind="$attrs" v-model="form.amount" type="text"
-                                class="mt-1 block w-full" placeholder="Driver name" />
+                                class="mt-1 block w-full" placeholder="amount" />
                             <InputError :message="form.errors.amount" />
                         </div>
                     </div>
