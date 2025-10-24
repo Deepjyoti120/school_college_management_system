@@ -215,7 +215,6 @@ const takeAction = (userData: User) => {
             </div>
         </ScrollArea>
     </SheetContent>
-
     <Sheet v-model:open="isSheetOpen">
         <CustomDiscount :user="user" :fee-structure="feeStructure" :open="isSheetOpen" @close="sheetCloseBtn" />
     </Sheet>

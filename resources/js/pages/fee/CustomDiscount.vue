@@ -15,6 +15,8 @@ import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
 import { nextTick, ref, watch } from 'vue';
 import { Discount } from '@/types/Discount';
+import Card from '@/components/ui/card/Card.vue';
+import CardContent from '@/components/ui/card/CardContent.vue';
 
 const currentNameInput = ref<HTMLInputElement | null>(null);
 const emit = defineEmits(['close']);
@@ -92,6 +94,36 @@ const actionBtnPressed = () => {
         </SheetHeader>
         <ScrollArea class="h-full overflow-auto">
             <div class="p-4 space-y-4">
+                <Card>
+                    <CardContent class="p-4 space-y-2">
+                        <h3 class="font-semibold text-base text-gray-900">Student Details</h3>
+                        <div class="text-sm text-gray-600 grid grid-cols-2 gap-x-4 gap-y-1">
+                            <p><span class="font-medium text-gray-800">Name:</span> {{ props.user?.name }}</p>
+                            <p><span class="font-medium text-gray-800">Class:</span> {{ props.user?.class?.name }}</p>
+                            <p><span class="font-medium text-gray-800">Section:</span> {{ props.user?.section?.name }}
+                            </p>
+                            <p><span class="font-medium text-gray-800">Roll No:</span> {{ props.user?.roll_number }}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent class="p-4 space-y-2">
+                        <h3 class="font-semibold text-base text-gray-900">Fee Details</h3>
+                        <div class="text-sm text-gray-600 grid grid-cols-2 gap-x-4 gap-y-1">
+                            <p><span class="font-medium text-gray-800">Fee Name:</span> {{ props.feeStructure?.name }}
+                            </p>
+                            <p><span class="font-medium text-gray-800">Month:</span> {{ props.feeStructure?.month_name
+                                }}</p>
+                            <p><span class="font-medium text-gray-800">Total:</span>
+                                {{ user?.payment ? ' ₹ ' + user?.payment?.total_amount : '₹ ' +
+                                    feeStructure?.total_amount }} </p>
+                            <p><span class="font-medium text-gray-800">Pending:</span>
+                                {{ '₹' + (Number(user?.payment ? + user?.payment?.total_amount :
+                                    feeStructure?.total_amount) - Number(user?.discount_amount ?? 0))
+                                }}</p>
+                        </div>
+                    </CardContent>
+                </Card>
                 <form @submit.prevent class="space-y-6 mt-8">
                     <div class="grid gap-2">
                         <div class="grid gap-2">
