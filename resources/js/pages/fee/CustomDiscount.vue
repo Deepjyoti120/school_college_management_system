@@ -98,11 +98,11 @@ const actionBtnPressed = () => {
                     <CardContent class="p-4 space-y-2">
                         <h3 class="font-semibold text-base text-gray-900">Student Details</h3>
                         <div class="text-sm text-gray-600 grid grid-cols-2 gap-x-4 gap-y-1">
-                            <p><span class="font-medium text-gray-800">Name:</span> {{ props.user?.name }}</p>
-                            <p><span class="font-medium text-gray-800">Class:</span> {{ props.user?.class?.name }}</p>
-                            <p><span class="font-medium text-gray-800">Section:</span> {{ props.user?.section?.name }}
+                            <p><span class="font-medium ">Name:</span> {{ props.user?.name }}</p>
+                            <p><span class="font-medium ">Class:</span> {{ props.user?.class?.name }}</p>
+                            <p><span class="font-medium ">Section:</span> {{ props.user?.section?.name }}
                             </p>
-                            <p><span class="font-medium text-gray-800">Roll No:</span> {{ props.user?.roll_number }}</p>
+                            <p><span class="font-medium ">Roll No:</span> {{ props.user?.roll_number }}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -110,14 +110,14 @@ const actionBtnPressed = () => {
                     <CardContent class="p-4 space-y-2">
                         <h3 class="font-semibold text-base text-gray-900">Fee Details</h3>
                         <div class="text-sm text-gray-600 grid grid-cols-2 gap-x-4 gap-y-1">
-                            <p><span class="font-medium text-gray-800">Fee Name:</span> {{ props.feeStructure?.name }}
+                            <p><span class="font-medium ">Fee Name:</span> {{ props.feeStructure?.name }}
                             </p>
-                            <p><span class="font-medium text-gray-800">Month:</span> {{ props.feeStructure?.month_name
+                            <p><span class="font-medium ">Month:</span> {{ props.feeStructure?.month_name
                                 }}</p>
-                            <p><span class="font-medium text-gray-800">Total:</span>
+                            <p><span class="font-medium ">Total:</span>
                                 {{ user?.payment ? ' ₹ ' + user?.payment?.total_amount : '₹ ' +
                                     feeStructure?.total_amount }} </p>
-                            <p><span class="font-medium text-gray-800">Pending:</span>
+                            <p><span class="font-medium ">Pending:</span>
                                 {{ '₹' + (Number(user?.payment ? + user?.payment?.total_amount :
                                     feeStructure?.total_amount) - Number(user?.discount_amount ?? 0))
                                 }}</p>
