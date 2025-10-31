@@ -1,11 +1,10 @@
 Copyright (c) 2025 Deepjyoti Baishya. All rights reserved.
 
-Product: SCMS - School College Management System
+Product: SFMS Pro – School & College Fees Payment and Management System
 
-No license is granted to any party under any intellectual property rights (including copyright, trademark, patent, trade secret, or any other proprietary rights) in or to SCMS - School College Management System. You may not copy, reproduce, distribute, modify, transmit, display, perform, publish, create derivative works from, or in any other way exploit SCMS - School College Management System in whole or in part without the prior express written permission of Deepjyoti Baishya.
+This product is the intellectual property of Deepjyoti Baishya.
+It is distributed and licensed exclusively through Envato Market (CodeCanyon) under the Envato Standard Licenses.
 
-Unauthorized use, reproduction, or distribution of this software or any portion of it may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law.
+Unauthorized redistribution, resale, or sharing of this item outside the Envato Market is strictly prohibited.
 
-Requests for permission or licensing terms should be sent to: deepjyoti.baishya@example.com
-
-THIS SOFTWARE/PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL DEEPJYOTI BAISHYA BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE/PRODUCT.
+For support or licensing inquiries, contact: deepjyoti120281@gmail.com
