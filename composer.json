@@ -8,6 +8,17 @@
         "framework"
     ],
     "license": "Proprietary",
+    "authors": [
+        {
+            "name": "Deepjyoti Baishya",
+            "email": "deepjyoti120281@gmail.com",
+            "homepage": "https://codecanyon.net/user/[your-username]",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "deepjyoti120281@gmail.com"
+    },
     "require": {
         "php": "^8.2",
         "inertiajs/inertia-laravel": "^2.0",
