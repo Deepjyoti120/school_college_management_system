@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/vue3';
-import bg from '@/assets/img/bg.jpg'
+import bg from '@/assets/img/bg.png'
 defineProps<{
     status?: string;
     canResetPassword: boolean;
@@ -86,9 +86,10 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
                 </div>
             </div>
         </div>
-        <div class="relative hidden bg-muted lg:block">
+        <div class="relative hidden lg:block">
             <img :src="bg" alt="Image"
-                class="absolute h-full w-full object-fill dark:brightness-[0.2] dark:grayscale">
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover w-full h-full dark:brightness-[0.2] dark:grayscale">
         </div>
+
     </div>
 </template>
