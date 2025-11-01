@@ -86,10 +86,14 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
                 </div>
             </div>
         </div>
-        <div class="relative hidden lg:block">
-            <img :src="bg" alt="Image"
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover w-full h-full dark:brightness-[0.2] dark:grayscale">
-        </div>
+       <div class="relative hidden lg:block">
+  <img 
+    :src="bg" 
+    alt="Image"
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/7 max-w-[600px] object-cover"
+  >
+</div>
+
 
     </div>
 </template>
