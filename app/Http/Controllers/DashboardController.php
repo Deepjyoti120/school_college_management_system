@@ -39,20 +39,23 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $schoolId = $user->school_id;
-
+        $totalStudent = User::where('school_id', $schoolId)
+            ->where('role', 'student')
+            ->count();
+        $totalFeeStructures = FeeStructure::where('school_id', $schoolId)->count();
+        $totalPayments = Payment::where('school_id', $schoolId)->count();
+        $pendingPayments = Payment::where('school_id', $schoolId)
+                ->where('status', RazorpayPaymentStatus::PENDING)
+                ->count();
         return [
             // total students in the same school
-            'totalStudents' => User::where('school_id', $schoolId)
-                ->where('role', 'student')
-                ->count(),
+            'totalStudents' => $totalStudent,
 
-            'totalFeeStructures' => FeeStructure::where('school_id', $schoolId)->count(),
+            'totalFeeStructures' => $totalFeeStructures,
 
-            'totalPayments' => Payment::where('school_id', $schoolId)->count(),
+            'totalPayments' => $totalPayments,
 
-            'pendingPayments' => Payment::where('school_id', $schoolId)
-                ->where('status', RazorpayPaymentStatus::PENDING)
-                ->count(),
+            'pendingPayments' => ($totalFeeStructures * $totalStudent) - $totalPayments,
 
             'successfulPayments' => Payment::where('school_id', $schoolId)
                 ->whereIn('status', [RazorpayPaymentStatus::PAID, RazorpayPaymentStatus::CAPTURED])
