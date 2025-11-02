@@ -139,14 +139,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </Card>
                     <Card class="shadow-none">
                         <CardHeader>
-                            <CardTitle>Revenue by Month</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <LineChart :data="charts?.revenueByMonth" />
-                        </CardContent>
-                    </Card>
-                    <Card class="shadow-none">
-                        <CardHeader>
                             <CardTitle>Fee Collection by Class</CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -154,6 +146,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 item: item.class,
                                 quantity: item.amount
                             }))" color="#3b82f6" />
+                        </CardContent>
+                    </Card>
+                    <Card class="shadow-none">
+                        <CardHeader>
+                            <CardTitle>Revenue by Month</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <LineChart :data="charts?.revenueByMonth" />
                         </CardContent>
                     </Card>
                     <Card class="shadow-none">

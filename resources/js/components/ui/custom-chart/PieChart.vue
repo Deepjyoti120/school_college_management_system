@@ -19,7 +19,8 @@ const chartData = computed(() => {
     primary: '#3b82f6',
     success: '#10b981',
     destructive: '#ef4444',
-    secondary: '#64748b'
+    secondary: '#64748b',
+    warning: '#ef4444'
   }
 
   return {

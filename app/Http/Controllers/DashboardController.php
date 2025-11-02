@@ -45,8 +45,8 @@ class DashboardController extends Controller
         $totalFeeStructures = FeeStructure::where('school_id', $schoolId)->count();
         $totalPayments = Payment::where('school_id', $schoolId)->count();
         $pendingPayments = Payment::where('school_id', $schoolId)
-                ->where('status', RazorpayPaymentStatus::PENDING)
-                ->count();
+            ->where('status', RazorpayPaymentStatus::PENDING)
+            ->count();
         return [
             // total students in the same school
             'totalStudents' => $totalStudent,
@@ -127,18 +127,45 @@ class DashboardController extends Controller
 
     protected function getPaymentStatusDistribution()
     {
-        return Payment::select('status', DB::raw('count(*) as count'))
-            ->where('school_id', auth()->user()->school_id)
+        $user = auth()->user();
+        $schoolId = $user->school_id;
+
+        $totalStudents = User::where('school_id', $schoolId)
+            ->where('role', 'student')
+            ->count();
+
+        $totalFeeStructures = FeeStructure::where('school_id', $schoolId)->count();
+
+        $paymentStatusData = Payment::select('status', DB::raw('COUNT(*) as count'))
+            ->where('school_id', $schoolId)
             ->groupBy('status')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'label' => $item->status->name,
-                    'value' => $item->count,
-                    'color' => $item->status_color,
-                ];
-            });
+            ->get();
+
+        $totalPaidPayments = Payment::where('school_id', $schoolId)
+            ->where('status', RazorpayPaymentStatus::PAID)
+            ->count();
+
+        $pendingPayments = ($totalFeeStructures * $totalStudents) - $totalPaidPayments;
+        if ($pendingPayments < 0) {
+            $pendingPayments = 0; 
+        }
+
+        $statusDistribution = $paymentStatusData->map(function ($item) {
+            return [
+                'label' => $item->status->name,
+                'value' => $item->count,
+                'color' => $item->status_color,
+            ];
+        });
+        $statusDistribution->push([
+            'label' => 'Pending',
+            'value' => $pendingPayments,
+            'color' => 'warning',
+        ]);
+
+        return $statusDistribution;
     }
+
 
     protected function getRevenueByMonth()
     {
