@@ -3,7 +3,7 @@ import { BarChart } from 'vue-chart-3'
 import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, BarController } from 'chart.js'
 import { computed } from 'vue'
 
-Chart.register(BarElement, CategoryScale, LinearScale, Tooltip , BarController)
+Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, BarController)
 
 const props = defineProps({
   data: {
@@ -14,17 +14,17 @@ const props = defineProps({
   color: {
     type: String,
     default: '#3b82f6'
-  }
+  },
 })
 
 const chartData = computed(() => ({
   labels: props.data.map(item => item.item),
   datasets: [{
-    label: 'Quantity',
+    label:props.data.map(item => item.item),
     data: props.data.map(item => item.quantity),
     backgroundColor: props.color,
     borderRadius: 4,
-    barThickness: 20,  
+    barThickness: 20,
   }]
 }))
 

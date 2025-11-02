@@ -16,7 +16,7 @@ const props = defineProps({
 const chartData = computed(() => ({
   labels: props.data.map(item => item.date),
   datasets: [{
-    label: 'Orders',
+    label: props.data.map(item => item.date || ''),
     data: props.data.map(item => item.count),
     borderColor: '#3b82f6',
     backgroundColor: 'rgba(59, 130, 246, 0.1)',
