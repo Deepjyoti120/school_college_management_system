@@ -22,7 +22,7 @@ export interface FeeStructure {
   frequency_color: string;
   payment_status_color: string;
   payment_status_label: string;
-  description?: string | null;
+  description?: string;
   month_name?: string;
   class: SchoolClass;
   is_active: boolean;

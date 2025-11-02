@@ -7,6 +7,7 @@ use App\Http\Controllers\Users;
 use App\Http\Controllers\Category;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeeController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
@@ -65,7 +66,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('order/action/{order}/reject', [OrderController::class, 'reject'])->name('order.action.reject');
     // Order End
     // Fee Generation Start
-    Route::get('fees', [FeeController::class, 'index'])->name('fees.index');
+    // Route::get('fees', [FeeController::class, 'Index'])->name('fees.index');
     Route::get('/fees/structure', [FeeController::class, 'feeStructure'])->name('fees.structure');
     Route::get('fees/structure/create', [FeeController::class, 'feeCreate'])->name('fees.create');
     Route::post('fees/structure/fee-store', [FeeController::class, 'feeStore'])->name('fee.store');
@@ -75,8 +76,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('fees/{fee}/{user}/custom-amount', [FeeController::class, 'customAmount'])->name('fees.custom.amount');
     Route::get('fees/{fee}/{user}/get-custom-amount', [FeeController::class, 'getCustomAmount'])->name('fees.get.custom.amount');
     // payments
-    Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('payments', [PaymentController::class, 'Index'])->name('payments.index');
     // Fee Generation End
+    // Holiday start
+    Route::get('holidays', [HolidayController::class, 'Index'])->name('holidays.index');
+    // Route::post('holiday/create', Holiday\CreateController::class)->name('holiday.create');
+    // Route::post('holiday/{holiday}/update', Holiday\UpdateController::class)->name('holiday.update');
+    // Route::put('holiday/{holiday}/toggle', Holiday\ToggleStatusController::class)->name('holiday.toggle');
+    // Holiday end
 });
 
 require __DIR__ . '/settings.php';
