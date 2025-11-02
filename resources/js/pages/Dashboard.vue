@@ -151,7 +151,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </CardHeader>
                         <CardContent>
                             <BarChart :data="charts?.feeCollectionByClass.map(item => ({
-                                product: item.class,
+                                item: item.class,
                                 quantity: item.amount
                             }))" color="#3b82f6" />
                         </CardContent>

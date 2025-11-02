@@ -18,9 +18,9 @@ const props = defineProps({
 })
 
 const chartData = computed(() => ({
-  labels: props.data.map(item => item.product),
+  labels: props.data.map(item => item.item),
   datasets: [{
-    label: 'Quantity Sold',
+    label: 'Quantity',
     data: props.data.map(item => item.quantity),
     backgroundColor: props.color,
     borderRadius: 4,
