@@ -88,6 +88,6 @@ class HolidayController extends Controller
         }
         $holiday->is_active = $validated['is_active'];
         $holiday->save();
-        return back()->with('success', 'User status updated successfully.');
+        return back()->with('success', 'Status updated successfully.');
     }
 }
