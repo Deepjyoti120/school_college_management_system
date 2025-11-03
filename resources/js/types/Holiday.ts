@@ -9,6 +9,7 @@ export interface Holiday {
     academic_year_id: string;
     date: string;
     description?: string | null;
+    date_formatted?: string | null;
     name?: string;
     is_sunday: boolean;
     is_active: boolean;

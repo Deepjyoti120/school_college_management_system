@@ -27,10 +27,12 @@ import Heading from '@/components/Heading.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
 import { Holiday } from '@/types/Holiday';
+import Switch from '@/components/ui/switch/Switch.vue';
 
 interface Props {
     holidays: PaginatedResponse<Holiday>,
     filters: Record<string, any>,
+    canCreate: boolean
 }
 const props = defineProps<Props>();
 const search = ref(props.filters?.search || '')
@@ -66,14 +68,18 @@ const goToPage = (page: number) => {
         onFinish: () => loading.value = false
     })
 }
+const toggleActive = (val: boolean, holiday: Holiday) => {
+    holiday.is_active = val;
+    router.put(route('holiday.toggle', holiday.id), { is_active: val });
+};
 const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
-
 </script>
 
 <template>
 
     <Head title="Holiday" />
     <AppLayout :breadcrumbs="breadcrumbs">
+
         <div class="px-4 py-6">
             <div class="flex justify-between">
                 <Heading title="Holiday" description="Manage or create Holidays" />
@@ -114,7 +120,7 @@ const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
                                     <TableHead class="font-bold text-black dark:text-white">Active</TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody v-if="false" class="bg-white dark:bg-slate-950">
+                            <TableBody class="bg-white dark:bg-slate-950">
                                 <TableRow v-for="holiday in props.holidays?.data" :key="holiday.id">
                                     <TableCell class="text-black dark:text-gray-200">
                                         <div class="text-black dark:text-gray-200 leading-tight">
@@ -137,39 +143,36 @@ const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
                                         </div>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
-                                        ₹{{ holiday.date }}
+                                        {{ holiday.date_formatted }}
                                     </TableCell>
                                     <TableCell class="capitalize text-black dark:text-gray-200">
-                                        <Button :class="holiday?.is_active ? 'bg-green-400' : 'border'" size="sm"
-                                            @click="takeAction(order)" :variant="'secondary'" :tabindex="0"
-                                            class="h-8 w-8">
-                                            <Pen :size="60" />
-                                        </Button>
+                                        <Switch :disabled="!props.canCreate" v-model="holiday.is_active"
+                                            @update:modelValue="(val) => toggleActive(val, holiday)" />
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
-                        <div v-if="props.fees?.data?.length === 0"
+                        <div v-if="props.holidays?.data?.length === 0"
                             class="flex flex-col items-center justify-center py-10 text-gray-500 dark:text-gray-400">
                             <ArchiveX :size="60" />
-                            <p>No users found</p>
+                            <p>No data found</p>
                         </div>
                     </Card>
                 </div>
             </CardContent>
-            <Pagination v-if="props.fees?.data?.length != 0" :items-per-page="props.fees?.per_page"
-                :total="props.fees?.total" :default-page="props.fees?.current_page">
+            <Pagination v-if="props.holidays?.data?.length != 0" :items-per-page="props.holidays?.per_page"
+                :total="props.holidays?.total" :default-page="props.holidays?.current_page">
                 <PaginationContent v-slot="{ items }">
-                    <PaginationPrevious v-if="props.fees?.prev_page_url"
-                        @click="goToPage(props.fees.current_page - 1)" />
+                    <PaginationPrevious v-if="props.holidays?.prev_page_url"
+                        @click="goToPage(props.holidays.current_page - 1)" />
                     <template v-for="(item, index) in items" :key="index">
                         <PaginationItem v-if="item.type === 'page'" :value="item.value"
-                            :is-active="item.value === props.fees?.current_page" @click="goToPage(item.value)">
+                            :is-active="item.value === props.holidays?.current_page" @click="goToPage(item.value)">
                             {{ item.value }}
                         </PaginationItem>
                     </template>
-                    <PaginationEllipsis v-if="props.fees?.last_page > 5" :index="4" />
-                    <PaginationNext v-if="props.fees?.next_page_url" @click="goToPage(props.fees?.current_page + 1)" />
+                    <PaginationEllipsis v-if="props.holidays?.last_page > 5" :index="4" />
+                    <PaginationNext v-if="props.holidays?.next_page_url" @click="goToPage(props.holidays?.current_page + 1)" />
                 </PaginationContent>
             </Pagination>
         </div>

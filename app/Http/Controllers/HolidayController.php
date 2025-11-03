@@ -20,6 +20,7 @@ use App\Models\Product;
 use App\Models\SchoolClass;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -40,9 +41,11 @@ class HolidayController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
+        $user = auth()->user();
         return Inertia::render('holiday/Index', [
             'holidays' => $holidays,
             'filters' => $request->only(['search']),
+            'canCreate' => UserRole::PRINCIPAL === $user->role,
         ]);
     }
 
@@ -74,5 +77,17 @@ class HolidayController extends Controller
             'date' => $validated['date'],
         ]);
         return back()->with('success', 'Successfully Saved.');
+    }
+    public function activeToggle(Request $request, Holiday $holiday)
+    {
+        $validated = $request->validate([
+            'is_active' => ['required', 'boolean'],
+        ]);
+        if (config('services.demo.mode')) {
+            return back()->with('error', 'This action is not allowed in demo mode');
+        }
+        $holiday->is_active = $validated['is_active'];
+        $holiday->save();
+        return back()->with('success', 'User status updated successfully.');
     }
 }

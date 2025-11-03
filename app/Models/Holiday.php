@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,6 +26,15 @@ class Holiday extends Model
         'is_sunday' => 'boolean',
         'is_active' => 'boolean',
     ];
+
+    protected $appends = [
+        'date_formatted',
+    ];
+
+    public function getDateFormattedAttribute()
+    {
+        return Carbon::parse($this->date)->format('F j, Y'); // e.g. March 23, 2025
+    }
 
     public function user()
     {

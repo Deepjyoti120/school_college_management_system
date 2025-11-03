@@ -82,6 +82,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('holidays', [HolidayController::class, 'Index'])->name('holidays.index');
     Route::get('holiday/create',  [HolidayController::class, 'Create'])->name('holiday.create');
     Route::post('holiday/store',  [HolidayController::class, 'Store'])->name('holiday.store');
+    Route::put('holiday/{holiday}/toggle', [HolidayController::class, 'ActiveToggle'])->name('holiday.toggle');
     // Route::post('holiday/{holiday}/update', Holiday\UpdateController::class)->name('holiday.update');
     // Route::put('holiday/{holiday}/toggle', Holiday\ToggleStatusController::class)->name('holiday.toggle');
     // Holiday end
