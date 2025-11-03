@@ -76,13 +76,11 @@ const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
 </script>
 
 <template>
-
     <Head title="Holiday" />
     <AppLayout :breadcrumbs="breadcrumbs">
-
         <div class="px-4 py-6">
             <div class="flex justify-between">
-                <Heading title="Holiday" description="Manage or create Holidays" />
+                <Heading title="Holiday" description="Manage or create Holidays (Note: You need to add sundays also.)" />
                 <div class="flex gap-2">
                     <Link :href="route('holiday.create')">
                     <Button :variant="'default'" :tabindex="0">
