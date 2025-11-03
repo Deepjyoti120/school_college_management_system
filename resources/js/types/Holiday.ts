@@ -8,8 +8,10 @@ export interface Holiday {
     school_id: string;
     academic_year_id: string;
     date: string;
-    description?: string;
+    description?: string | null;
+    name?: string;
     is_sunday: boolean;
+    is_active: boolean;
     created_at: string;
     updated_at: string;
     user?: User | null;

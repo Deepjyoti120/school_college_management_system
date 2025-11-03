@@ -14,13 +14,16 @@ class Holiday extends Model
         'school_id',
         'academic_year_id',
         'date',
+        'name',
         'description',
         'is_sunday',
+        'is_active',
     ];
 
     protected $casts = [
         'date' => 'date',
         'is_sunday' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function user()

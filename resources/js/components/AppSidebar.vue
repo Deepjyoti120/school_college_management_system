@@ -11,6 +11,7 @@ import {
     IndianRupee,
     IndianRupeeIcon,
     LayoutPanelTop,
+    LucideCircleOff,
     Map,
     PieChart,
     Settings,
@@ -187,6 +188,12 @@ if (user.role === UserRole.PRINCIPAL) {
             title: 'Payments',
             url: '/payments',
             icon: IndianRupeeIcon,
+            isActive: false,
+        },
+        {
+            title: 'Holiday',
+            url: '/holidays',
+            icon: LucideCircleOff,
             isActive: false,
         },
     ];

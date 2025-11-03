@@ -17,8 +17,10 @@ return new class extends Migration
             $table->foreignUlid('school_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('academic_year_id')->constrained()->cascadeOnDelete();
             $table->date('date');
+            $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->boolean('is_sunday')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

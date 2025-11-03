@@ -80,7 +80,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Fee Generation End
     // Holiday start
     Route::get('holidays', [HolidayController::class, 'Index'])->name('holidays.index');
-    // Route::post('holiday/create', Holiday\CreateController::class)->name('holiday.create');
+    Route::get('holiday/create',  [HolidayController::class, 'Create'])->name('holiday.create');
+    Route::post('holiday/store',  [HolidayController::class, 'Store'])->name('holiday.store');
     // Route::post('holiday/{holiday}/update', Holiday\UpdateController::class)->name('holiday.update');
     // Route::put('holiday/{holiday}/toggle', Holiday\ToggleStatusController::class)->name('holiday.toggle');
     // Holiday end
