@@ -28,6 +28,7 @@ import SearchInput from '@/components/SearchInput.vue';
 import { PaginatedResponse } from '@/types/PaginatedResponse';
 import { Holiday } from '@/types/Holiday';
 import Switch from '@/components/ui/switch/Switch.vue';
+import Badge from '@/components/ui/badge/Badge.vue';
 
 interface Props {
     holidays: PaginatedResponse<Holiday>,
@@ -76,11 +77,13 @@ const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
 </script>
 
 <template>
+
     <Head title="Holiday" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6">
             <div class="flex justify-between">
-                <Heading title="Holiday" description="Manage or create Holidays (Note: You need to add sundays also.)" />
+                <Heading title="Holiday"
+                    description="Manage or create Holidays (Note: You need to add sundays also.)" />
                 <div class="flex gap-2">
                     <Link :href="route('holiday.create')">
                     <Button :variant="'default'" :tabindex="0">
@@ -110,9 +113,9 @@ const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
                         <Table class="w-full">
                             <TableHeader class="bg-slate-100 dark:bg-slate-800">
                                 <TableRow>
-                                    <TableHead class="font-bold text-black dark:text-white">Name
+                                    <TableHead class="font-bold text-black dark:text-white">Name | Description
                                     </TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Description
+                                    <TableHead class="font-bold text-black dark:text-white">Status
                                     </TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Date</TableHead>
                                     <TableHead class="font-bold text-black dark:text-white">Active</TableHead>
@@ -123,6 +126,12 @@ const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
                                     <TableCell class="text-black dark:text-gray-200">
                                         <div class="text-black dark:text-gray-200 leading-tight">
                                             <div class="font-medium">{{ holiday?.name }}</div>
+                                            <div class="text-black dark:text-gray-200 leading-tight">
+                                                <div class="font-medium">{{ holiday.description }}</div>
+                                                <!-- <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                Order-{{ order.order_number }}
+                                            </p> -->
+                                            </div>
                                             <!-- <p class="text-sm text-gray-500 dark:text-gray-400">
                                                 {{ (fee.creator?.country_code ?? '') + (' ' + fee.creator?.phone ||
                                                     '') }} <Badge class="mt-1" :variant="fee.creator?.role_color"
@@ -133,12 +142,9 @@ const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
                                         </div>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
-                                        <div class="text-black dark:text-gray-200 leading-tight">
-                                            <div class="font-medium">{{ holiday.description }}</div>
-                                            <!-- <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                Order-{{ order.order_number }}
-                                            </p> -->
-                                        </div>
+                                        <Badge class="mt-1" :class="holiday?.status_color">
+                                            {{ holiday?.status_label}}
+                                        </Badge>
                                     </TableCell>
                                     <TableCell class="text-black dark:text-gray-200">
                                         {{ holiday.date_formatted }}
@@ -170,7 +176,8 @@ const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
                         </PaginationItem>
                     </template>
                     <PaginationEllipsis v-if="props.holidays?.last_page > 5" :index="4" />
-                    <PaginationNext v-if="props.holidays?.next_page_url" @click="goToPage(props.holidays?.current_page + 1)" />
+                    <PaginationNext v-if="props.holidays?.next_page_url"
+                        @click="goToPage(props.holidays?.current_page + 1)" />
                 </PaginationContent>
             </Pagination>
         </div>
