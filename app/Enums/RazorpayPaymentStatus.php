@@ -29,18 +29,31 @@ enum RazorpayPaymentStatus: string
     /**
      * Bootstrap color for badges, etc.
      */
+    // public function color(): string
+    // {
+    //     return match ($this) {
+    //         self::PENDING  => 'destructive',
+    //         self::CAPTURED => 'success',
+    //         self::FAILED   => 'destructive',
+    //         self::REFUNDED => 'warning',
+    //         self::AUTHORIZED => 'primary',
+    //         self::PAID => 'success',    
+    //         default => 'default',
+    //     };
+    // }
     public function color(): string
     {
         return match ($this) {
-            self::PENDING  => 'destructive',
-            self::CAPTURED => 'success',
-            self::FAILED   => 'destructive',
-            self::REFUNDED => 'warning',
-            self::AUTHORIZED => 'primary',
-            self::PAID => 'success',    
-            default => 'default',
+            self::PENDING     => 'bg-amber-500/10 text-amber-700 border border-amber-500/20',
+            self::CAPTURED    => 'bg-green-500/10 text-green-700 border border-green-500/20',
+            self::FAILED      => 'bg-red-500/10 text-red-700 border border-red-500/20',
+            self::REFUNDED    => 'bg-sky-500/10 text-sky-700 border border-sky-500/20',
+            self::AUTHORIZED  => 'bg-indigo-500/10 text-indigo-700 border border-indigo-500/20',
+            self::PAID        => 'bg-green-500/10 text-green-700 border border-green-500/20',
+            default           => 'bg-amber-500/10 text-amber-700 border border-amber-500/20',
         };
     }
+
 
     /**
      * Return array of options for select inputs

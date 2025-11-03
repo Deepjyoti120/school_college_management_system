@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('name')->nullable();
             $table->text('description')->nullable();
-            $table->boolean('is_sunday')->default(false);
+            $table->string('status')->default('holiday')->index();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

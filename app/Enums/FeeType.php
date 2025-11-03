@@ -15,13 +15,21 @@ enum FeeType: string
         };
     }
 
+    // public function color(): string
+    // {
+    //     return match ($this) {
+    //         self::ADMISSION => 'warning',
+    //         self::MONTHLY => 'info',
+    //     };
+    // }
     public function color(): string
     {
         return match ($this) {
-            self::ADMISSION => 'warning',
-            self::MONTHLY => 'info',
+            self::ADMISSION => 'bg-amber-500/10 text-amber-700 border border-amber-500/20',
+            self::MONTHLY   => 'bg-blue-500/10 text-blue-700 border border-blue-500/20',
         };
     }
+
 
     public static function options(): array
     {

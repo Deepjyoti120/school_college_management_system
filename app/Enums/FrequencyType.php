@@ -21,11 +21,13 @@ enum FrequencyType: string
     public function color(): string
     {
         return match ($this) {
-            self::ONE_TIME => 'primary',
-            self::MONTHLY => 'info',
-            self::YEARLY => 'success',
+            self::ONE_TIME => 'bg-indigo-500/10 text-indigo-700 border border-indigo-500/20',
+            self::MONTHLY  => 'bg-blue-500/10 text-blue-700 border border-blue-500/20',      
+            self::YEARLY   => 'bg-green-500/10 text-green-700 border border-green-500/20',   
+            default        => 'bg-gray-500/10 text-gray-700 border border-gray-500/20',      
         };
     }
+
 
     public static function options(): array
     {

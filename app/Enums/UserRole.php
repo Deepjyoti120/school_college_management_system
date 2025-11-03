@@ -31,21 +31,38 @@ enum UserRole: string
         };
     }
 
+    // public function color(): string
+    // {
+    //     return match ($this) {
+    //         self::ADMIN => 'warning',
+    //         self::SUPER_ADMIN => 'danger',
+    //         self::STUDENT => 'info',
+    //         self::TEACHER => 'success',
+    //         self::ACCOUNTANT => 'primary',
+    //         self::LIBRARIAN => 'secondary',
+    //         self::HEAD_MASTER => 'dark',
+    //         self::PRINCIPAL => 'dark',
+    //         self::PARENT => 'info',
+    //         self::STAFF => 'secondary',
+    //     };
+    // }
+
     public function color(): string
     {
         return match ($this) {
-            self::ADMIN => 'warning',
-            self::SUPER_ADMIN => 'danger',
-            self::STUDENT => 'info',
-            self::TEACHER => 'success',
-            self::ACCOUNTANT => 'primary',
-            self::LIBRARIAN => 'secondary',
-            self::HEAD_MASTER => 'dark',
-            self::PRINCIPAL => 'dark',
-            self::PARENT => 'info',
-            self::STAFF => 'secondary',
+            self::ADMIN        => 'bg-amber-500/10 text-amber-700 border border-amber-500/20',    
+            self::SUPER_ADMIN  => 'bg-red-500/10 text-red-700 border border-red-500/20',          
+            self::STUDENT      => 'bg-blue-500/10 text-blue-700 border border-blue-500/20',       
+            self::TEACHER      => 'bg-green-500/10 text-green-700 border border-green-500/20',    
+            self::ACCOUNTANT   => 'bg-indigo-500/10 text-indigo-700 border border-indigo-500/20', 
+            self::LIBRARIAN    => 'bg-gray-500/10 text-gray-700 border border-gray-500/20',       
+            self::HEAD_MASTER  => 'bg-zinc-700/10 text-zinc-800 border border-zinc-700/20',       
+            self::PRINCIPAL    => 'bg-zinc-700/10 text-zinc-800 border border-zinc-700/20',       
+            self::PARENT       => 'bg-sky-500/10 text-sky-700 border border-sky-500/20',
+            self::STAFF        => 'bg-slate-500/10 text-slate-700 border border-slate-500/20',    
         };
     }
+
 
     public static function options(): array
     {
