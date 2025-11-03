@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\UserRole;
 use App\Models\School;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,9 @@ class SchoolUser extends Seeder
     public function run(): void
     {
         DB::transaction(function () {
+            $year = now()->month < 4 ? now()->year - 1 : now()->year;
+            $startDate = Carbon::create($year, 4, 1);
+            $endDate = $startDate->copy()->addYear()->subDay();
             $school = School::create([
                 'name' => 'Angels English School',
                 'address' => 'Sualkuchi, Guwahati',
@@ -31,6 +35,8 @@ class SchoolUser extends Seeder
                 'latitude' => 26.1445,
                 'longitude' => 91.7362,
                 'is_active' => true,
+                'academic_start_date' => $startDate,
+                'academic_end_date' => $endDate,
             ]);
 
             User::create([
@@ -38,6 +44,7 @@ class SchoolUser extends Seeder
                 'email' => 'principal@gmail.com',
                 'password' => Hash::make('secret1234'),
                 'role' => UserRole::PRINCIPAL,
+                'country_code'  => '+91',
                 'phone' => '1111111111',
                 'school_id' => $school->id,
                 'is_active' => true,
