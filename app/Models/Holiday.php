@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\HolidayStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -17,19 +18,31 @@ class Holiday extends Model
         'date',
         'name',
         'description',
-        'is_sunday',
+        'status',
         'is_active',
     ];
 
     protected $casts = [
         'date' => 'date',
-        'is_sunday' => 'boolean',
         'is_active' => 'boolean',
+        'status' => HolidayStatus::class,
     ];
 
     protected $appends = [
         'date_formatted',
+        'status_label',
+        'status_color',
     ];
+
+    public function getStatusLabelAttribute(): ?string
+    {
+        return $this->status?->label();
+    }
+
+    public function getStatusColorAttribute(): ?string
+    {
+        return $this->status?->color();
+    }
 
     public function getDateFormattedAttribute()
     {

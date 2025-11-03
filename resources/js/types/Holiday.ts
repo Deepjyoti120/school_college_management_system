@@ -11,7 +11,9 @@ export interface Holiday {
     description?: string | null;
     date_formatted?: string | null;
     name?: string;
-    is_sunday: boolean;
+    status?: string | null;
+    status_label?: string | null;
+    status_color?: string | null;
     is_active: boolean;
     created_at: string;
     updated_at: string;
