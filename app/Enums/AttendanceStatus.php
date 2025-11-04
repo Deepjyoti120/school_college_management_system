@@ -30,15 +30,15 @@ enum AttendanceStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::PRESENT        => 'bg-green-500/10 text-green-700 border border-green-500/20',
-            self::ABSENT         => 'bg-red-500/10 text-red-700 border border-red-500/20',
-            self::LEAVE          => 'bg-amber-500/10 text-amber-700 border border-amber-500/20',
-            self::HALF_DAY       => 'bg-blue-500/10 text-blue-700 border border-blue-500/20',
-            self::HOLIDAY        => 'bg-purple-500/10 text-purple-700 border border-purple-500/20',
-            self::WEEKLY_OFF     => 'bg-gray-500/10 text-gray-700 border border-gray-500/20',
+            self::PRESENT   => 'bg-green-500/10 text-green-700 border border-green-500/20',
+            self::ABSENT  => 'bg-red-500/10 text-red-700 border border-red-500/20',
+            self::LEAVE     => 'bg-amber-500/10 text-amber-700 border border-amber-500/20',
+            self::HALF_DAY  => 'bg-blue-500/10 text-blue-700 border border-blue-500/20',
+            self::HOLIDAY    => 'bg-purple-500/10 text-purple-700 border border-purple-500/20',
+            self::WEEKLY_OFF  => 'bg-gray-500/10 text-gray-700 border border-gray-500/20',
             self::WORK_FROM_HOME => 'bg-teal-500/10 text-teal-700 border border-teal-500/20',
-            self::LATE           => 'bg-orange-500/10 text-orange-700 border border-orange-500/20',
-            default              => 'bg-zinc-500/10 text-zinc-700 border border-zinc-500/20',
+            self::LATE   => 'bg-orange-500/10 text-orange-700 border border-orange-500/20',
+            default  => 'bg-zinc-500/10 text-zinc-700 border border-zinc-500/20',
         };
     }
 
