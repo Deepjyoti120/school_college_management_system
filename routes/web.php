@@ -8,6 +8,7 @@ use App\Http\Controllers\Category;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\InfoController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
@@ -15,10 +16,12 @@ use App\Http\Controllers\Restaurent;
 
 Route::get('/', function () {
     if (Auth::check()) {
-       return redirect()->route('dashboard');
+        return redirect()->route('dashboard');
     }
     return Inertia::render('auth/Login');
 })->name('home');
+Route::get('about', [InfoController::class, 'about'])->name('about.index');
+Route::get('privacy-policy', [InfoController::class, 'privacyPolicy'])->name('privacy.index');
 
 // Route::get('dashboard', function () {
 //     return Inertia::render('Dashboard');
@@ -42,7 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('users', Users\Index::class)->name('users.index');
     Route::get('user/create/{user?}', Users\Create::class)->name('user.create');
     Route::get('class/{class_id}/sections', [Users\Create::class, 'sections'])
-    ->name('class.sections');
+        ->name('class.sections');
     Route::post('user/store', Users\Store::class)->name('user.store');
     Route::put('user/{user}/toggle', Users\ToggleStatusController::class)->name('user.toggle');
     Route::get('user/{user}/profile', Users\ProfileStatusController::class)->name('user.profile');
