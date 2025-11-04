@@ -23,24 +23,24 @@
                     alt="Admin Dashboard" class="rounded-xl shadow" />
             </section>
             <section class="mx-auto">
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-    <h2 class="text-2xl font-semibold text-center mb-4 text-gray-800">⚠️ Important Notes</h2>
-    <div class="space-y-4 text-gray-700 leading-relaxed">
-      <p>
-        This application and its online demo are provided
-        <strong>for demonstration purposes only</strong>
-        as part of the product sold on
-        <strong>CodeCanyon</strong>.
-      </p> 
-      <p>
-        All data displayed or entered in the demo is <strong>sample data</strong>
-        and should not be treated as real or confidential.
-        Users are advised <strong>not to enter any personal, institutional, or
-        sensitive information</strong> while testing the demo.
-      </p>
-    </div>
-  </div>
-</section>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-center mb-4 text-gray-800">⚠️ Important Notes</h2>
+                    <div class="space-y-4 text-gray-700 leading-relaxed">
+                        <p>
+                            This application and its online demo are provided
+                            <strong>for demonstration purposes only</strong>
+                            as part of the product sold on
+                            <strong>CodeCanyon</strong>.
+                        </p>
+                        <p>
+                            All data displayed or entered in the demo is <strong>sample data</strong>
+                            and should not be treated as real or confidential.
+                            Users are advised <strong>not to enter any personal, institutional, or
+                                sensitive information</strong> while testing the demo.
+                        </p>
+                    </div>
+                </div>
+            </section>
 
             <section>
                 <h3 class="text-2xl font-semibold mb-4">🎯 Demo & Access</h3>
