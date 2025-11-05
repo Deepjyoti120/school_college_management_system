@@ -11,6 +11,7 @@ import {
     IndianRupee,
     IndianRupeeIcon,
     LayoutPanelTop,
+    LucideBookOpenCheck,
     LucideCircleOff,
     Map,
     PieChart,
@@ -176,7 +177,21 @@ if (user.role === UserRole.PRINCIPAL) {
                 },
             ],
         },
-    ]
+    ];
+    const attendances = [
+        {
+            title: "Attendance",
+            items: [
+
+                {
+                    title: 'Student Attendance',
+                    url: '/classes-atendances',
+                    icon: LucideBookOpenCheck,
+                    isActive: false,
+                },
+            ],
+        },
+    ];
     const platFormsItems = [
         {
             title: 'Fees Structure',
@@ -198,6 +213,7 @@ if (user.role === UserRole.PRINCIPAL) {
         },
     ];
     data.navMain[0].items.push(...platFormsItems);
+    data.navMain.push(...attendances);
     data.navMain.push(...items);
 }
 const settings =

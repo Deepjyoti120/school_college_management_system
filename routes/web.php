@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -89,6 +90,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::post('holiday/{holiday}/update', Holiday\UpdateController::class)->name('holiday.update');
     // Route::put('holiday/{holiday}/toggle', Holiday\ToggleStatusController::class)->name('holiday.toggle');
     // Holiday end
+    // Attendace start
+    Route::get('classes-atendances', [AttendanceController::class, 'classesAtendances'])->name('classes.attendances.index');
+    Route::get('attendance/{schoolClass}/{school_id}', [AttendanceController::class, 'Index'])->name('attendance.index');
+    // Attendance end
 });
 
 require __DIR__ . '/settings.php';

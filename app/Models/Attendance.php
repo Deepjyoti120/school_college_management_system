@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AttendanceStatus;
+use App\Enums\UserRole;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,8 @@ class Attendance extends Model
         'check_in_lng',
         'check_out_lat',
         'check_out_lng',
+        'class_id',
+        'role',
     ];
 
     protected $casts = [
@@ -36,6 +39,7 @@ class Attendance extends Model
         'check_in_lng' => 'decimal:8',
         'check_out_lat' => 'decimal:8',
         'check_out_lng' => 'decimal:8',
+        'role' => UserRole::class,
     ];
 
 
@@ -43,6 +47,8 @@ class Attendance extends Model
         'date_formatted',
         'status_label',
         'status_color',
+        'role_label',
+        'role_color',
     ];
 
     public function getDateFormattedAttribute()
@@ -59,6 +65,16 @@ class Attendance extends Model
     public function getStatusColorAttribute(): ?string
     {
         return $this->status?->color();
+    }
+
+    public function getRoleLabelAttribute(): ?string
+    {
+        return $this->role?->label();
+    }
+
+    public function getRoleColorAttribute(): ?string
+    {
+        return $this->role?->color();
     }
 
     public function user()
