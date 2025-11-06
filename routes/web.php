@@ -91,8 +91,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::put('holiday/{holiday}/toggle', Holiday\ToggleStatusController::class)->name('holiday.toggle');
     // Holiday end
     // Attendace start
-    Route::get('classes-atendances', [AttendanceController::class, 'classesAtendances'])->name('classes.attendances.index');
+    Route::get('classes-atendances', [AttendanceController::class, 'ClassesAtendances'])->name('classes.attendances.index');
     Route::get('attendance/{schoolClass}/{school_id}', [AttendanceController::class, 'Index'])->name('attendance.index');
+    Route::get('attendance/teachers', [AttendanceController::class, 'TeachersAttendance'])->name('teachers.attendance.index');
     // Attendance end
 });
 

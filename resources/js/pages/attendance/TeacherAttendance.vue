@@ -28,10 +28,7 @@ const academicYear = ref(props.filters?.academic_year_id || '');
 const loading = ref(false);
 const onSearch = () => {
     loading.value = true;
-    router.get(route('attendance.index', {
-        schoolClass: route().params.schoolClass,
-        school_id: route().params.school_id
-    }), {
+    router.get(route('teachers.attendance.index'), {
         search: search.value,
         month: month.value,
         year: year.value,
@@ -43,13 +40,12 @@ const onSearch = () => {
     });
 };
 const breadcrumbs = [
-    { title: 'Classes', href: '/classes-atendances' },
-    { title: 'Attendance', href: '/attendance' },
+    { title: 'Teacher Attendance', href: '/attendance/teachers' }, 
 ];
 </script>
 
 <template>
-    <Head title="Attendance" />
+    <Head title="Teacher Attendance" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6 space-y-6">
             <Heading title="Teachers Attendance" description="Visit All Teachers Attendance" />

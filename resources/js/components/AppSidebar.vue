@@ -181,11 +181,16 @@ if (user.role === UserRole.PRINCIPAL) {
     const attendances = [
         {
             title: "Attendance",
-            items: [
-
+            items: [ 
                 {
                     title: 'Student Attendance',
                     url: '/classes-atendances',
+                    icon: LucideBookOpenCheck,
+                    isActive: false,
+                },
+                {
+                    title: 'Teacher Attendance',
+                    url: '/attendance/teachers',
                     icon: LucideBookOpenCheck,
                     isActive: false,
                 },
