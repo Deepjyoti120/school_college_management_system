@@ -1,178 +1,144 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { nextTick, ref, watch } from 'vue';
+import { Head, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
-import { toast } from 'vue-sonner'
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
 import Button from '@/components/ui/button/Button.vue';
-import { ArchiveX, LoaderCircle, Pen, } from 'lucide-vue-next';
 import Heading from '@/components/Heading.vue';
 import SearchInput from '@/components/SearchInput.vue';
-import { PaginatedResponse } from '@/types/PaginatedResponse';
-import { Holiday } from '@/types/Holiday';
-import Switch from '@/components/ui/switch/Switch.vue';
 import Badge from '@/components/ui/badge/Badge.vue';
+import { ArchiveX, LoaderCircle } from 'lucide-vue-next';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from '@/components/ui/select';
+import Input from '@/components/ui/input/Input.vue';
 
 interface Props {
-    holidays: PaginatedResponse<Holiday>,
+    users: any[],
+    days: any[],
     filters: Record<string, any>,
+    academicYears: Array<{ value: string | number, label: string }>,
     canCreate: boolean
 }
 const props = defineProps<Props>();
-const search = ref(props.filters?.search || '')
-const loading = ref(false)
-const onSearch = async () => {
-    loading.value = true
-    router.get(route('attendance.index'), {
-        search: search.value || '',
+
+const search = ref('');
+const month = ref(props.filters?.month || new Date().getMonth() + 1);
+const year = ref(props.filters?.year || new Date().getFullYear());
+const academicYear = ref(props.filters?.academic_year_id || '');
+const loading = ref(false);
+const onSearch = () => {
+    loading.value = true;
+    router.get(route('attendance.index', {
+        schoolClass: route().params.schoolClass,
+        school_id: route().params.school_id
+    }), {
+        search: search.value,
+        month: month.value,
+        year: year.value,
+        academic_year_id: academicYear.value,
     }, {
         preserveState: true,
         preserveScroll: true,
-        onFinish: () => {
-            loading.value = false;
-            toast('Search completed successfully.', {
-                description: '',
-                action: {
-                    label: 'Undo',
-                    onClick: () => console.log('Undo'),
-                },
-            })
-        }
-    })
-    await nextTick()
-}
-const goToPage = (page: number) => {
-    loading.value = true
-    router.get(route('attendance.index'), {
-        page,
-        search: search.value || '',
-    }, {
-        preserveScroll: true,
-        preserveState: true,
         onFinish: () => loading.value = false
-    })
-}
-const toggleActive = (val: boolean, holiday: Holiday) => {
-    holiday.is_active = val;
-    router.put(route('holiday.toggle', holiday.id), { is_active: val });
+    });
 };
-const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
+const breadcrumbs = [
+    { title: 'Classes', href: '/classes-atendances' },
+    { title: 'Attendance', href: '/attendance' },
+]; 
 </script>
 
 <template>
-
     <Head title="Attendance" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="px-4 py-6">
-            <div class="flex justify-between">
-                <Heading title="Attendance"
-                    description="Check attendance here" /> 
-            </div>
+        <div class="px-4 py-6 space-y-6">
+            <Heading title="Teachers Attendance" description="Visit All Teachers Attendance" />
             <CardContent>
-                <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
-                    <div class="flex gap-4 w-full">
-                        <SearchInput v-model="search" placeholder="Search by name..." />
+                <div class="flex flex-col  md:flex-row md:items-end md:gap-4 w-full">
+                    <div class="grid grid-cols-12 gap-3 w-full">
+                        <div class="col-span-12 md:col-span-10">
+                            <SearchInput class="w-full" v-model="search" placeholder="Search by name..." />
+                        </div>
+                        <div class="col-span-6 md:col-span-1">
+                            <Select v-model="month">
+                                <SelectTrigger class="w-full">
+                                    <SelectValue placeholder="Month" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectItem v-for="m in 12" :key="m" :value="m">
+                                            {{ new Date(0, m - 1).toLocaleString('default', { month: 'long' }) }}
+                                        </SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div class="col-span-6 md:col-span-1">
+                            <Input type="number" v-model="year" placeholder="Year" class="w-full" />
+                        </div>
                     </div>
                     <div class="md:w-auto w-full">
-                        <Button @click="onSearch" type="submit" :tabindex="4" :disabled="loading"
-                            class="w-full md:w-32">
+                        <Button @click="onSearch" type="submit" :disabled="loading" class="w-full md:w-32">
                             <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin mr-2" />
                             Search
                         </Button>
                     </div>
                 </div>
-                <!-- <div v-if="loading" class="flex items-center justify-center py-10">
-                    <LoaderCircle class="animate-spin" :size="24" />
-                </div> -->
-                <div>
-                    <Card class="shadow-none my-4 bg-slate-50 dark:bg-slate-900">
-                        <Table class="w-full">
-                            <TableHeader class="bg-slate-100 dark:bg-slate-800">
-                                <TableRow>
-                                    <TableHead class="font-bold text-black dark:text-white">Name | Description
-                                    </TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Status
-                                    </TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Date</TableHead>
-                                    <TableHead class="font-bold text-black dark:text-white">Active</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody class="bg-white dark:bg-slate-950">
-                                <TableRow v-for="holiday in props.holidays?.data" :key="holiday.id">
-                                    <TableCell class="text-black dark:text-gray-200">
+                <Card class="mx-auto shadow-none rounded-2xl mt-6">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border border-gray-200 dark:border-slate-700 text-sm">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200">
+                                <tr>
+                                    <th class="p-2 text-left sticky left-0 bg-slate-100 dark:bg-slate-800">Teacher</th>
+                                    <th class="p-2 text-center">Total</th>
+                                    <th v-for="day in props.days" :key="day.date" class="p-1 text-center">
+                                        <div>{{ day.day }}</div>
+                                        <div>{{ day.day_number }}</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="user in props.users" :key="user.user.id"
+                                    class="odd:bg-white even:bg-slate-50 dark:odd:bg-slate-950 dark:even:bg-slate-900">
+                                    <td class="p-2 font-medium sticky left-0 bg-white dark:bg-slate-950">
+                                        {{ user.user.name }}
                                         <div class="text-black dark:text-gray-200 leading-tight">
-                                            <div class="font-medium">{{ holiday?.name }}</div>
-                                            <div class="text-black dark:text-gray-200 leading-tight">
-                                                <div class="font-medium">{{ holiday.description }}</div>
-                                                <!-- <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                Order-{{ order.order_number }}
-                                            </p> -->
-                                            </div>
-                                            <!-- <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ (fee.creator?.country_code ?? '') + (' ' + fee.creator?.phone ||
-                                                    '') }} <Badge class="mt-1" :variant="fee.creator?.role_color"
-                                                    :class="fee.creator?.role_color">
-                                                    {{ fee.creator?.role_label }}
-                                                </Badge>
-                                            </p> -->
+                                            <p v-if="user.user.role == 'student'"
+                                                class="text-sm text-gray-500 dark:text-gray-400">
+                                                Roll No:{{ user.user.roll_number }}
+                                            </p>
                                         </div>
-                                    </TableCell>
-                                    <TableCell class="text-black dark:text-gray-200">
-                                        <Badge class="mt-1" :class="holiday?.status_color">
-                                            {{ holiday?.status_label}}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell class="text-black dark:text-gray-200">
-                                        {{ holiday.date_formatted }}
-                                    </TableCell>
-                                    <TableCell class="capitalize text-black dark:text-gray-200">
-                                        <Switch :disabled="!props.canCreate" v-model="holiday.is_active"
-                                            @update:modelValue="(val) => toggleActive(val, holiday)" />
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                        <div v-if="props.holidays?.data?.length === 0"
+                                    </td>
+                                    <td class="p-2 text-center">
+                                        <div class="font-semibold text-gray-700 dark:text-gray-300">
+                                            {{
+                                                user.attendances.filter(a => a.status === 'present').length
+                                            }}/{{user.attendances.filter(a => a.status === 'absent').length}}/{{
+                                                user.attendances.filter(a => a.status === 'leave').length}}
+                                        </div>
+                                    </td>
+                                    <td v-for="day in props.days" :key="day.date" class="p-1 text-center">
+                                        <div v-if="user.attendances.some(a => a.date === day.date)">
+                                            <Badge
+                                                :class="user.attendances.find(a => a.date === day.date)?.status_color"
+                                                class="text-xs px-2 py-1 font-semibold">
+                                                {{
+                                                    user.attendances.find(a => a.date === day.date)?.status_label?.charAt(0)
+                                                }}
+                                            </Badge>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-if="users?.length === 0"
                             class="flex flex-col items-center justify-center py-10 text-gray-500 dark:text-gray-400">
                             <ArchiveX :size="60" />
-                            <p>No data found</p>
+                            <p>No attendance found</p>
                         </div>
-                    </Card>
-                </div>
+                    </div>
+                </Card>
             </CardContent>
-            <Pagination v-if="props.holidays?.data?.length != 0" :items-per-page="props.holidays?.per_page"
-                :total="props.holidays?.total" :default-page="props.holidays?.current_page">
-                <PaginationContent v-slot="{ items }">
-                    <PaginationPrevious v-if="props.holidays?.prev_page_url"
-                        @click="goToPage(props.holidays.current_page - 1)" />
-                    <template v-for="(item, index) in items" :key="index">
-                        <PaginationItem v-if="item.type === 'page'" :value="item.value"
-                            :is-active="item.value === props.holidays?.current_page" @click="goToPage(item.value)">
-                            {{ item.value }}
-                        </PaginationItem>
-                    </template>
-                    <PaginationEllipsis v-if="props.holidays?.last_page > 5" :index="4" />
-                    <PaginationNext v-if="props.holidays?.next_page_url"
-                        @click="goToPage(props.holidays?.current_page + 1)" />
-                </PaginationContent>
-            </Pagination>
         </div>
     </AppLayout>
 </template>

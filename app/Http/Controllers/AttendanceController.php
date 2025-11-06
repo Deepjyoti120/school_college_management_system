@@ -50,24 +50,51 @@ class AttendanceController extends Controller
     }
     public function index(Request $request, SchoolClass $schoolClass, $school_id)
     {
-        $holidays = Attendance::query()->with(['school', 'user'])
-            ->when($request->search, function ($q) use ($request) {
-                $search = strtolower($request->search);
-                // $q->whereHas('product', function ($query) use ($search) {
-                $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
-                // });
-            })
-            // ->when($request->status && $request->status !== 'all', fn($q) => $q->where('status', $request->status))
-            ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->withQueryString();
         $user = auth()->user();
+        $month = $request->input('month', now()->month);
+        $year = $request->input('year', now()->year);
+        $academicYearId = $request->input('academic_year_id');
+        $attendances = Attendance::with(['user'])
+            ->where('school_id', $school_id)
+            ->where('class_id', $schoolClass->id)
+            ->when($academicYearId, fn($q) => $q->where('academic_year_id', $academicYearId))
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->get();
+        $users = $attendances->groupBy('user_id')->map(function ($records) {
+            $user = $records->first()->user;
+            return [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                ],
+                'attendances' => $records->map(fn($a) => [
+                    'date' => $a->date->format('Y-m-d'),
+                    'status' => $a->status->value,
+                    'status_label' => $a->status_label,
+                    'status_color' => $a->status_color,
+                ]),
+            ];
+        })->values();
+        $daysInMonth = collect(range(1, Carbon::create($year, $month)->daysInMonth))->map(fn($day) => [
+            'day' => Carbon::create($year, $month, $day)->format('D'),
+            'date' => Carbon::create($year, $month, $day)->format('Y-m-d'),
+            'day_number' => $day,
+        ]);
+        $academicYears = AcademicYear::where('school_id', $user->school_id)->get();
         return Inertia::render('attendance/Index', [
-            'holidays' => $holidays,
-            'filters' => $request->only(['search']),
-            'canCreate' => UserRole::PRINCIPAL === $user->role,
+            'users' => $users,
+            'days' => $daysInMonth,
+            'filters' => [
+                'month' => $month,
+                'year' => $year,
+                'academic_year_id' => $academicYearId,
+            ],
+            'academicYears' => $academicYears,
+            'canCreate' => in_array($user->role, [UserRole::PRINCIPAL, UserRole::ADMIN]),
         ]);
     }
+
 
     public function create()
     {

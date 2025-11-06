@@ -75,7 +75,7 @@ const toggleActive = (val: boolean, holiday: Holiday) => {
     holiday.is_active = val;
     router.put(route('holiday.toggle', holiday.id), { is_active: val });
 };
-const breadcrumbs = [{ title: 'Holiday', href: '/holidays' }];
+const breadcrumbs = [ { title: 'Classes', href: '/classes-atendances' }];
 </script>
 
 <template>
