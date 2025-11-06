@@ -100,6 +100,22 @@ const breadcrumbs = [
                                         autocomplete="email" />
                                     <InputError :message="form.errors.email" />
                                 </div>
+                                <div class="grid gap-2">
+                                    <Label for="role">Role</Label>
+                                    <Select v-model="form.role">
+                                        <SelectTrigger class="w-full">
+                                            <SelectValue placeholder="Role" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem v-for="r in props.roles" :key="r.value" :value="r.value">
+                                                    {{ r.label }}
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError :message="form.errors.role" />
+                                </div>
                                 <div class="grid gap-2 col-span-full md:col-span-1">
                                     <Label for="dob">Date of Birth</Label>
                                     <Input id="dob" type="date" v-model="form.dob" />
@@ -141,22 +157,6 @@ const breadcrumbs = [
                                         </SelectContent>
                                     </Select>
                                     <InputError :message="form.errors.section_id" />
-                                </div>
-                                <div class="grid gap-2">
-                                    <Label for="role">Role</Label>
-                                    <Select v-model="form.role">
-                                        <SelectTrigger class="w-full">
-                                            <SelectValue placeholder="Role" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem v-for="r in props.roles" :key="r.value" :value="r.value">
-                                                    {{ r.label }}
-                                                </SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                    <InputError :message="form.errors.role" />
                                 </div>
                                 <div class="grid gap-2">
                                     <Label for="board">Board</Label>

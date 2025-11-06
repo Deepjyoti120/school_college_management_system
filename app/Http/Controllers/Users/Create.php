@@ -17,11 +17,16 @@ class Create extends Controller
     public function getFilterRoles(): array
     {
         $student = UserRole::STUDENT;
+        $teacher = UserRole::TEACHER;
         return [
             [
                 'label' => $student->label(),
                 'value' => $student->value,
             ],
+            [
+                'label' => $teacher->label(),
+                'value' => $teacher->value,
+            ]
         ];
     }
 

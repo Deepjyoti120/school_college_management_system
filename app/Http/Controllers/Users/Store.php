@@ -22,9 +22,9 @@ class Store extends Controller
             'doj' => ['required', 'date'],
             'email' => ['required', 'email', 'unique:users,email' . ($isEdit ? ',' . $userId : '')],
             'phone' => ['required', 'digits:10'],
-            'class_id' => ['required', 'exists:school_classes,id'],
-            'section_id' => ['required', 'exists:school_class_sections,id'],
-            'roll_number' => ['required', 'string'],
+            'class_id' => ['required_unless:role,teacher', 'nullable', 'exists:school_classes,id'],
+            'section_id' => ['required_unless:role,teacher', 'nullable', 'exists:school_class_sections,id'],
+            'roll_number' => ['required_unless:role,teacher', 'nullable', 'string'],
         ];
 
         // Password required only on create
