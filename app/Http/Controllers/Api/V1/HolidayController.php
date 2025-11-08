@@ -8,6 +8,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\FeeStructure;
+use App\Models\Holiday;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -18,7 +19,10 @@ class HolidayController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $academicYears = AcademicYear::where('school_id', $user->school_id)->get();
-        return ApiResponse::success($academicYears, 'success');
+        $academicYear = AcademicYear::where('school_id', $user->school_id)->first();
+        $holidays = Holiday::where('school_id', $user->school_id)
+            ->where('academic_year_id', $academicYear->id)
+            ->get();
+        return ApiResponse::success($holidays, 'success');
     }
 }

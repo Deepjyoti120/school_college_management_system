@@ -29,7 +29,7 @@ Route::prefix('v1')->group(function () {
         Route::post('payment/success', [PaymentController::class, 'paymentSuccess']);
         Route::post('payment/failed', [PaymentController::class, 'paymentFailed']);
         // Holiday Start
-        Route::post('holiday/list', [HolidayController::class, 'index']);
+        Route::get('holiday/list', [HolidayController::class, 'index']);
         // Holiday End
     });
 });
