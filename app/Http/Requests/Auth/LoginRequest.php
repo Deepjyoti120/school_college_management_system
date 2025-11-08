@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
@@ -55,6 +56,13 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
                 'email' => __('This account is inactive.'),
+            ]);
+        }
+        $allowRoles = [UserRole::ADMIN, UserRole::PRINCIPAL];
+        if (!in_array($user->role, $allowRoles)  ) {
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages([
+                'email' => __('This account is not allowed to login here.'),
             ]);
         }
 
