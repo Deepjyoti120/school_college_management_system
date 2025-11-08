@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AcademicYearsController;
+use App\Http\Controllers\Api\V1\AttendanceController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\HolidayController;
 use App\Http\Controllers\Api\V1\PaymentController;
@@ -31,6 +32,10 @@ Route::prefix('v1')->group(function () {
         // Holiday Start
         Route::get('holiday/list', [HolidayController::class, 'index']);
         // Holiday End
+        // Attendance Start
+        Route::get('teacher/attendance/list', [AttendanceController::class, 'index']);
+        Route::post('teacher/check-in-out', [AttendanceController::class, 'checkInOut']);
+        // Attendance End
     });
 });
 // Auth::attempt(['email' => 'deepjyoti120281@gmail.com', 'password' => 'secret1234'])

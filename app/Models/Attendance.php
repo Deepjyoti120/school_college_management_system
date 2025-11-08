@@ -40,6 +40,7 @@ class Attendance extends Model
         'check_out_lat' => 'decimal:8',
         'check_out_lng' => 'decimal:8',
         'role' => UserRole::class,
+        'work_minutes' => 'integer',
     ];
 
 
