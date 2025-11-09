@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function me()
     {
-        $user = auth()->user()->load('school');
+        $user = auth()->user()->load(['school','attendance']);
         return ApiResponse::success(
             $user,
             'User details retrieved successfully.'

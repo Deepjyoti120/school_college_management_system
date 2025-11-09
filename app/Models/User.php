@@ -165,4 +165,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Discount::class);
     }
+
+    public function attendance()
+    {
+        return $this->hasOne(Attendance::class, 'user_id')->whereDate('date', now()->toDateString())->latest();
+    }
 }

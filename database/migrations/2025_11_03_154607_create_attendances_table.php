@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attendances', function (Blueprint $table) {
-            $table->ulid('id')->primary();
+            $table->id('id');
             $table->foreignUlid('user_id')->constrained()->onDelete('cascade');
             $table->foreignUlid('school_id')->constrained()->cascadeOnDelete();
-            $table->foreignUlid('academic_year_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('academic_year_id')->nullable()->constrained()->cascadeOnDelete();
             $table->date('date')->index();
             $table->timestamp('check_in')->nullable();
             $table->timestamp('check_out')->nullable();
