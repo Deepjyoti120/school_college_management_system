@@ -35,6 +35,7 @@ Route::prefix('v1')->group(function () {
         // Attendance Start
         Route::get('teacher/attendance/list', [AttendanceController::class, 'index']);
         Route::post('teacher/check-in-out', [AttendanceController::class, 'checkInOut']);
+        Route::get('teacher/attendance/class-list', [AttendanceController::class, 'classList']);
         // Attendance End
     });
 });

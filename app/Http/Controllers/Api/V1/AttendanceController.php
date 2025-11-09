@@ -13,6 +13,7 @@ use App\Models\FeeStructure;
 use App\Models\Holiday;
 use App\Models\Payment;
 use App\Models\School;
+use App\Models\SchoolClass;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Razorpay\Api\Api;
@@ -84,6 +85,12 @@ class AttendanceController extends Controller
                 message: 'Checked out successfully'
             );
         }
-        return ApiResponse::created('You have already checked in and checked out today.');
+        return ApiResponse::error(message: 'You have already checked in and checked out today.');
+    }
+    public function classList(Request $request)
+    {
+        $user = $request->user();
+        $schoolClass = SchoolClass::where('school_id', $user->school_id)->get();
+        return ApiResponse::success($schoolClass, 'success');
     }
 }
