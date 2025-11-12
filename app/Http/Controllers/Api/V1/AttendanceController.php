@@ -19,6 +19,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Razorpay\Api\Api;
+use Symfony\Component\Uid\Ulid;
 
 class AttendanceController extends Controller
 {
@@ -26,8 +27,12 @@ class AttendanceController extends Controller
     {
         $userId = $request->user()->id;
         $classId = $request->input('class_id');
-        $attendances = Attendance::with(['school'])
-            ->where('user_id', $userId)
+        $attendances = Attendance::with(['school','user'])
+            // ->where('user_id', $userId)
+            ->when(!$classId, function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->where('role', $classId ? UserRole::STUDENT : UserRole::TEACHER)
             ->where('school_id', $request->user()->school_id)
             ->when($classId, function ($query) use ($classId) {
                 $query->where('class_id', $classId);
@@ -115,11 +120,19 @@ class AttendanceController extends Controller
                 $q->whereDate('date', $today);
             })
             ->get();
-        $attendanceData = $students->map(function ($student) use ($today) {
+        $academicYear = AcademicYear::where('school_id', $request->user()->school_id)
+            ->where('is_current', true)
+            ->first();
+        $attendanceData = $students->map(function ($student) use ($today, $academicYear) {
             return [
+                // 'id' => Ulid::generate(),
+                'school_id' => $student->school_id,
+                'class_id' => $student->class_id,
                 'user_id' => $student->id,
                 'date' => $today,
                 'status' => AttendanceStatus::PRESENT,
+                'role' => $student->role,
+                'academic_year_id' => $academicYear?->id,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -127,6 +140,7 @@ class AttendanceController extends Controller
         if (!empty($attendanceData)) {
             Attendance::insert($attendanceData);
         }
+        // $attendanceData->loadMissing('user', 'school');
         return ApiResponse::success($attendanceData, 'Student attendance generated successfully');
     }
     public function studentAttendanceMarkAbsent(Request $request)
