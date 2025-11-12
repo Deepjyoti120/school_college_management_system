@@ -33,9 +33,11 @@ Route::prefix('v1')->group(function () {
         Route::get('holiday/list', [HolidayController::class, 'index']);
         // Holiday End
         // Attendance Start
-        Route::get('teacher/attendance/list', [AttendanceController::class, 'index']);
+        Route::post('teacher/attendance/list', [AttendanceController::class, 'index']);
         Route::post('teacher/check-in-out', [AttendanceController::class, 'checkInOut']);
-        Route::get('teacher/attendance/class-list', [AttendanceController::class, 'classList']);
+        Route::get('student/attendance/class-list', [AttendanceController::class, 'classList']);
+        Route::get('student/attendance-generate', [AttendanceController::class, 'studentAttendanceGenerate']);
+        Route::post('student/attendance-mark-absent', [AttendanceController::class, 'studentAttendanceMarkAbsent']);
         // Attendance End
     });
 });

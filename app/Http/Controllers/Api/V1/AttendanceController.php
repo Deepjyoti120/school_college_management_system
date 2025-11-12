@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\AttendanceStatus;
 use App\Enums\RazorpayPaymentStatus;
+use App\Enums\UserRole;
 use App\GeneratesUniqueNumber;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
@@ -14,6 +15,7 @@ use App\Models\Holiday;
 use App\Models\Payment;
 use App\Models\School;
 use App\Models\SchoolClass;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Razorpay\Api\Api;
@@ -23,8 +25,13 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         $userId = $request->user()->id;
-        $attendances = Attendance::where('user_id', $userId)
-            ->with(['school'])
+        $classId = $request->input('class_id');
+        $attendances = Attendance::with(['school'])
+            ->where('user_id', $userId)
+            ->where('school_id', $request->user()->school_id)
+            ->when($classId, function ($query) use ($classId) {
+                $query->where('class_id', $classId);
+            })
             ->orderBy('created_at', 'desc')
             ->limit(31)
             ->get();
@@ -92,5 +99,50 @@ class AttendanceController extends Controller
         $user = $request->user();
         $schoolClass = SchoolClass::where('school_id', $user->school_id)->get();
         return ApiResponse::success($schoolClass, 'success');
+    }
+
+    public function studentAttendanceGenerate(Request $request)
+    {
+        $classId = $request->input('class_id');
+        if (!$classId) {
+            return ApiResponse::error(message: 'class_id is required', status: Response::HTTP_BAD_REQUEST);
+        }
+        $today = now()->toDateString();
+        $students = User::where('role', UserRole::STUDENT)
+            ->where('school_id', $request->user()->school_id)
+            ->where('class_id', $classId)
+            ->whereDoesntHave('attendances', function ($q) use ($today) {
+                $q->whereDate('date', $today);
+            })
+            ->get();
+        $attendanceData = $students->map(function ($student) use ($today) {
+            return [
+                'user_id' => $student->id,
+                'date' => $today,
+                'status' => AttendanceStatus::PRESENT,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        })->toArray();
+        if (!empty($attendanceData)) {
+            Attendance::insert($attendanceData);
+        }
+        return ApiResponse::success($attendanceData, 'Student attendance generated successfully');
+    }
+    public function studentAttendanceMarkAbsent(Request $request)
+    {
+        $attendanceId  = $request->input('attendance_id');
+        if (!$attendanceId) {
+            return ApiResponse::error(message: 'attendance_id is required', status: Response::HTTP_BAD_REQUEST);
+        }
+        $attendance = Attendance::where('id', $attendanceId)->where('school_id', $request->user()->school_id)
+            ->first();
+        if (!$attendance) {
+            return ApiResponse::error(message: 'Attendance record not found', status: Response::HTTP_NOT_FOUND);
+        }
+        $attendance->update([
+            'status' => AttendanceStatus::ABSENT,
+        ]);
+        return ApiResponse::success($attendance, 'Attendance marked as absent successfully');
     }
 }
