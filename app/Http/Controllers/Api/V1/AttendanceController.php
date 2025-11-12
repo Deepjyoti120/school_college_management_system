@@ -27,7 +27,7 @@ class AttendanceController extends Controller
     {
         $userId = $request->user()->id;
         $classId = $request->input('class_id');
-        $attendances = Attendance::with(['school','user'])
+        $attendances = Attendance::with(['school', 'user'])
             // ->where('user_id', $userId)
             ->when(!$classId, function ($query) use ($userId) {
                 $query->where('user_id', $userId);
@@ -143,7 +143,7 @@ class AttendanceController extends Controller
         // $attendanceData->loadMissing('user', 'school');
         return ApiResponse::success($attendanceData, 'Student attendance generated successfully');
     }
-    public function studentAttendanceMarkAbsent(Request $request)
+    public function studentAttendanceMarkAbsentPresent(Request $request)
     {
         $attendanceId  = $request->input('attendance_id');
         if (!$attendanceId) {
@@ -155,7 +155,7 @@ class AttendanceController extends Controller
             return ApiResponse::error(message: 'Attendance record not found', status: Response::HTTP_NOT_FOUND);
         }
         $attendance->update([
-            'status' => AttendanceStatus::ABSENT,
+            'status' => $attendance->status === AttendanceStatus::PRESENT ?  AttendanceStatus::ABSENT : AttendanceStatus::PRESENT,
         ]);
         return ApiResponse::success($attendance, 'Attendance marked as absent successfully');
     }
