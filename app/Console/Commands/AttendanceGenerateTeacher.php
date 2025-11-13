@@ -27,13 +27,13 @@ class AttendanceGenerateTeacher extends Command
     public function handle()
     {
 //         CREATE OR REPLACE FUNCTION public.generate_teacher_daily_attendance()
-//             RETURNS void
-//             LANGUAGE plpgsql
-//             AS $function$
+//  RETURNS void
+//  LANGUAGE plpgsql
+// AS $function$
 //             BEGIN
-//                 INSERT INTO attendances (user_id, date, status, created_at, updated_at)
+//                 INSERT INTO attendances (user_id, school_id, date, status, role, created_at, updated_at)
 //                 SELECT 
-//                     u.id,
+//                     u.id,u.school_id,
 //                     CURRENT_DATE,
 // --                     CASE 
 // --                         WHEN EXISTS (
@@ -47,16 +47,19 @@ class AttendanceGenerateTeacher extends Command
 // --                         ELSE 
 //                         'absent',
 // --                     END AS status,
+// 					u.role,
 //                     NOW(),
 //                     NOW()
 //                 FROM users u
-//                 WHERE NOT EXISTS (
+//                 Where u.role = 'teacher'
+//                 and NOT EXISTS (
 //                     SELECT 1 FROM attendances a
 //                     WHERE a.user_id = u.id 
 //                       AND a.date = CURRENT_DATE
 //                 );
 //             END;
-//             $function$;
+//             $function$
+
        DB::statement('SELECT generate_teacher_daily_attendance()');
     }
 }
