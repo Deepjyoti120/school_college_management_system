@@ -40,7 +40,7 @@ class AttendanceController extends Controller
             })
             ->whereDate('date', $date)
             ->orderBy('created_at', 'desc')
-            ->limit(31)
+            // ->limit(31)
             ->get();
         return ApiResponse::success($attendances, 'success');
     }
