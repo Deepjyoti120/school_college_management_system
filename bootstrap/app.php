@@ -8,7 +8,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use App\Console\Kernel as ConsoleKernel; // ✅ Add this
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
@@ -27,5 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })
-    ->withConsoleKernel(ConsoleKernel::class)  // ✅ Add this line
     ->create();
+
+$app->singleton(Illuminate\Contracts\Console\Kernel::class, ConsoleKernel::class);
+
+return $app;
