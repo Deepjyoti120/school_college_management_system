@@ -11,8 +11,13 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
+        // $schedule->command('app:attendance-generate-teacher')
+        //     ->dailyAt('06:00')
+        //     ->onFailure(function () {
+        //         //
+        //     });
         $schedule->command('app:attendance-generate-teacher')
-            ->dailyAt('06:00')
+            ->everyMinute()
             ->onFailure(function () {
                 //
             });
