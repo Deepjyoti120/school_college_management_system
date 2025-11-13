@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
-    protected $commands = [];
+    protected $commands = [
+        Commands\AttendanceGenerateTeacher::class,
+    ];
 
     protected function schedule(Schedule $schedule)
     {
