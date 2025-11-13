@@ -136,7 +136,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getProfileUrlAttribute(): ?string
     {
-        $demoProfile = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Student_icon.svg/1024px-Student_icon.svg.png?20170605011742';
+        $demoProfile = 'https://uxwing.com/wp-content/themes/uxwing/download/education-school/student-boy-icon.png';
         if ($this->role === UserRole::STUDENT) {
         }
         return $this->profile_photo ?  Storage::url($this->profile_photo) : $demoProfile;
