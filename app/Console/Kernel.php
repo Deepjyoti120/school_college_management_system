@@ -4,13 +4,10 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
-    protected $commands = [
-        Commands\AttendanceGenerateTeacher::class,
-    ];
+    protected $commands = [];
 
     protected function schedule(Schedule $schedule)
     {
@@ -24,9 +21,6 @@ class Kernel extends ConsoleKernel
             ->onFailure(function () {
                 //
             });
-        $schedule->call(function () {
-            Log::info('✅ Test cron ran at ' . now());
-        })->everyMinute();
     }
 
 
