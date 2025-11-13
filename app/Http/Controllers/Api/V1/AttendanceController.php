@@ -27,6 +27,7 @@ class AttendanceController extends Controller
     {
         $userId = $request->user()->id;
         $classId = $request->input('class_id');
+        $date = $request->input('date') ?? now()->toDateString();
         $attendances = Attendance::with(['school', 'user'])
             // ->where('user_id', $userId)
             ->when(!$classId, function ($query) use ($userId) {
@@ -37,6 +38,7 @@ class AttendanceController extends Controller
             ->when($classId, function ($query) use ($classId) {
                 $query->where('class_id', $classId);
             })
+            ->whereDate('date', $date)
             ->orderBy('created_at', 'desc')
             ->limit(31)
             ->get();
@@ -146,10 +148,13 @@ class AttendanceController extends Controller
     public function studentAttendanceMarkAbsentPresent(Request $request)
     {
         $attendanceId  = $request->input('attendance_id');
+        $date = $request->input('date') ?? now()->toDateString();
         if (!$attendanceId) {
             return ApiResponse::error(message: 'attendance_id is required', status: Response::HTTP_BAD_REQUEST);
         }
-        $attendance = Attendance::where('id', $attendanceId)->where('school_id', $request->user()->school_id)
+        $attendance = Attendance::where('id', $attendanceId)
+            ->where('school_id', $request->user()->school_id)
+            ->whereDate('date', $date)
             ->first();
         if (!$attendance) {
             return ApiResponse::error(message: 'Attendance record not found', status: Response::HTTP_NOT_FOUND);
