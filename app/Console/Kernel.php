@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('app:attendance-generate-teacher')
-            ->dailyAt('04:00')
+            // ->dailyAt('04:00')
+            ->dailyAt('22:30')   // runs at 10:30 PM UTC = 4:00 AM IST
             // ->timezone('Asia/Kolkata')
             ->onFailure(function () {
                 //
