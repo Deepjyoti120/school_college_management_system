@@ -17,6 +17,12 @@ class Kernel extends ConsoleKernel
             ->onFailure(function () {
                 //
             });
+        $schedule->command('app:attendance-generate-teacher')
+            ->dailyAt('11:10')
+            // ->timezone('Asia/Kolkata')
+            ->onFailure(function () {
+                //
+            });
     }
 
 
