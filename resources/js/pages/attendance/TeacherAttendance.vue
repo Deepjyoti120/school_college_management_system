@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
@@ -39,12 +39,22 @@ const onSearch = () => {
         onFinish: () => loading.value = false
     });
 };
+function exportAttendance() {
+    const url = route('teachers.attendance.export', {
+        month: month.value,
+        year: year.value,
+        academic_year_id: academicYear.value
+    })
+    window.location.href = url
+}
+
 const breadcrumbs = [
-    { title: 'Teacher Attendance', href: '/attendance/teachers' }, 
+    { title: 'Teacher Attendance', href: '/attendance/teachers' },
 ];
 </script>
 
 <template>
+
     <Head title="Teacher Attendance" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="px-4 py-6 space-y-6">
@@ -79,6 +89,9 @@ const breadcrumbs = [
                             Search
                         </Button>
                     </div>
+                    <Button @click="exportAttendance" class="w-full md:w-32">
+                        <span>Export</span>
+                    </Button>
                 </div>
                 <Card class="mx-auto shadow-none rounded-2xl mt-6">
                     <div class="overflow-x-auto">

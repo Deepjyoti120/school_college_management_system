@@ -94,6 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('classes-atendances', [AttendanceController::class, 'ClassesAtendances'])->name('classes.attendances.index');
     Route::get('attendance/{schoolClass}/{school_id}', [AttendanceController::class, 'Index'])->name('attendance.index');
     Route::get('attendance/teachers', [AttendanceController::class, 'TeachersAttendance'])->name('teachers.attendance.index');
+    Route::get('attendance/teachers-export', [AttendanceController::class, 'exportTeachers'])->name('teachers.attendance.export');
     // Attendance end
 });
 

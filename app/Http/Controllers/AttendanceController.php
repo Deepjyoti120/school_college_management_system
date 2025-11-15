@@ -7,6 +7,7 @@ use App\Enums\FrequencyType;
 use App\Enums\OrderStatus;
 use App\Enums\RazorpayPaymentStatus;
 use App\Enums\UserRole;
+use App\Exports\TeacherAttendanceExport;
 use App\Helpers\ApiResponse;
 use App\Models\AcademicYear;
 use App\Models\Attendance;
@@ -26,6 +27,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceController extends Controller
 {
@@ -102,7 +104,7 @@ class AttendanceController extends Controller
         $academicYearId = $request->input('academic_year_id');
         $attendances = Attendance::with(['user'])
             ->where('school_id', $user->school_id)
-            ->where('role',UserRole::TEACHER)
+            ->where('role', UserRole::TEACHER)
             ->when($academicYearId, fn($q) => $q->where('academic_year_id', $academicYearId))
             ->whereMonth('date', $month)
             ->whereYear('date', $year)
@@ -140,7 +142,17 @@ class AttendanceController extends Controller
             'canCreate' => in_array($user->role, [UserRole::PRINCIPAL, UserRole::ADMIN]),
         ]);
     }
-
+    public function exportTeachers(Request $request)
+    {
+        $month = $request->input('month', now()->month);
+        $year = $request->input('year', now()->year);
+        $academicYearId = $request->input('academic_year_id');
+        $filename = 'teacher_attendance_' . $month . '_' . $year . '.xlsx';
+        return Excel::download(
+            new TeacherAttendanceExport($month, $year, $academicYearId),
+            $filename
+        );
+    }
 
     public function create()
     {
