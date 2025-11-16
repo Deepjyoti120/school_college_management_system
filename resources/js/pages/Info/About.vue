@@ -30,7 +30,7 @@
                             This application and its online demo are provided
                             <strong>for demonstration purposes only</strong>
                             as part of the product sold on
-                            <strong>CodeCanyon</strong>.
+                            <strong></strong>.
                         </p>
                         <p>
                             All data displayed or entered in the demo is <strong>sample data</strong>
