@@ -1,4 +1,4 @@
-<h2>🎓 SFMS Pro – School Fee Payment Management System (Flutter + Laravel + Vue | Android & iOS)</h2>
+<h2>🎓 SFMS Pro – School Fee Payment and Management System (Flutter + Laravel + Vue | Android & iOS)</h2>
 <p>
 A <strong>School & College Fees Payment</strong> solution built with
 <strong>Flutter (Android + iOS)</strong> and <strong>Laravel + Vue.js + Inertia.js</strong>.
