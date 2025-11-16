@@ -22,7 +22,7 @@
                 <img src="https://ik.imagekit.io/u4sugnhfi/Envato_Assets/SFCM_School_Fee_Payment_and_Management_System/admin-dashboard-show-case.png"
                     alt="Admin Dashboard" class="rounded-xl shadow" />
             </section>
-            <section class="mx-auto">
+            <!-- <section class="mx-auto">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
                     <h2 class="text-2xl font-semibold text-center mb-4 text-gray-800">⚠️ Important Notes</h2>
                     <div class="space-y-4 text-gray-700 leading-relaxed">
@@ -40,7 +40,7 @@
                         </p>
                     </div>
                 </div>
-            </section>
+            </section> -->
 
             <section>
                 <h3 class="text-2xl font-semibold mb-4">🎯 Demo & Access</h3>
