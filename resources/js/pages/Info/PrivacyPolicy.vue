@@ -34,21 +34,8 @@
             <section class="space-y-3">
                 <h2 class="text-2xl font-semibold">3. Data Security</h2>
                 <p class="text-gray-700 leading-relaxed">
-                    This application and its online demo are provided
-                    <strong>for demonstration purposes only</strong>
-                    as part of the product sold on
-                    <strong>CodeCanyon</strong>.
-                </p>
-                <p class="text-gray-700 leading-relaxed">
                     Although standard security measures such as HTTPS and secure API communication are implemented,
                     this is <strong>not a live production system</strong>.
-                </p>
-                <p class="text-gray-700 leading-relaxed">
-                    All data displayed or entered in the demo is <strong>sample data</strong>
-                    and should not be treated as real or confidential.
-                    Users are advised <strong>not to enter any personal, institutional, or sensitive
-                        information</strong>
-                    while testing the demo.
                 </p>
             </section>
 
