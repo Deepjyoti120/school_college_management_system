@@ -5,14 +5,6 @@ A <strong>School & College Fees Payment</strong> solution built with
 Manage students, payments, and class-wise fees with Keep mobile and web always up to date.
 <br><br>
 <img
-  src="https://ik.imagekit.io/u4sugnhfi/Envato_Assets/SFCM_School_Fee_Payment_and_Management_System/Project-Setup-Offer-for-First-10-Buyers.gif"
-  alt="SFMS Pro - School & College Fees Payment and Management System | Project Setup Offer for First 10 Buyers"
-/>
-<img
-  src="https://ik.imagekit.io/u4sugnhfi/Envato_Assets/SFCM_School_Fee_Payment_and_Management_System/Exclusive-Product.gif"
-  alt="SFMS Pro - School & College Fees Payment and Management System | Exclusive Product"
-/>
-<img
   src="https://ik.imagekit.io/u4sugnhfi/Envato_Assets/SFCM_School_Fee_Payment_and_Management_System/app-show-case.png"
   alt="SFMS Pro - School & College Fees Payment and Management System | App Show Case"
 />
