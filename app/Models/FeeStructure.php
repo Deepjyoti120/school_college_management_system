@@ -30,6 +30,7 @@ class FeeStructure extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'final_amount' => 'decimal:2',
         'gst_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'frequency' => FrequencyType::class,
@@ -47,6 +48,7 @@ class FeeStructure extends Model
         'payment_status',
         'payment_status_label',
         'payment_status_color',
+        'final_amount',
     ];
 
     protected static function booted()
@@ -168,5 +170,16 @@ class FeeStructure extends Model
     public function discounts()
     {
         return $this->hasMany(Discount::class);
+    }
+    public function discount()
+    {
+        return $this->hasOne(Discount::class)
+            ->where('user_id', auth()->id());
+    }
+    public function getFinalAmountAttribute()
+    {
+        $discount = $this->discount?->amount ?? 0;
+
+        return number_format((float)$this->total_amount - (float)$discount, 2, '.', '');
     }
 }
