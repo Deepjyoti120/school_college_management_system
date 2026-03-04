@@ -15,6 +15,7 @@ import SelectItem from '@/components/ui/select/SelectItem.vue';
 import InputError from '@/components/InputError.vue';
 import { SelectOption } from '@/types/SelectOption';
 import { onMounted, ref, watch } from 'vue';
+import Badge from '@/components/ui/badge/Badge.vue';
 
 interface Props {
     roles: SelectOption[],
@@ -36,11 +37,26 @@ const form = useForm({
     board: props.user?.board || '',
     class_id: props.user?.class_id || '',
     section_id: props.user?.section_id || '',
+    subject_ids: Array.isArray(props.user?.subject_ids) ? props.user.subject_ids : [],
     phone: props.user?.phone || '',
     roll_number: props.user?.roll_number || '',
 });
 
 const sections = ref<SelectOption[]>([]);
+const subjects = ref<SelectOption[]>([]);
+
+const loadSubjects = async (classId: string) => {
+    if (!classId) {
+        subjects.value = [];
+        form.subject_ids = [];
+        return;
+    }
+    const res = await fetch(route('class.subjects', { class_id: classId }));
+    subjects.value = await res.json();
+    const subjectIds = new Set(subjects.value.map(subject => subject.value));
+    form.subject_ids = form.subject_ids.filter((id: string) => subjectIds.has(id));
+};
+
 onMounted(async () => {
     if (form.class_id) {
         const res = await fetch(route('class.sections', { class_id: form.class_id }));
@@ -48,17 +64,43 @@ onMounted(async () => {
         if (!sections.value.find(s => s.value === form.section_id)) {
             form.section_id = '';
         }
+        if (form.role === 'student') {
+            await loadSubjects(form.class_id);
+        }
     }
 });
 
 watch(() => form.class_id, async (newVal) => {
     form.section_id = '';
     sections.value = [];
+    if (form.role === 'student') {
+        await loadSubjects(newVal);
+    } else {
+        subjects.value = [];
+        form.subject_ids = [];
+    }
     if (newVal) {
         const res = await fetch(route('class.sections', { class_id: newVal }));
         sections.value = await res.json();
     }
 });
+
+watch(() => form.role, async (newRole) => {
+    if (newRole !== 'student') {
+        subjects.value = [];
+        form.subject_ids = [];
+        return;
+    }
+    await loadSubjects(form.class_id);
+});
+
+const toggleSubject = (subjectId: string) => {
+    if (form.subject_ids.includes(subjectId)) {
+        form.subject_ids = form.subject_ids.filter((id: string) => id !== subjectId);
+        return;
+    }
+    form.subject_ids = [...form.subject_ids, subjectId];
+};
 
 const submit = () => {
     form.post(route('user.store'), {
@@ -157,6 +199,29 @@ const breadcrumbs = [
                                         </SelectContent>
                                     </Select>
                                     <InputError :message="form.errors.section_id" />
+                                </div>
+                                <div v-if="form.role === 'student'" class="grid gap-2 col-span-full">
+                                    <Label>Subjects</Label>
+                                    <div v-if="!form.class_id"
+                                        class="text-sm text-muted-foreground border rounded-md px-3 py-2">
+                                        Select class first to load subjects.
+                                    </div>
+                                    <div v-else-if="subjects.length === 0"
+                                        class="text-sm text-muted-foreground border rounded-md px-3 py-2">
+                                        No subjects found for selected class.
+                                    </div>
+                                    <div v-else class="flex flex-wrap gap-2">
+                                        <button v-for="subject in subjects" :key="subject.value" type="button"
+                                            class="focus:outline-none"
+                                            @click="toggleSubject(String(subject.value))">
+                                            <Badge :variant="form.subject_ids.includes(String(subject.value))
+                                                ? 'default'
+                                                : 'outline'">
+                                                {{ subject.label }}
+                                            </Badge>
+                                        </button>
+                                    </div>
+                                    <InputError :message="form.errors.subject_ids" />
                                 </div>
                                 <div class="grid gap-2">
                                     <Label for="board">Board</Label>

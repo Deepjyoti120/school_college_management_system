@@ -30,6 +30,11 @@ class SchoolClass extends Model
         return $this->hasMany(User::class, 'class_id')->where('role', UserRole::STUDENT);
     }
 
+    public function subjects()
+    {
+        return $this->hasMany(Subject::class, 'class_id');
+    }
+
     // public function teachers()
     // {
     //     return $this->hasMany(User::class, 'class_id')->where('role', UserRole::TEACHER);

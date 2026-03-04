@@ -8,6 +8,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\SchoolClass;
 use App\Models\SchoolClassSection;
+use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -40,12 +41,26 @@ class Create extends Controller
             ]);
     }
 
+    public function subjects(Request $request, $class_id)
+    {
+        return Subject::query()
+            ->where('school_id', auth()->user()->school_id)
+            ->where('class_id', $class_id)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn($subject) => [
+                'label' => $subject->name,
+                'value' => $subject->id,
+            ]);
+    }
+
     public function __invoke(Request $request, $user_id = null)
     {
         $school_id = auth()->user()->school_id;
 
         $user = $user_id
-            ? User::where('school_id', $school_id)->findOrFail($user_id)
+            ? User::where('school_id', $school_id)->with(['subjects:id'])->findOrFail($user_id)
             : null;
 
         return Inertia::render('users/Create', [
@@ -69,6 +84,7 @@ class Create extends Controller
                 'class_id' => $user->class_id,
                 'section_id' => $user->section_id,
                 'roll_number' => $user->roll_number,
+                'subject_ids' => $user->subjects->pluck('id')->values(),
             ] : null,
         ]);
     }

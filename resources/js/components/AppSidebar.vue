@@ -3,12 +3,9 @@ import type { SidebarProps } from '@/components/ui/sidebar'
 import {
     AudioWaveform,
     BaggageClaimIcon,
-    Car,
     Command,
-    FileChartColumnIncreasing,
     Frame,
     GalleryVerticalEnd,
-    IndianRupee,
     IndianRupeeIcon,
     LayoutPanelTop,
     LucideBookOpenCheck,
@@ -19,7 +16,6 @@ import {
     Settings2,
     SquareTerminal,
     Users2Icon,
-    WalletMinimal,
 } from 'lucide-vue-next'
 import NavMain from '@/components/NavMain.vue'
 import NavUser from '@/components/NavUser.vue'
@@ -146,7 +142,13 @@ if (user.role === UserRole.SUPER_ADMIN) {
             url: '/fees/structure',
             icon: LayoutPanelTop,
             isActive: false,
-        }
+        },
+        {
+            title: 'Subjects',
+            url: '/subjects',
+            icon: BaggageClaimIcon,
+            isActive: false,
+        },
     ];
     const adminItems = [
         {
@@ -202,6 +204,12 @@ if (user.role === UserRole.PRINCIPAL) {
             title: 'Fees Structure',
             url: '/fees/structure',
             icon: LayoutPanelTop,
+            isActive: false,
+        },
+        {
+            title: 'Subjects',
+            url: '/subjects',
+            icon: BaggageClaimIcon,
             isActive: false,
         },
         {

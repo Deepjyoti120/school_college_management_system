@@ -14,6 +14,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Restaurent;
+use App\Http\Controllers\SubjectController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -47,10 +48,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('user/create/{user?}', Users\Create::class)->name('user.create');
     Route::get('class/{class_id}/sections', [Users\Create::class, 'sections'])
         ->name('class.sections');
+    Route::get('class/{class_id}/subjects', [Users\Create::class, 'subjects'])
+        ->name('class.subjects');
     Route::post('user/store', Users\Store::class)->name('user.store');
     Route::put('user/{user}/toggle', Users\ToggleStatusController::class)->name('user.toggle');
     Route::get('user/{user}/profile', Users\ProfileStatusController::class)->name('user.profile');
     Route::get('user/{user}/payments', Users\UserPaymentController::class)->name('user.payments');
+    Route::get('subjects', [SubjectController::class, 'index'])->name('subjects.index');
+    Route::get('subject/create', [SubjectController::class, 'create'])->name('subject.create');
+    Route::post('subject/store', [SubjectController::class, 'store'])->name('subject.store');
+    Route::put('subject/{subject}/toggle', [SubjectController::class, 'toggle'])->name('subject.toggle');
     // Category
     Route::get('categories', Category\Index::class)->name('categories.index');
     Route::post('category/create', Category\CreateController::class)->name('category.create');

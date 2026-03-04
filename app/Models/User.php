@@ -156,6 +156,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(School::class);
     }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'user_subjects')
+            ->withTimestamps();
+    }
+
     public function payments()
     {
         return $this->hasMany(Payment::class);
