@@ -176,6 +176,7 @@ class FeeStructure extends Model
         return $this->hasOne(Discount::class)
             ->where('user_id', auth()->id());
     }
+    
     public function getFinalAmountAttribute()
     {
         $discount = $this->discount?->amount ?? 0;

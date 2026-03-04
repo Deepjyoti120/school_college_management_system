@@ -6,7 +6,7 @@ import 'vue-sonner/style.css'
 import { usePage } from '@inertiajs/vue3';
 import { h, watchEffect } from 'vue';
 import { toast } from 'vue-sonner';
-import { CircleAlert, CircleCheck, CircleCheckBigIcon, Home } from 'lucide-vue-next';
+import { CircleAlert, CircleCheckBigIcon} from 'lucide-vue-next';
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
 }
