@@ -28,6 +28,7 @@ class AttendanceController extends Controller
     {
         $userId = $request->user()->id;
         $classId = $request->input('class_id');
+        $sectionId = $request->input('section_id');
         $date = $request->input('date') ?? now()->toDateString();
         $attendances = Attendance::with(['school', 'user'])
             // ->where('user_id', $userId)
@@ -36,8 +37,13 @@ class AttendanceController extends Controller
             })
             ->where('role', $classId ? UserRole::STUDENT : UserRole::TEACHER)
             ->where('school_id', $request->user()->school_id)
-            ->when($classId, function ($query) use ($classId) {
+            ->when($classId, function ($query) use ($classId, $sectionId) {
                 $query->where('class_id', $classId);
+            })
+            ->when($sectionId, function ($query) use ($sectionId) {
+                $query->whereHas('user', function ($q) use ($sectionId) {
+                    $q->where('section_id', $sectionId);
+                });
             })
             ->whereDate('date', $date)
             ->orderBy('created_at', 'desc')
@@ -116,8 +122,7 @@ class AttendanceController extends Controller
         if (!$class_id) {
             return ApiResponse::error(message: 'class_id is required', status: Response::HTTP_BAD_REQUEST);
         }
-        $schoolClass = SchoolClassSection::where('school_id', $user->school_id)
-            ->where('class_id', $class_id)->get();
+        $schoolClass = SchoolClassSection::where('class_id', $class_id)->get();
         return ApiResponse::success($schoolClass, 'success');
     }
 
