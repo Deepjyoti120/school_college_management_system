@@ -23,6 +23,7 @@ class FeeStructure extends Model
         'gst_amount',
         'total_amount',
         'frequency',
+        'is_subject_wise',
         'description',
         'month',
         'year',
@@ -35,6 +36,7 @@ class FeeStructure extends Model
         'total_amount' => 'decimal:2',
         'frequency' => FrequencyType::class,
         'type' => FeeType::class,
+        'is_subject_wise' => 'boolean',
         'month' => 'integer',
         'year' => 'integer',
     ];
@@ -90,6 +92,12 @@ class FeeStructure extends Model
     public function class()
     {
         return $this->belongsTo(SchoolClass::class, 'class_id');
+    }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'fee_structure_subjects')
+            ->withTimestamps();
     }
 
     public function getFrequencyLabelAttribute(): string
@@ -165,7 +173,17 @@ class FeeStructure extends Model
     public function users()
     {
         return $this->hasMany(User::class, 'class_id', 'class_id')
-            ->whereColumn('users.school_id', 'fee_structures.school_id');
+            ->whereColumn('users.school_id', 'fee_structures.school_id')
+            ->where(function ($query) {
+                $query->where('fee_structures.is_subject_wise', false)
+                    ->orWhereExists(function ($subQuery) {
+                        $subQuery->selectRaw(1)
+                            ->from('user_subjects')
+                            ->join('fee_structure_subjects', 'fee_structure_subjects.subject_id', '=', 'user_subjects.subject_id')
+                            ->whereColumn('user_subjects.user_id', 'users.id')
+                            ->whereColumn('fee_structure_subjects.fee_structure_id', 'fee_structures.id');
+                    });
+            });
     }
     public function discounts()
     {

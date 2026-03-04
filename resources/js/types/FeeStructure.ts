@@ -1,4 +1,5 @@
 import { SchoolClass } from "./SchoolClass";
+import { Subject } from "./Subject";
 
 export interface FeeStructure {
   id: string;
@@ -20,10 +21,12 @@ export interface FeeStructure {
   frequency: string;
   frequency_label: string;
   frequency_color: string;
+  is_subject_wise: boolean;
   payment_status_color: string;
   payment_status_label: string;
   description?: string;
   month_name?: string;
+  subjects?: Subject[];
   class: SchoolClass;
   is_active: boolean;
   is_paid: boolean;

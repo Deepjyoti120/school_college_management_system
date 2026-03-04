@@ -21,7 +21,9 @@ import {
     NumberFieldInput,
 } from '@/components/ui/number-field'
 import { SelectOption } from '@/types/SelectOption';
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
+import Switch from '@/components/ui/switch/Switch.vue';
+import Badge from '@/components/ui/badge/Badge.vue';
 
 const breadcrumbs = [
     { title: 'Fees Structure', href: '/fees/structure' },
@@ -42,8 +44,12 @@ const form = useForm({
     type: '',
     amount: 0,
     frequency: '',
+    is_subject_wise: false,
+    subject_ids: [] as string[],
     description: '',
 });
+
+const subjects = ref<SelectOption[]>([]);
 
 const submit = () => {
     form.post(route('fee.store'),
@@ -62,6 +68,19 @@ const filteredFrequencyTypes = computed(() => {
     return props.frequencyTypes.filter((frequency) => allowed.includes(String(frequency.value)));
 });
 
+const loadSubjects = async (classId: string) => {
+    if (!classId) {
+        subjects.value = [];
+        form.subject_ids = [];
+        return;
+    }
+
+    const res = await fetch(route('class.subjects', { class_id: classId }));
+    subjects.value = await res.json();
+    const subjectIds = new Set(subjects.value.map((subject) => subject.value));
+    form.subject_ids = form.subject_ids.filter((id) => subjectIds.has(id));
+};
+
 watch(() => form.type, () => {
     if (!form.frequency) {
         return;
@@ -71,6 +90,32 @@ watch(() => form.type, () => {
         form.frequency = '';
     }
 });
+
+watch(() => form.class_id, async (newVal) => {
+    if (form.is_subject_wise) {
+        await loadSubjects(newVal);
+    } else {
+        subjects.value = [];
+        form.subject_ids = [];
+    }
+});
+
+watch(() => form.is_subject_wise, async (enabled) => {
+    if (!enabled) {
+        subjects.value = [];
+        form.subject_ids = [];
+        return;
+    }
+    await loadSubjects(form.class_id);
+});
+
+const toggleSubject = (subjectId: string) => {
+    if (form.subject_ids.includes(subjectId)) {
+        form.subject_ids = form.subject_ids.filter((id) => id !== subjectId);
+        return;
+    }
+    form.subject_ids = [...form.subject_ids, subjectId];
+};
 </script>
 
 <template>
@@ -159,6 +204,38 @@ watch(() => form.type, () => {
                                         </NumberFieldContent>
                                     </NumberField>
                                     <InputError :message="form.errors.amount" />
+                                </div>
+                                <div class="grid gap-2">
+                                    <Label>Subject Wise Fee</Label>
+                                    <div class="h-10 px-3 border rounded-md flex items-center gap-3">
+                                        <Switch v-model="form.is_subject_wise" />
+                                        <p class="text-sm text-muted-foreground">
+                                            {{ form.is_subject_wise ? 'Enabled' : 'Disabled' }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div v-if="form.is_subject_wise" class="grid gap-2 col-span-2">
+                                    <Label>Subjects</Label>
+                                    <div v-if="!form.class_id"
+                                        class="text-sm text-muted-foreground border rounded-md px-3 py-2">
+                                        Select class first to load subjects.
+                                    </div>
+                                    <div v-else-if="subjects.length === 0"
+                                        class="text-sm text-muted-foreground border rounded-md px-3 py-2">
+                                        No subjects found for selected class.
+                                    </div>
+                                    <div v-else class="flex flex-wrap gap-2">
+                                        <button v-for="subject in subjects" :key="subject.value" type="button"
+                                            class="focus:outline-none" @click="toggleSubject(String(subject.value))">
+                                            <Badge :variant="form.subject_ids.includes(String(subject.value))
+                                                ? 'default'
+                                                : 'outline'">
+                                                {{ subject.label }}
+                                            </Badge>
+                                        </button>
+                                    </div>
+                                    <InputError :message="form.errors.subject_ids" />
                                 </div>
 
                                 <div class="grid gap-2 col-span-2">

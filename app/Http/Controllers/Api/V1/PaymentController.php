@@ -30,10 +30,20 @@ class PaymentController extends Controller
     public function pendingPayments(Request $request)
     {
         $user = auth()->user();
+        $subjectIds = $user->subjects()->pluck('subjects.id')->all();
         $defaultAcademicYear = AcademicYear::getOrCreateCurrentAcademicYear($user->school_id);
         $feeStructures = FeeStructure::pendingForUser($user->id)
-            ->with(['school', 'academicYear', 'class', 'payments','discount'])
+            ->with(['school', 'academicYear', 'class', 'payments', 'discount', 'subjects'])
+            ->where('school_id', $user->school_id)
             ->where('class_id', $user->class_id)
+            ->where(function ($query) use ($subjectIds) {
+                $query->where('is_subject_wise', false);
+                if (!empty($subjectIds)) {
+                    $query->orWhereHas('subjects', function ($subjectQuery) use ($subjectIds) {
+                        $subjectQuery->whereIn('subjects.id', $subjectIds);
+                    });
+                }
+            })
             ->where('is_active', true)
             ->where('academic_year_id', $defaultAcademicYear->id)
             ->get();
@@ -60,8 +70,22 @@ class PaymentController extends Controller
     public function paymentInit(Request $request)
     {
         $id = $request->query('id');
-        $feeStructure =  FeeStructure::findOrFail($id);
         $user = auth()->user();
+        $subjectIds = $user->subjects()->pluck('subjects.id')->all();
+        $feeStructure =  FeeStructure::query()
+            ->where('id', $id)
+            ->where('school_id', $user->school_id)
+            ->where('class_id', $user->class_id)
+            ->where('is_active', true)
+            ->where(function ($query) use ($subjectIds) {
+                $query->where('is_subject_wise', false);
+                if (!empty($subjectIds)) {
+                    $query->orWhereHas('subjects', function ($subjectQuery) use ($subjectIds) {
+                        $subjectQuery->whereIn('subjects.id', $subjectIds);
+                    });
+                }
+            })
+            ->firstOrFail();
         $amount = $feeStructure->total_amount;
         $name =   $user->name;
         $phone = $user->phone;

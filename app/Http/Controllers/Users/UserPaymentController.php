@@ -17,6 +17,7 @@ class UserPaymentController extends Controller
 {
     public function __invoke(Request $request, User $user)
     {
+        $subjectIds = $user->subjects()->pluck('subjects.id')->all();
         // $schoolId = $user->school_id;
         // $defaultAcademicYear = AcademicYear::getOrCreateCurrentAcademicYear($schoolId);
         // $request->academicYear = $request->academicYear ?? $defaultAcademicYear->id;
@@ -48,6 +49,7 @@ class UserPaymentController extends Controller
             ->with([
                 'school',
                 'class',
+                'subjects',
                 'discounts' => function ($q) use ($user) {
                     $q->where('user_id', $user->id)
                         ->where('is_active', true);
@@ -55,6 +57,14 @@ class UserPaymentController extends Controller
             ])
             ->where('school_id', $user->school_id)
             ->where('class_id', $user->class_id)
+            ->where(function ($query) use ($subjectIds) {
+                $query->where('is_subject_wise', false);
+                if (!empty($subjectIds)) {
+                    $query->orWhereHas('subjects', function ($subjectQuery) use ($subjectIds) {
+                        $subjectQuery->whereIn('subjects.id', $subjectIds);
+                    });
+                }
+            })
             // ->withCount(['users as user_count'])
             // ->withSum(['payments as total_paid' => function ($q) {
             //     $q->where('status', RazorpayPaymentStatus::PAID);

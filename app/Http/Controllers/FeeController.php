@@ -17,6 +17,7 @@ use App\Models\OrderDocument;
 use App\Models\OrderProgress;
 use App\Models\Product;
 use App\Models\SchoolClass;
+use App\Models\Subject;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -208,6 +209,9 @@ class FeeController extends Controller
             'type' => ['required', 'in:' . implode(',', FeeType::values())],
             'amount' => ['required', 'numeric', 'min:100'],
             'frequency' => ['required', 'in:' . implode(',', FrequencyType::values())],
+            'is_subject_wise' => ['nullable', 'boolean'],
+            'subject_ids' => ['nullable', 'array'],
+            'subject_ids.*' => ['exists:subjects,id'],
             'description' => ['nullable', 'string', 'max:1000'],
         ]);
         if (config('services.demo.mode')) {
@@ -217,6 +221,8 @@ class FeeController extends Controller
         $academicYear = AcademicYear::getOrCreateCurrentAcademicYear($schoolId);
         $feeType = FeeType::from($validated['type']);
         $frequency = FrequencyType::from($validated['frequency']);
+        $isSubjectWise = (bool) ($validated['is_subject_wise'] ?? false);
+        $subjectIds = array_values(array_unique($validated['subject_ids'] ?? []));
         $allowedFrequencyByType = match ($feeType) {
             FeeType::ADMISSION => [FrequencyType::ONE_TIME],
             FeeType::MONTHLY => [FrequencyType::MONTHLY, FrequencyType::QUARTERLY],
@@ -225,6 +231,23 @@ class FeeController extends Controller
             return back()->withErrors([
                 'frequency' => 'Selected frequency is not allowed for the selected fee type.',
             ])->withInput();
+        }
+        if ($isSubjectWise && count($subjectIds) === 0) {
+            return back()->withErrors([
+                'subject_ids' => 'Please select at least one subject for subject-wise fee.',
+            ])->withInput();
+        }
+        if ($isSubjectWise) {
+            $subjectCount = Subject::query()
+                ->where('school_id', $schoolId)
+                ->where('class_id', $validated['class_id'])
+                ->whereIn('id', $subjectIds)
+                ->count();
+            if ($subjectCount !== count($subjectIds)) {
+                return back()->withErrors([
+                    'subject_ids' => 'Selected subjects are invalid for the selected class.',
+                ])->withInput();
+            }
         }
 
         $startMonth = $academicYear->start_date->copy()->startOfMonth();
@@ -238,7 +261,7 @@ class FeeController extends Controller
                 ->all(),
         };
 
-        $createdCount = DB::transaction(function () use ($schedule, $schoolId, $academicYear, $validated) {
+        $createdCount = DB::transaction(function () use ($schedule, $schoolId, $academicYear, $validated, $isSubjectWise, $subjectIds) {
             $count = 0;
 
             foreach ($schedule as $date) {
@@ -249,6 +272,7 @@ class FeeController extends Controller
                     ->where('name', $validated['name'])
                     ->where('type', $validated['type'])
                     ->where('frequency', $validated['frequency'])
+                    ->where('is_subject_wise', $isSubjectWise)
                     ->where('year', $date->year)
                     ->where('month', $date->month)
                     ->exists();
@@ -257,7 +281,7 @@ class FeeController extends Controller
                     continue;
                 }
 
-                FeeStructure::create([
+                $fee = FeeStructure::create([
                     'school_id' => $schoolId,
                     'academic_year_id' => $academicYear->id,
                     'class_id' => $validated['class_id'],
@@ -265,10 +289,14 @@ class FeeController extends Controller
                     'type' => $validated['type'],
                     'amount' => $validated['amount'],
                     'frequency' => $validated['frequency'],
+                    'is_subject_wise' => $isSubjectWise,
                     'description' => $validated['description'] ?? null,
                     'year' => $date->year,
                     'month' => $date->month,
                 ]);
+                if ($isSubjectWise) {
+                    $fee->subjects()->sync($subjectIds);
+                }
 
                 $count++;
             }
@@ -353,6 +381,10 @@ class FeeController extends Controller
     }
     public function feeUsers(Request $request, FeeStructure $fee)
     {
+        $subjectIds = $fee->is_subject_wise
+            ? $fee->subjects()->pluck('subjects.id')->all()
+            : [];
+
         $users = User::with([
             'payments' => function ($q) use ($fee) {
                 $q->where('fee_structure_id', $fee->id)
@@ -366,6 +398,11 @@ class FeeController extends Controller
         ])
             ->where('users.school_id', $fee->school_id)
             ->where('users.class_id', $fee->class_id)
+            ->when($fee->is_subject_wise, function ($query) use ($subjectIds) {
+                $query->whereHas('subjects', function ($subjectQuery) use ($subjectIds) {
+                    $subjectQuery->whereIn('subjects.id', $subjectIds);
+                });
+            })
             ->whereIn('users.role', UserRole::allowedForUser(auth()->user()->role))
             ->where('users.id', '!=', auth()->id())
             ->when($request->role && $request->role !== 'all', fn($q) => $q->where('users.role', $request->role))
