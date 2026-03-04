@@ -37,7 +37,7 @@ class AttendanceController extends Controller
             })
             ->where('role', $classId ? UserRole::STUDENT : UserRole::TEACHER)
             ->where('school_id', $request->user()->school_id)
-            ->when($classId, function ($query) use ($classId, $sectionId) {
+            ->when($classId, function ($query) use ($classId) {
                 $query->where('class_id', $classId);
             })
             ->when($sectionId, function ($query) use ($sectionId) {
@@ -129,6 +129,7 @@ class AttendanceController extends Controller
     public function studentAttendanceGenerate(Request $request)
     {
         $classId = $request->input('class_id');
+        $sectionId = $request->input('section_id');
         if (!$classId) {
             return ApiResponse::error(message: 'class_id is required', status: Response::HTTP_BAD_REQUEST);
         }
@@ -136,6 +137,9 @@ class AttendanceController extends Controller
         $students = User::where('role', UserRole::STUDENT)
             ->where('school_id', $request->user()->school_id)
             ->where('class_id', $classId)
+            ->when($sectionId, function ($query) use ($sectionId) {
+                $query->where('section_id', $sectionId);
+            })
             ->whereDoesntHave('attendances', function ($q) use ($today) {
                 $q->whereDate('date', $today);
             })
