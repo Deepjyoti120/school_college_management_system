@@ -21,6 +21,7 @@ import {
     NumberFieldInput,
 } from '@/components/ui/number-field'
 import { SelectOption } from '@/types/SelectOption';
+import { computed, watch } from 'vue';
 
 const breadcrumbs = [
     { title: 'Fees Structure', href: '/fees/structure' },
@@ -31,7 +32,7 @@ interface Props {
     classes: SelectOption[];
     feeTypes: SelectOption[];
     frequencyTypes: SelectOption[];
-    months: SelectOption[];
+    feeTypeFrequencyMap: Record<string, string[]>;
 }
 const props = defineProps<Props>();
 
@@ -42,7 +43,6 @@ const form = useForm({
     amount: 0,
     frequency: '',
     description: '',
-    month: null,
 });
 
 const submit = () => {
@@ -52,6 +52,25 @@ const submit = () => {
         }
     );
 };
+
+const filteredFrequencyTypes = computed(() => {
+    if (!form.type) {
+        return props.frequencyTypes;
+    }
+
+    const allowed = props.feeTypeFrequencyMap?.[form.type] ?? [];
+    return props.frequencyTypes.filter((frequency) => allowed.includes(String(frequency.value)));
+});
+
+watch(() => form.type, () => {
+    if (!form.frequency) {
+        return;
+    }
+    const allowed = props.feeTypeFrequencyMap?.[form.type] ?? [];
+    if (!allowed.includes(form.frequency)) {
+        form.frequency = '';
+    }
+});
 </script>
 
 <template>
@@ -118,34 +137,18 @@ const submit = () => {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectItem v-for="f in props.frequencyTypes" :key="f.value"
+                                                <SelectItem v-for="f in filteredFrequencyTypes" :key="f.value"
                                                     :value="f.value">
                                                     {{ f.label }}
                                                 </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
+                                    <p class="text-xs text-muted-foreground">
+                                        Admission supports One Time (1 entry). Monthly supports Quarterly (4 entries) or Monthly (12 entries), starting from academic year first month.
+                                    </p>
                                     <InputError :message="form.errors.frequency" />
                                 </div>
-                                <div class="grid gap-2">
-                                    <Label>Month</Label>
-                                    {{ form.month }}
-                                    <Select v-model="form.month">
-                                        <SelectTrigger class="w-full">
-                                            <SelectValue placeholder="Select Month" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem v-for="f in props.months" :key="f.value"
-                                                    :value="f.value">
-                                                    {{ f.label }}
-                                                </SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                    <InputError :message="form.errors.month" />
-                                </div>
-
                                 <div class="grid gap-2">
                                     <NumberField v-model="form.amount">
                                         <Label>Amount</Label>

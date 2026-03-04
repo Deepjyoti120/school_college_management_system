@@ -6,6 +6,7 @@ enum FrequencyType: string
 {
     case ONE_TIME = 'one_time';
     case MONTHLY = 'monthly';
+    case QUARTERLY = 'quarterly';
     case YEARLY = 'yearly';
 
 
@@ -14,6 +15,7 @@ enum FrequencyType: string
         return match ($this) {
             self::ONE_TIME => 'One Time',
             self::MONTHLY => 'Monthly',
+            self::QUARTERLY => 'Quarterly',
             self::YEARLY => 'Yearly',
         };
     }
@@ -23,6 +25,7 @@ enum FrequencyType: string
         return match ($this) {
             self::ONE_TIME => 'bg-indigo-500/10 text-indigo-700 border border-indigo-500/20',
             self::MONTHLY  => 'bg-blue-500/10 text-blue-700 border border-blue-500/20',      
+            self::QUARTERLY  => 'bg-amber-500/10 text-amber-700 border border-amber-500/20',
             self::YEARLY   => 'bg-green-500/10 text-green-700 border border-green-500/20',   
             default        => 'bg-gray-500/10 text-gray-700 border border-gray-500/20',      
         };

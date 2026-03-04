@@ -178,17 +178,12 @@ class FeeController extends Controller
     public function feeCreate()
     {
         $schoolId = auth()->user()->school_id;
-        $academicYear = AcademicYear::getOrCreateCurrentAcademicYear($schoolId);
-        $months = collect();
-        $start = $academicYear->start_date->copy()->startOfMonth();
-        $end = $academicYear->end_date->copy()->endOfMonth();
-        while ($start->lte($end)) {
-            $months->push([
-                'label' => $start->format('F Y'),
-                'value' => $start->format('Y-m'),
-            ]);
-            $start->addMonth();
-        }
+
+        $feeTypeFrequencyMap = [
+            FeeType::ADMISSION->value => [FrequencyType::ONE_TIME->value],
+            FeeType::MONTHLY->value => [FrequencyType::MONTHLY->value, FrequencyType::QUARTERLY->value],
+        ];
+
         return Inertia::render('fee/Create', [
             'classes' => SchoolClass::where('school_id', $schoolId)
                 ->get(['id', 'name'])
@@ -201,7 +196,7 @@ class FeeController extends Controller
                 'label' => $f->label(),
                 'value' => $f->value,
             ]),
-            'months' => $months,
+            'feeTypeFrequencyMap' => $feeTypeFrequencyMap,
         ]);
     }
 
@@ -214,36 +209,80 @@ class FeeController extends Controller
             'amount' => ['required', 'numeric', 'min:100'],
             'frequency' => ['required', 'in:' . implode(',', FrequencyType::values())],
             'description' => ['nullable', 'string', 'max:1000'],
-            'month' => ['nullable', 'date_format:Y-m'],
-            // 'month' => ['nullable', 'integer', 'between:1,12'],
         ]);
         if (config('services.demo.mode')) {
             return back()->with('error', 'This action is not allowed in demo mode');
         }
-        $academicYear = AcademicYear::getOrCreateCurrentAcademicYear(auth()->user()->school_id);
-        $year = null;
-        $month = null;
-        if (!empty($validated['month'])) {
-            [$year, $month] = explode('-', $validated['month']);
+        $schoolId = auth()->user()->school_id;
+        $academicYear = AcademicYear::getOrCreateCurrentAcademicYear($schoolId);
+        $feeType = FeeType::from($validated['type']);
+        $frequency = FrequencyType::from($validated['frequency']);
+        $allowedFrequencyByType = match ($feeType) {
+            FeeType::ADMISSION => [FrequencyType::ONE_TIME],
+            FeeType::MONTHLY => [FrequencyType::MONTHLY, FrequencyType::QUARTERLY],
+        };
+        if (!in_array($frequency, $allowedFrequencyByType, true)) {
+            return back()->withErrors([
+                'frequency' => 'Selected frequency is not allowed for the selected fee type.',
+            ])->withInput();
         }
-        // $gstRate = FeeStructure::GST_RATE;
-        // $gstAmount = round(($validated['amount'] * $gstRate) / 100, 2);
-        // $totalAmount = $validated['amount'] + $gstAmount;
-        FeeStructure::create([
-            'school_id' => auth()->user()->school_id,
-            'academic_year_id' => $academicYear->id,
-            'class_id' => $validated['class_id'],
-            'name' => $validated['name'],
-            'type' => $validated['type'],
-            'amount' => $validated['amount'],
-            'frequency' => $validated['frequency'],
-            'description' => $validated['description'] ?? null,
-            'year' => $year ?? now()->year,
-            'month' => $month,
-            // 'gst_amount' => $gstAmount,
-            // 'total_amount' => $totalAmount,
-        ]);
-        return back()->with('success', 'Successfully Saved.');
+
+        $startMonth = $academicYear->start_date->copy()->startOfMonth();
+        $schedule = match ($frequency) {
+            FrequencyType::ONE_TIME, FrequencyType::YEARLY => [$startMonth->copy()],
+            FrequencyType::QUARTERLY => collect(range(0, 3))
+                ->map(fn($index) => $startMonth->copy()->addMonths($index * 3))
+                ->all(),
+            FrequencyType::MONTHLY => collect(range(0, 11))
+                ->map(fn($index) => $startMonth->copy()->addMonths($index))
+                ->all(),
+        };
+
+        $createdCount = DB::transaction(function () use ($schedule, $schoolId, $academicYear, $validated) {
+            $count = 0;
+
+            foreach ($schedule as $date) {
+                $alreadyExists = FeeStructure::query()
+                    ->where('school_id', $schoolId)
+                    ->where('academic_year_id', $academicYear->id)
+                    ->where('class_id', $validated['class_id'])
+                    ->where('name', $validated['name'])
+                    ->where('type', $validated['type'])
+                    ->where('frequency', $validated['frequency'])
+                    ->where('year', $date->year)
+                    ->where('month', $date->month)
+                    ->exists();
+
+                if ($alreadyExists) {
+                    continue;
+                }
+
+                FeeStructure::create([
+                    'school_id' => $schoolId,
+                    'academic_year_id' => $academicYear->id,
+                    'class_id' => $validated['class_id'],
+                    'name' => $validated['name'],
+                    'type' => $validated['type'],
+                    'amount' => $validated['amount'],
+                    'frequency' => $validated['frequency'],
+                    'description' => $validated['description'] ?? null,
+                    'year' => $date->year,
+                    'month' => $date->month,
+                ]);
+
+                $count++;
+            }
+
+            return $count;
+        });
+
+        if ($createdCount === 0) {
+            return back()->with('error', 'Fee structure already exists for the selected frequency schedule.');
+        }
+
+        return back()->with('success', $createdCount === 1
+            ? 'Successfully Saved.'
+            : "Successfully Saved ({$createdCount} entries).");
     }
 
     public function approve(Request $request, Order $order)
