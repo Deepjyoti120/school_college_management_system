@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_subjects', function (Blueprint $table) {
-            $table->ulid('id')->primary();
             $table->foreignUlid('user_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('subject_id')->constrained('subjects')->cascadeOnDelete();
             $table->timestamps();
