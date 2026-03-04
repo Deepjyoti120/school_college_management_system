@@ -36,6 +36,7 @@ Route::prefix('v1')->group(function () {
         Route::post('attendance/list', [AttendanceController::class, 'index']);
         Route::post('teacher/check-in-out', [AttendanceController::class, 'checkInOut']);
         Route::get('student/attendance/class-list', [AttendanceController::class, 'classList']);
+        Route::get('student/attendance/class-section-list', [AttendanceController::class, 'classSectionList']);
         Route::post('student/attendance-generate', [AttendanceController::class, 'studentAttendanceGenerate']);
         Route::post('student/attendance-mark-absent-present', [AttendanceController::class, 'studentAttendanceMarkAbsentPresent']);
         // Attendance End

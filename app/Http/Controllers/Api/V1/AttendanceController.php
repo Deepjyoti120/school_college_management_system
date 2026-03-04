@@ -15,6 +15,7 @@ use App\Models\Holiday;
 use App\Models\Payment;
 use App\Models\School;
 use App\Models\SchoolClass;
+use App\Models\SchoolClassSection;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -105,6 +106,18 @@ class AttendanceController extends Controller
     {
         $user = $request->user();
         $schoolClass = SchoolClass::where('school_id', $user->school_id)->get();
+        return ApiResponse::success($schoolClass, 'success');
+    }
+
+    public function classSectionList(Request $request)
+    {
+        $user = $request->user();
+        $class_id = $request->input('class_id');
+        if (!$class_id) {
+            return ApiResponse::error(message: 'class_id is required', status: Response::HTTP_BAD_REQUEST);
+        }
+        $schoolClass = SchoolClassSection::where('school_id', $user->school_id)
+            ->where('class_id', $class_id)->get();
         return ApiResponse::success($schoolClass, 'success');
     }
 
